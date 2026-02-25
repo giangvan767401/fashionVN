@@ -37,31 +37,31 @@
 
                     <!-- Navigation -->
                     <nav class="hidden md:flex space-x-8">
-                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium">Bộ Sưu Tập</a>
-                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium">Hàng Mới</a>
-                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium">Modiweek</a>
-                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium">Kích Thước</a>
-                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium">Sản Phẩm Xanh</a>
+                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium transition-all duration-300 transform hover:-translate-y-1">Bộ Sưu Tập</a>
+                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium transition-all duration-300 transform hover:-translate-y-1">Hàng Mới</a>
+                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium transition-all duration-300 transform hover:-translate-y-1">Modiweek</a>
+                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium transition-all duration-300 transform hover:-translate-y-1">Kích Thước</a>
+                        <a href="#" class="text-gray-600 hover:text-black text-sm font-medium transition-all duration-300 transform hover:-translate-y-1">Sản Phẩm Xanh</a>
                     </nav>
 
                     <!-- Icons -->
                     <div class="flex items-center space-x-5">
-                        <button class="text-gray-600 hover:text-black">
+                        <button class="text-gray-600 hover:text-black transition-all duration-300 transform hover:-translate-y-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </button>
-                        <button class="text-gray-600 hover:text-black">
+                        <button class="text-gray-600 hover:text-black transition-all duration-300 transform hover:-translate-y-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </button>
-                        <button class="text-gray-600 hover:text-black">
+                        <button class="text-gray-600 hover:text-black transition-all duration-300 transform hover:-translate-y-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
                         </button>
-                        <button class="text-gray-600 hover:text-black relative">
+                        <button class="text-gray-600 hover:text-black relative transition-all duration-300 transform hover:-translate-y-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>

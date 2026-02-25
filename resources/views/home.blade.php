@@ -17,7 +17,7 @@
                 Hài Hòa Với Thiên Nhiên
             </h1>
             
-            <a href="#" class="inline-block bg-white text-black px-12 py-4 text-sm font-medium hover:bg-black hover:text-white transition-colors duration-300">
+            <a href="#" class="inline-block bg-white text-black px-12 py-4 text-sm font-medium rounded-full shadow-lg hover:bg-black hover:text-white transition-all duration-300 transform hover:-translate-y-1">
                 Hàng Mới
             </a>
         </div>
