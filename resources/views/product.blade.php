@@ -4,7 +4,7 @@
 <div class="font-[Inter] text-[#333333]">
     <!-- Breadcrumb -->
     <div class="max-w-[1440px] px-4 md:px-8 mx-auto mt-8 mb-6">
-        <nav class="text-sm text-gray-500" aria-label="Breadcrumb">
+        <nav class="text-base text-gray-500" aria-label="Breadcrumb">
             <ol class="list-none p-0 inline-flex">
                 <li class="flex items-center">
                     <a href="/" class="hover:text-gray-900 transition-colors">Trang Chủ</a>
@@ -50,14 +50,53 @@
             <p class="text-sm text-gray-500 mb-4">Mã SP: {{ $product['id'] }}</p>
             
             <!-- Price -->
-            <div class="text-2xl font-bold mb-6">{{ $product['price'] }}</div>
+            <div class="inline-block border border-gray-300 px-4 py-2 text-2xl font-bold mb-6">{{ $product['price'] }}</div>
 
-            <!-- Description -->
-            <p class="text-gray-600 mb-8 leading-relaxed">
-                {{ $product['description'] }}
-            </p>
+            <!-- Description & Size Guide Container -->
+            <div id="product-info-container" class="mb-8">
+                <!-- Description -->
+                <p id="product-description" class="text-gray-600 leading-relaxed transition-opacity duration-300">
+                    {{ $product['description'] }}
+                </p>
 
-            <!-- Color Selection -->
+                <!-- Size Guide Inline (Hidden by default) -->
+                <div id="inline-size-guide" class="hidden transition-opacity duration-300 border-t border-gray-300 pt-6 mt-2">
+                    <div class="flex justify-between items-end mb-1">
+                        <h3 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Bảng Hướng Dẫn Chọn Size</h3>
+                        <button class="text-sm text-gray-500 hover:text-black underline underline-offset-4" onclick="toggleSizeGuide()">Đóng</button>
+                    </div>
+                    <p class="text-base text-gray-500 mb-6">Số đo cơ thể (cm), không phải số đo trang phục.</p>
+                    <div class="overflow-x-auto border border-gray-200">
+                        <table class="w-full text-center text-base">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-200 text-gray-900">
+                                    <th class="px-4 py-4 font-semibold">Size</th>
+                                    <th class="px-4 py-4 font-semibold">Ngực</th>
+                                    <th class="px-4 py-4 font-semibold">Eo</th>
+                                    <th class="px-4 py-4 font-semibold">Mông</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="px-4 py-4 font-medium text-gray-900">XS</td><td class="px-4 py-4 text-gray-600">78-82</td><td class="px-4 py-4 text-gray-600">60-64</td><td class="px-4 py-4 text-gray-600">86-90</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="px-4 py-4 font-medium text-gray-900">S</td><td class="px-4 py-4 text-gray-600">82-86</td><td class="px-4 py-4 text-gray-600">64-68</td><td class="px-4 py-4 text-gray-600">90-94</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="px-4 py-4 font-medium text-gray-900">M</td><td class="px-4 py-4 text-gray-600">86-90</td><td class="px-4 py-4 text-gray-600">68-72</td><td class="px-4 py-4 text-gray-600">94-98</td>
+                                </tr>
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="px-4 py-4 font-medium text-gray-900">L</td><td class="px-4 py-4 text-gray-600">90-94</td><td class="px-4 py-4 text-gray-600">72-76</td><td class="px-4 py-4 text-gray-600">98-102</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4 font-medium text-gray-900">XL</td><td class="px-4 py-4 text-gray-600">94-98</td><td class="px-4 py-4 text-gray-600">76-80</td><td class="px-4 py-4 text-gray-600">102-106</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             <div class="mb-6 border-t border-gray-200 pt-6">
                 <h3 class="font-medium text-sm text-gray-900 uppercase tracking-wide mb-3">Màu Sắc: <span id="selected-color-name" class="font-normal">{{ $product['colors'][0]['name'] }}</span></h3>
                 <div class="flex items-center gap-3">
@@ -228,6 +267,9 @@
 
     </div>
 </div>
+
+<!-- Removed Size Guide Modal -->
+
 <style>
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar {
@@ -325,9 +367,20 @@
         });
     });
 
-    // Mock size guide toggle
+    // Toggle Inline Size Guide
     function toggleSizeGuide() {
-        alert("Hiển thị Bảng Size (Modal)");
+        const description = document.getElementById('product-description');
+        const sizeGuide = document.getElementById('inline-size-guide');
+        
+        if (sizeGuide.classList.contains('hidden')) {
+            // Show Size Guide, Hide Description
+            description.classList.add('hidden');
+            sizeGuide.classList.remove('hidden');
+        } else {
+            // Show Description, Hide Size Guide
+            sizeGuide.classList.add('hidden');
+            description.classList.remove('hidden');
+        }
     }
 </script>
 @endsection

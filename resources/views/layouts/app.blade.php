@@ -16,13 +16,13 @@
     <header class="fixed top-0 left-0 right-0 h-16 bg-[#FDFBF7] shadow-sm z-50 flex items-center justify-between px-8">
         <div class="flex items-center">
             <a href="{{ url('/') }}" class="text-2xl font-bold tracking-tight">Lumiere</a>
-            <span class="text-[10px] ml-1 mt-2 text-gray-500">women clothing</span>
+            <span class="text-[10px] ml-1 mt-2 text-gray-500 italic">women clothing</span>
         </div>
         
-        <nav class="hidden md:flex justify-center space-x-8 text-[15px] font-medium text-gray-700 h-full">
+        <nav class="hidden md:flex justify-center space-x-8 text-[18px] font-medium text-gray-700 h-full">
             <!-- Bộ Sưu Tập with Mega Menu -->
             <div class="h-full flex items-center">
-                <button type="button" id="megaMenuBtn" onclick="document.getElementById('megaMenu').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Bộ Sưu Tập</button>
+                <button type="button" id="megaMenuBtn" onclick="document.getElementById('megaMenu').classList.toggle('hidden')" class="py-4 h-full flex items-center">Bộ Sưu Tập</button>
                 
                 <!-- Mega Menu Dropdown -->
                 <div id="megaMenu" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
@@ -34,7 +34,7 @@
                             <div>
                                 <h3 class="font-medium text-black mb-6">Danh Mục</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
-                                    <li><a href="#" class="hover:text-black">Xem Tất Cả</a></li>
+                                    <li><a href="{{ route('collection') }}" class="hover:text-black">Xem Tất Cả</a></li>
                                     <li><a href="#" class="hover:text-black">Blouses & Áo</a></li>
                                     <li><a href="#" class="hover:text-black">Quần Tây</a></li>
                                     <li><a href="#" class="hover:text-black">Váy & Jumpsuit</a></li>
@@ -331,7 +331,7 @@
     </header>
 
     @if (Request::is('/'))
-    <div class="bg-[#3D4B41] text-white text-xs w-full text-center py-2 absolute top-16 z-40">
+    <div class="bg-[#3D4B41] text-white text-sm w-full text-center py-2 absolute top-16 z-40 uppercase tracking-wide">
         Nhận Ngay Dịch Vụ Giao Hàng Miễn Phí Cho Tất Cả Đơn Hàng
     </div>
     @endif
