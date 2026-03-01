@@ -89,6 +89,7 @@ class CollectionController extends Controller
                 'collections' => $collectionSlugs,
                 'is_new' => in_array('hang-moi', $collectionSlugs),
                 'is_bestseller' => in_array('ban-chay-nhat', $collectionSlugs),
+                'slug' => $product->slug,
             ];
         })->toArray();
 

@@ -32,144 +32,211 @@
                 @if(request()->has('q') && request()->get('q') !== '')
                     <input type="hidden" name="q" value="{{ request('q') }}">
                 @endif
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold">Bộ Lọc</h2>
-                    <a href="{{ route('collection') }}" class="text-sm text-gray-500 hover:text-black {{ empty(request()->query()) ? 'hidden' : '' }}">Bỏ Chọn Tất Cả</a>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold font-serif">Filters</h2>
                 </div>
 
-                <!-- Accordion Filters -->
-                <div class="space-y-3">
+                <!-- Active Filters Chips -->
+                @php
+                    $activeFilters = [];
+                    $sortLabels = ['featured' => 'Nổi Bật', 'bestseller' => 'Bán Chạy Nhất', 'price_asc' => 'Giá: Tăng Dần', 'price_desc' => 'Giá: Giảm Dần'];
+                    $collectionLabels = ['con_hang' => 'Còn Hàng', 'het_hang' => 'Hết Hàng'];
+                    $materialLabels = ['cotton' => 'Cotton', 'len' => 'Len', 'len_ban_tong_hop' => 'Len Bản Tổng Hợp', 'lụa' => 'Lụa', 'cashmere' => 'Cashmere'];
+                    $colorLabels = ['đen'=>'Đen','đỏ'=>'Đỏ','xanh lá'=>'Xanh Lá','vàng'=>'Vàng','xanh dương'=>'Xanh Dương','tím'=>'Tím','hồng'=>'Hồng','xanh nhạt'=>'Xanh Nhạt','cam'=>'Cam','trắng'=>'Trắng'];
+                    foreach((array)request()->query('sort', []) as $v) $activeFilters[] = ['param'=>'sort','value'=>$v,'label'=>$sortLabels[$v]??$v];
+                    foreach((array)request()->query('collections', []) as $v) $activeFilters[] = ['param'=>'collections','value'=>$v,'label'=>$collectionLabels[$v]??ucfirst($v)];
+                    foreach((array)request()->query('sizes', []) as $v) $activeFilters[] = ['param'=>'sizes','value'=>$v,'label'=>$v];
+                    foreach((array)request()->query('materials', []) as $v) $activeFilters[] = ['param'=>'materials','value'=>$v,'label'=>$materialLabels[$v]??ucfirst($v)];
+                    foreach((array)request()->query('colors', []) as $v) $activeFilters[] = ['param'=>'colors','value'=>$v,'label'=>$colorLabels[$v]??ucfirst($v)];
+                @endphp
+                @if(count($activeFilters) > 0)
+                <div class="w-full max-w-[200px] mb-5 border border-gray-200 divide-y divide-gray-200">
+                    @foreach($activeFilters as $filter)
+                    @php
+                        $newQuery = request()->query();
+                        $newQuery[$filter['param']] = array_values(array_filter((array)request()->query($filter['param'], []), fn($v) => $v !== $filter['value']));
+                        if (empty($newQuery[$filter['param']])) unset($newQuery[$filter['param']]);
+                        $removeUrl = route('collection') . (count($newQuery) ? '?' . http_build_query($newQuery) : '');
+                    @endphp
+                    <div class="flex items-center justify-between bg-[#d4d8d3] px-4 py-3">
+                        <span class="text-[14px] font-medium text-gray-800 tracking-wide">{{ $filter['label'] }}</span>
+                        <a href="{{ $removeUrl }}" class="text-gray-500 hover:text-black ml-8 text-lg leading-none">&times;</a>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                <!-- Collapsible Filters -->
+                <div class="space-y-3 max-w-[200px] mt-4">
                     
                     <!-- Sắp Xếp Theo -->
                     <div class="border border-gray-200">
-                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#e8edeb] font-medium text-left accordion-btn" data-target="sort-content">
+                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="sort-content">
                             Sắp Xếp Theo
-                            <span class="text-xl leading-none icon">+</span>
+                            <span class="text-lg leading-none icon font-normal">+</span>
                         </button>
-                        <div id="sort-content" class="hidden px-4 py-3 space-y-2 border-t border-gray-200 bg-white">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sort[]" value="featured" {{ in_array('featured', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Nổi Bật</span>
+                        <div id="sort-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="sort[]" value="featured" {{ in_array('featured', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Nổi Bật</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sort[]" value="bestseller" {{ in_array('bestseller', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Bán Chạy Nhất</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="sort[]" value="bestseller" {{ in_array('bestseller', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Bán Chạy Nhất</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sort[]" value="price_asc" {{ in_array('price_asc', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Giá: Tăng Dần</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="sort[]" value="price_asc" {{ in_array('price_asc', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Giá: Tăng Dần</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sort[]" value="price_desc" {{ in_array('price_desc', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Giá: Giảm Dần</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="sort[]" value="price_desc" {{ in_array('price_desc', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Giá: Giảm Dần</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Bộ Sưu Tập -->
                     <div class="border border-gray-200">
-                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#e8edeb] font-medium text-left accordion-btn" data-target="collection-content">
+                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="collection-content">
                             Bộ Sưu Tập
-                            <span class="text-xl leading-none icon">+</span>
+                            <span class="text-lg leading-none icon font-normal">+</span>
                         </button>
-                        <div id="collection-content" class="hidden px-4 py-3 space-y-2 border-t border-gray-200 bg-white">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="collections[]" value="new" {{ in_array('new', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Hàng Mới</span>
+                        <div id="collection-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="collections[]" value="con_hang" {{ in_array('con_hang', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Còn Hàng</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="collections[]" value="bestseller" {{ in_array('bestseller', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Bán Chạy Của Tuần</span>
-                            </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="collections[]" value="modiweek" {{ in_array('modiweek', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Modiweek</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="collections[]" value="het_hang" {{ in_array('het_hang', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Hết Hàng</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Kích Cỡ -->
                     <div class="border border-gray-200">
-                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#e8edeb] font-medium text-left accordion-btn" data-target="size-content">
+                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="size-content">
                             Kích Cỡ
-                            <span class="text-xl leading-none icon">+</span>
+                            <span class="text-lg leading-none icon font-normal">+</span>
                         </button>
-                        <div id="size-content" class="hidden px-4 py-3 space-y-2 border-t border-gray-200 bg-white">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sizes[]" value="XS" {{ in_array('XS', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>XS</span>
+                        <div id="size-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <input type="checkbox" name="sizes[]" value="XS" {{ in_array('XS', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 flex-1 ml-4">XS</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sizes[]" value="S" {{ in_array('S', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>S</span>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <input type="checkbox" name="sizes[]" value="S" {{ in_array('S', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 flex-1 ml-4">S</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sizes[]" value="M" {{ in_array('M', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>M</span>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <input type="checkbox" name="sizes[]" value="M" {{ in_array('M', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 flex-1 ml-4">M</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sizes[]" value="L" {{ in_array('L', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>L</span>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <input type="checkbox" name="sizes[]" value="L" {{ in_array('L', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 flex-1 ml-4">L</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="sizes[]" value="XL" {{ in_array('XL', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>XL</span>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <input type="checkbox" name="sizes[]" value="XL" {{ in_array('XL', (array)request()->query('sizes', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 flex-1 ml-4">XL</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Chất Liệu -->
-                    <div class="border border-gray-200 bg-[#7b9c8a] text-white">
-                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 font-medium text-left accordion-btn" data-target="material-content">
+                    <div class="border border-gray-200">
+                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="materials-content">
                             Chất Liệu
-                            <span class="text-xl leading-none icon">+</span>
+                            <span class="text-lg leading-none icon font-normal">+</span>
                         </button>
-                        <div id="material-content" class="hidden px-4 py-3 space-y-3 border-t border-gray-200 bg-white">
-                            <label class="flex items-center space-x-2 cursor-pointer text-black">
-                                <input type="checkbox" name="materials[]" value="cotton" {{ in_array('cotton', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Cotton</span>
+                        <div id="materials-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="materials[]" value="cotton" {{ in_array('cotton', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Cotton</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer text-black">
-                                <input type="checkbox" name="materials[]" value="linen" {{ in_array('linen', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Linen</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="materials[]" value="len" {{ in_array('len', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Len</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer text-black">
-                                <input type="checkbox" name="materials[]" value="lụa" {{ in_array('lụa', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span>Lụa</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="materials[]" value="len_ban_tong_hop" {{ in_array('len_ban_tong_hop', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Len Bản Tổng Hợp</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="materials[]" value="lụa" {{ in_array('lụa', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Lụa</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="materials[]" value="cashmere" {{ in_array('cashmere', (array)request()->query('materials', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="text-[13px] text-gray-600 ml-4">Cashmere</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Màu Sắc -->
                     <div class="border border-gray-200">
-                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-medium text-left accordion-btn" data-target="color-content">
+                        <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="colors-content">
                             Màu Sắc
-                            <span class="text-xl leading-none icon">+</span>
+                            <span class="text-lg leading-none icon font-normal">+</span>
                         </button>
-                        <div id="color-content" class="hidden px-4 py-3 grid grid-cols-2 gap-y-2 border-t border-gray-200 bg-white">
-                            <label class="flex items-center space-x-2 cursor-pointer text-black">
-                                <input type="checkbox" name="colors[]" value="đen" {{ in_array('đen', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span class="w-4 h-4 rounded-full bg-black inline-block border border-gray-200"></span>
-                                <span class="text-sm">Đen</span>
+                        <div id="colors-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="đen" {{ in_array('đen', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-black inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Đen</span>
                             </label>
-                            <label class="flex items-center space-x-2 cursor-pointer text-black">
-                                <input type="checkbox" name="colors[]" value="trắng" {{ in_array('trắng', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span class="w-4 h-4 rounded-full bg-white inline-block border border-gray-400"></span>
-                                <span class="text-sm">Trắng</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="đỏ" {{ in_array('đỏ', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-red-600 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Đỏ</span>
                             </label>
-                             <label class="flex items-center space-x-2 cursor-pointer text-black">
-                                <input type="checkbox" name="colors[]" value="be" {{ in_array('be', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] rounded-sm focus:ring-0 w-4 h-4 filter-checkbox">
-                                <span class="w-4 h-4 rounded-full bg-[#F5F5DC] inline-block border border-gray-300"></span>
-                                <span class="text-sm">Be</span>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="xanh lá" {{ in_array('xanh lá', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-green-700 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Xanh Lá</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="vàng" {{ in_array('vàng', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-yellow-500 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Vàng</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="xanh dương" {{ in_array('xanh dương', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-blue-600 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Xanh Dương</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="tím" {{ in_array('tím', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-purple-600 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Tím</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="hồng" {{ in_array('hồng', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-pink-300 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Hồng</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="xanh nhạt" {{ in_array('xanh nhạt', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-sky-200 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Xanh Nhạt</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="cam" {{ in_array('cam', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-orange-500 inline-block border border-gray-300 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Cam</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="colors[]" value="trắng" {{ in_array('trắng', (array)request()->query('colors', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
+                                <span class="w-3.5 h-3.5 rounded-full bg-white inline-block border border-gray-400 mx-2 shrink-0"></span>
+                                <span class="text-[13px] text-gray-600 ml-2">Trắng</span>
                             </label>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Desktop Apply Button -->
-                <div class="mt-6 flex flex-col gap-3">
-                     <button type="submit" class="w-full bg-[#5c7a6b] text-white px-6 py-3 hover:bg-[#4a6356] transition-colors font-medium">Áp Dụng Tùy Chọn</button>
-                     <a href="{{ route('collection') }}" class="w-full text-center py-2 text-sm text-gray-500 hover:text-black hover:underline {{ empty(request()->query()) ? 'hidden' : '' }}">Thoát / Xóa bộ lọc</a>
+                <div class="mt-6 flex flex-row items-center justify-between gap-3">
+                    <button type="button" class="w-1/2 text-center text-[12px] text-gray-500 hover:text-black py-2.5 transition-colors font-medium border border-transparent bg-transparent" onclick="window.location.href='{{ route('collection') }}'">Bỏ Chọn Tất Cả</button>
+                    <button type="submit" class="w-1/2 bg-[#5c7a6b] text-white px-2 py-2.5 text-[12px] hover:bg-[#4a6356] transition-colors font-medium rounded-sm">Lọc Đã Chọn</button>
                 </div>
             </form>
         </div>
@@ -184,22 +251,24 @@
             @endif
 
             @if(count($products) > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-12 pl-6">
                 @foreach($products as $product)
-                <div class="product-card group cursor-pointer relative" onclick="window.location.href='{{ route('product.show', ['slug' => 'san-pham-mau']) }}'">
+                <div class="product-card group cursor-pointer relative" onclick="window.location.href='{{ route('product.show', ['slug' => $product['slug']]) }}'">
                     <!-- Image -->
-                    <div class="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 mb-4">
+                    <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#e6e9e6] mb-4 p-4">
                         <img src="{{ $product['image'] }}" 
                              onerror="this.src='https://placehold.co/600x800/e2e8f0/a0aec0?text=Sản+Phẩm'"
                              alt="{{ $product['name'] }}" 
-                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                             class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
                         
-                        <!-- Badge -->
-                        @if($product['is_new'])
-                        <div class="absolute top-4 left-4 bg-white px-3 py-1 text-xs font-medium tracking-wide shadow-sm">
-                            New
+                        <!-- Actions & Badges -->
+                        <div class="absolute top-4 left-4 flex flex-col gap-2">
+                            @if($product['is_new'])
+                            <span class="bg-white px-3 py-1 text-[11px] font-medium tracking-wide border border-gray-200 uppercase">
+                                New
+                            </span>
+                            @endif
                         </div>
-                        @endif
 
                         <!-- Heart Icon -->
                         <button type="button" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center hover:bg-white transition-colors z-10" onclick="event.stopPropagation()">
@@ -210,17 +279,19 @@
                     </div>
 
                     <!-- Info -->
-                    <div>
-                        <h3 class="font-bold text-lg leading-tight mb-1">{{ $product['name'] }}</h3>
-                        <div class="flex justify-between items-start mb-2">
-                            <p class="text-gray-600 text-sm">{{ $product['description'] }}</p>
-                            <span class="font-bold text-lg">{{ $product['price'] }}</span>
+                    <div class="px-1 mt-3">
+                        <div class="flex justify-between items-start mb-1.5 align-top">
+                            <div>
+                                <h3 class="font-bold text-[15px] leading-tight text-gray-900 group-hover:underline">{{ $product['name'] }}</h3>
+                                <p class="text-gray-500 text-[13px] mt-1 line-clamp-1">{{ $product['description'] }}</p>
+                            </div>
+                            <span class="font-bold text-[15px] text-gray-900 ml-3 whitespace-nowrap">{{ $product['price'] }}</span>
                         </div>
                         
                         <!-- Colors -->
-                        <div class="flex items-center gap-2 mt-3">
+                        <div class="flex items-center gap-1.5 mt-2">
                             @foreach($product['colors'] as $color)
-                            <div class="w-4 h-4 rounded-full border border-gray-300" style="background-color: {{ $color }};"></div>
+                            <div class="w-3.5 h-3.5 rounded-full border border-gray-300" style="background-color: {{ $color }};"></div>
                             @endforeach
                         </div>
                     </div>
@@ -271,26 +342,24 @@
             });
         });
 
-        // Set active state for sort and material accordions for UI purpose
-        document.querySelector('[data-target="sort-content"]').click();
-        
-        const matBtn = document.querySelector('[data-target="material-content"]');
-        if (matBtn) {
-            matBtn.click();
-            matBtn.classList.remove('bg-[#7b9c8a]', 'text-white');
-            matBtn.classList.add('text-black');
-        }
+        // Open filters that have checked inputs automatically on page load
+        const accordions = [
+            'sort-content', 'collection-content', 'size-content', 'materials-content', 'colors-content'
+        ];
 
-        // Auto submit form when filters change
-        const filterForm = document.getElementById('filter-form');
-        const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
-        if(filterForm) {
-            filterCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    filterForm.submit();
-                });
-            });
-        }
+        accordions.forEach(id => {
+            const content = document.getElementById(id);
+            if (content) {
+                const hasChecked = content.querySelector('input[type="checkbox"]:checked');
+                if (hasChecked) {
+                    content.classList.remove('hidden');
+                    const btn = document.querySelector(`[data-target="${id}"]`);
+                    if (btn) btn.querySelector('.icon').textContent = '-';
+                }
+            }
+        });
+
+        // Auto submit form is removed. User must click "Áp Dụng Tùy Chọn".
     });
 </script>
 @endsection

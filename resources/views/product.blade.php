@@ -164,7 +164,7 @@
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
                     <div id="fabric-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed">
-                        100% Cotton Hữu Cơ. Siêu mềm, thoáng khí và thân thiện với môi trường.
+                        Chất liệu chính: {{ $product['materials'] ?: 'Đang cập nhật' }}. Thân thiện và mang lại cảm giác thoải mái.
                     </div>
                 </div>
 
@@ -194,9 +194,10 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
         
-        <div class="product-card group cursor-pointer">
+        @foreach($relatedProducts as $related)
+        <div class="product-card group cursor-pointer" onclick="window.location.href='{{ route('product.show', $related['slug']) }}'">
             <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#f3f3f3] mb-4 flex items-center justify-center">
-                <img src="{{ asset('user/img/modiweek/1.webp') }}" alt="Áo Quấn" 
+                <img src="{{ $related['image'] }}" alt="{{ $related['name'] }}" 
                      class="max-w-[95%] max-h-[95%] object-contain transition-transform duration-500 group-hover:scale-105">
                 
                 <button class="absolute top-4 right-4 text-gray-400 group-hover:text-black hover:!text-red-500 transition-all duration-300">
@@ -204,66 +205,25 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                     </svg>
                 </button>
-            </div>
 
+                <!-- Quick Add Action -->
+                <button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-black font-medium px-6 py-3 w-[85%] opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-black hover:text-white shadow-lg text-sm uppercase tracking-wide">
+                    Thêm Nhanh
+                </button>
+            </div>
+            
             <div class="flex flex-col px-4">
-                <h3 class="font-bold text-sm md:text-base uppercase leading-tight">Áo Quấn Cách Điệu</h3>
+                <h3 class="font-bold text-sm md:text-base uppercase leading-tight group-hover:underline underline-offset-4">{{ $related['name'] }}</h3>
                 <div class="flex justify-between items-start mt-0.5"> 
-                    <p class="text-gray-500 text-xs md:text-sm leading-tight">Áo kiểu thắt eo thời thượng</p>
-                    <span class="font-bold text-sm md:text-base ml-2">4.000.000đ</span>
+                    <p class="text-gray-500 text-xs md:text-sm leading-tight line-clamp-1"></p>
+                    <span class="font-bold text-sm md:text-base ml-2 whitespace-nowrap">{{ $related['price'] }}</span>
                 </div>
-                <div class="flex gap-2 mt-3">
-                    <div class="w-4 h-4 rounded-full bg-[#9ACD32] border border-gray-200 shadow-sm"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="product-card group cursor-pointer">
-            <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#f3f3f3] mb-4 flex items-center justify-center">
-                <img src="{{ asset('user/img/modiweek/2.webp') }}" alt="T-Shirt" 
-                     class="max-w-[95%] max-h-[95%] object-contain transition-transform duration-500 group-hover:scale-105">
-                <button class="absolute top-4 right-4 text-gray-400 group-hover:text-black hover:!text-red-500 transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="flex flex-col px-4">
-                <h3 class="font-bold text-sm md:text-base uppercase leading-tight">Áo Thun Cơ Bản</h3>
-                <div class="flex justify-between items-start mt-0.5">
-                    <p class="text-gray-500 text-xs md:text-sm leading-tight">Áo thun năng động, trẻ trung</p>
-                    <span class="font-bold text-sm md:text-base ml-2">2.375.000đ</span>
-                </div>
-                <div class="flex gap-2 mt-3">
-                    <div class="w-4 h-4 rounded-full bg-black border border-gray-200"></div>
-                    <div class="w-4 h-4 rounded-full bg-[#ADD8E6] border border-gray-200"></div>
-                    <div class="w-4 h-4 rounded-full bg-[#8FBC8F] border border-gray-200"></div>
+                <div class="flex gap-2 mt-3 text-transparent text-xs hover:text-gray-400">
+                    <div class="w-4 h-4 rounded-full bg-gray-300 border border-gray-200 shadow-sm"></div>
                 </div>
             </div>
         </div>
-
-        <div class="product-card group cursor-pointer">
-            <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#f3f3f3] mb-4 flex items-center justify-center">
-                <img src="{{ asset('user/img/modiweek/4.webp') }}" alt="Jacket" 
-                     class="max-w-[95%] max-h-[95%] object-contain transition-transform duration-500 group-hover:scale-105">
-                <button class="absolute top-4 right-4 text-gray-400 group-hover:text-black hover:!text-red-500 transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                </button>
-            </div>
-            <div class="flex flex-col px-4">
-                <h3 class="font-bold text-sm md:text-base uppercase leading-tight">Áo Khoác Zip Rule</h3>
-                <div class="flex justify-between items-start mt-0.5">
-                    <p class="text-gray-500 text-xs md:text-sm leading-tight">Áo khoác khóa kéo cá tính</p>
-                    <span class="font-bold text-sm md:text-base ml-2">4.975.000đ</span>
-                </div>
-                <div class="flex gap-2 mt-3">
-                    <div class="w-4 h-4 rounded-full bg-[#9ACD32] border border-gray-200"></div>
-                    <div class="w-4 h-4 rounded-full bg-[#D2691E] border border-gray-200"></div>
-                </div>
-            </div>
-        </div>
+        @endforeach
 
     </div>
 </div>
