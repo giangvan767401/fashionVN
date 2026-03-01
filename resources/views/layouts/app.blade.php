@@ -315,9 +315,14 @@
         </nav>
 
         <div class="flex items-center space-x-6">
-            <button aria-label="Search" class="hover:text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </button>
+            <!-- Elegant Expandable Search Form -->
+            <form action="{{ route('collection') }}" method="GET" id="searchForm" class="relative flex items-center transition-all duration-300 border-b border-transparent">
+                <input type="text" name="q" id="searchInput" placeholder="Tìm kiếm" value="{{ request('q') }}" class="w-0 transition-all duration-300 bg-transparent border-0 outline-none text-sm text-gray-800 placeholder-gray-500 focus:ring-0 p-0 overflow-hidden shadow-none focus:border-transparent">
+                <!-- Search Toggle Button -->
+                <button id="searchIconBtn" type="button" aria-label="Search" class="hover:text-gray-600 focus:outline-none pl-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </form>
             <button aria-label="Account" class="hover:text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </button>
@@ -326,7 +331,6 @@
             </button>
             <button aria-label="Cart" class="hover:text-gray-600">
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            </button>
         </div>
     </header>
 
@@ -455,6 +459,52 @@
                 }
             }
         });
+
+        // Elegant Search bar toggle
+        const searchIconBtn = document.getElementById('searchIconBtn');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        
+        if (searchIconBtn && searchForm && searchInput) {
+            searchIconBtn.addEventListener('click', (e) => {
+                // Prevent bubbling so document click doesn't close it immediately
+                e.stopPropagation();
+                
+                if (searchInput.classList.contains('w-0')) {
+                    // Open
+                    searchForm.classList.remove('border-transparent');
+                    searchForm.classList.add('border-gray-800');
+                    searchInput.classList.remove('w-0', 'p-0');
+                    searchInput.classList.add('w-40', 'px-2', 'py-1');
+                    setTimeout(() => searchInput.focus(), 300);
+                } else {
+                    // Close or Submit
+                    if (searchInput.value.trim() !== '') {
+                        searchForm.submit();
+                    } else {
+                        searchForm.classList.add('border-transparent');
+                        searchForm.classList.remove('border-gray-800');
+                        searchInput.classList.remove('w-40', 'px-2', 'py-1');
+                        searchInput.classList.add('w-0', 'p-0');
+                    }
+                }
+            });
+
+            // Prevent form clicks from propagating to document
+            searchForm.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', () => {
+                if (searchInput.classList.contains('w-40') && searchInput.value.trim() === '') {
+                    searchForm.classList.add('border-transparent');
+                    searchForm.classList.remove('border-gray-800');
+                    searchInput.classList.remove('w-40', 'px-2', 'py-1');
+                    searchInput.classList.add('w-0', 'p-0');
+                }
+            });
+        }
     </script>
 </body>
 </html>

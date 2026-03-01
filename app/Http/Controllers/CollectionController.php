@@ -8,159 +8,115 @@ class CollectionController extends Controller
 {
     public function index(Request $request)
     {
-        // Mock data cho danh sách sản phẩm mẫu theo layout mới
-        $products = [
-            [
-                'name' => 'Áo Quấn Cách Điệu',
-                'description' => 'Áo kiểu thắt eo thời thượng',
-                'price' => '4.000.000đ',
-                'raw_price' => 4000000,
-                'image' => asset('user/img/modiweek/1.webp'),
-                'colors' => ['#9ACD32'],
-                'color_names' => ['green'],
-                'sizes' => ['S', 'M'],
-                'materials' => ['cotton', 'silk'],
-                'collections' => ['new', 'modiweek'],
-                'is_new' => false,
-                'is_bestseller' => false,
-            ],
-            [
-                'name' => 'Áo Thun Cơ Bản',
-                'description' => 'Áo thun năng động, trẻ trung',
-                'price' => '2.375.000đ',
-                'raw_price' => 2375000,
-                'image' => asset('user/img/modiweek/2.webp'),
-                'colors' => ['#000000', '#ADD8E6', '#8FBC8F'],
-                'color_names' => ['black', 'blue', 'green'],
-                'sizes' => ['M', 'L', 'XL'],
-                'materials' => ['cotton'],
-                'collections' => ['bestseller'],
-                'is_new' => true,
-                'is_bestseller' => true,
-            ],
-            [
-                'name' => 'Váy Sơ Mi',
-                'description' => 'Đầm dáng sơ mi thanh lịch',
-                'price' => '6.125.000đ',
-                'raw_price' => 6125000,
-                'image' => asset('user/img/modiweek/3.webp'),
-                'colors' => ['#000000', '#B0C4DE', '#8FBC8F'],
-                'color_names' => ['black', 'blue', 'green'],
-                'sizes' => ['S', 'M', 'L'],
-                'materials' => ['cotton', 'linen'],
-                'collections' => ['new'],
-                'is_new' => false,
-                'is_bestseller' => false,
-            ],
-            [
-                'name' => 'Áo Khoác Zip Rule',
-                'description' => 'Áo khoác khóa kéo cá tính',
-                'price' => '4.975.000đ',
-                'raw_price' => 4975000,
-                'image' => asset('user/img/modiweek/4.webp'),
-                'colors' => ['#9ACD32', '#D2691E'],
-                'color_names' => ['green', 'yellow'],
-                'sizes' => ['L', 'XL'],
-                'materials' => ['wool'],
-                'collections' => ['modiweek'],
-                'is_new' => false,
-                'is_bestseller' => false,
-            ],
-            [
-                'name' => 'Quần Vải Linen',
-                'description' => 'Quần dài chất liệu linen thoáng mát',
-                'price' => '4.500.000đ',
-                'raw_price' => 4500000,
-                'image' => asset('user/img/modiweek/5.webp'),
-                'colors' => ['#000000', '#00008B', '#8FBC8F'],
-                'color_names' => ['black', 'blue', 'green'],
-                'sizes' => ['XS', 'S', 'M'],
-                'materials' => ['linen'],
-                'collections' => ['bestseller', 'modiweek'],
-                'is_new' => false,
-                'is_bestseller' => true,
-            ],
-            [
-                'name' => 'Áo Len Chui Đầu Boss',
-                'description' => 'Áo len dệt kim cao cấp',
-                'price' => '7.000.000đ',
-                'raw_price' => 7000000,
-                'image' => asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp'),
-                'colors' => ['#000000', '#52694d'],
-                'color_names' => ['black', 'green'],
-                'sizes' => ['M', 'L'],
-                'materials' => ['wool', 'wool-blend'],
-                'collections' => ['new'],
-                'is_new' => true,
-                'is_bestseller' => false,
-            ]
-        ];
-
         // 1. Lấy parameters từ Request
         $sort = $request->query('sort'); // array
         $collections = $request->query('collections', []); // array
         $sizes = $request->query('sizes', []); // array
         $materials = $request->query('materials', []); // array
         $colors = $request->query('colors', []); // array
+        $q = $request->query('q'); // Search query
 
-        // 2. Logic Lọc mảng
-        $filteredProducts = array_filter($products, function($product) use ($collections, $sizes, $materials, $colors, $sort) {
-            
-            // Check Collections
-            if (!empty($collections)) {
-                $hasCollection = false;
-                foreach ($collections as $c) {
-                    if (in_array($c, $product['collections'])) {
-                        $hasCollection = true;
-                        break;
-                    }
+        // 2. Query từ Database
+        $query = \App\Models\Product::with(['images', 'collections', 'variants.attributeValues']);
+
+        if (!empty($q)) {
+            $query->where(function ($qBuilder) use ($q) {
+                $qBuilder->where('name', 'like', "%{$q}%")
+                         ->orWhere('short_desc', 'like', "%{$q}%");
+            });
+        }
+
+        if (!empty($collections)) {
+            $query->whereHas('collections', function ($qBuilder) use ($collections) {
+                $qBuilder->whereIn('slug', $collections);
+            });
+        }
+
+        if (!empty($sizes) || !empty($colors) || !empty($materials)) {
+            $query->whereHas('variants.attributeValues', function ($qBuilder) use ($sizes, $colors, $materials) {
+                if (!empty($sizes)) {
+                    $qBuilder->whereIn('value', $sizes);
                 }
-                if (!$hasCollection) return false;
+                if (!empty($colors)) {
+                    $qBuilder->whereIn('value', $colors); // Assuming color values match the filter like 'Đen', 'black' (need to align naming later)
+                }
+                if (!empty($materials)) {
+                    $qBuilder->whereIn('value', $materials);
+                }
+            });
+        }
+
+        $dbProducts = $query->get();
+
+        // 3. Map sang format của View (Array)
+        $mappedProducts = $dbProducts->map(function ($product) {
+            $image = $product->images->firstWhere('is_primary', true) ?? $product->images->first();
+            
+            $imageUrl = asset('user/img/default-product.jpg');
+            if ($image) {
+                // If it's already an absolute URL (like http://...), use it directly. Otherwise, wrap it in asset()
+                $imageUrl = filter_var($image->url, FILTER_VALIDATE_URL) ? $image->url : asset($image->url);
             }
 
-            // Check Sizes
+            $sizes = [];
+            $colors = [];
+            $colorNames = [];
+            $materials = [];
+
+            foreach ($product->variants as $variant) {
+                foreach ($variant->attributeValues as $attr) {
+                    if ($attr->group_id == 1) $sizes[] = $attr->value; // ID 1: Kích thước
+                    if ($attr->group_id == 2) {
+                        $colors[] = $attr->color_hex ?? '#000000'; // ID 2: Màu sắc
+                        $colorNames[] = strtolower($attr->value); 
+                    }
+                    if ($attr->group_id == 3) $materials[] = strtolower($attr->value); // ID 3: Chất liệu
+                }
+            }
+
+            $collectionSlugs = $product->collections->pluck('slug')->toArray();
+
+            return [
+                'name' => $product->name,
+                'description' => $product->short_desc,
+                'price' => number_format($product->sale_price ?? $product->base_price, 0, ',', '.') . 'đ',
+                'raw_price' => $product->sale_price ?? $product->base_price,
+                'image' => $imageUrl,
+                'colors' => array_values(array_unique($colors)),
+                'color_names' => array_values(array_unique($colorNames)),
+                'sizes' => array_values(array_unique($sizes)),
+                'materials' => array_values(array_unique($materials)),
+                'collections' => $collectionSlugs,
+                'is_new' => in_array('hang-moi', $collectionSlugs),
+                'is_bestseller' => in_array('ban-chay-nhat', $collectionSlugs),
+            ];
+        })->toArray();
+
+        // 4. Lọc lại bằng code nếu whereHas không strict (optional)
+        // Dùng whereHas ở trên là đã lọc OR rồi. Để lọc AND (phải thỏa cả size và color) thì cần whereHas cho từng cái.
+        // Ở đây để đơn giản và chuẩn xác theo code filter mảng cũ, ta dùng lại array_filter thay vì dùng câu whereHas phức tạp
+        
+        $filteredProducts = array_filter($mappedProducts, function($product) use ($colors, $materials, $sizes) {
+            // Arrays are already filtered by DB for matching ANY of the filters, 
+            // but we might want strict AND between different filter types (e.g., must have Size M AND Color Black).
+            
             if (!empty($sizes)) {
-                $hasSize = false;
-                foreach ($sizes as $s) {
-                    if (in_array($s, $product['sizes'])) {
-                        $hasSize = true;
-                        break;
-                    }
-                }
-                if (!$hasSize) return false;
+                if (empty(array_intersect($sizes, $product['sizes']))) return false;
             }
-
-            // Check Materials
             if (!empty($materials)) {
-                $hasMaterial = false;
-                foreach ($materials as $m) {
-                    if (in_array($m, $product['materials'])) {
-                        $hasMaterial = true;
-                        break;
-                    }
-                }
-                if (!$hasMaterial) return false;
+                // frontend sends 'cotton', but DB has 'cotton' because of strtolower
+                if (empty(array_intersect($materials, $product['materials']))) return false;
+            }
+            if (!empty($colors)) {
+                // DB has 'đen' -> 'đen'. Frontend might send 'black', so logic might mismatch unless we sync English/Vietnamese tags.
+                // We will just do a simple intersect for now.
+                if (empty(array_intersect($colors, $product['color_names']))) return false;
             }
 
-            // Check Colors
-            if (!empty($colors)) {
-                $hasColor = false;
-                foreach ($colors as $c) {
-                    if (in_array($c, $product['color_names'])) {
-                        $hasColor = true;
-                        break;
-                    }
-                }
-                if (!$hasColor) return false;
-            }
-            
-            // Sort by Featured / Bestseller filtering (Optional, if they pass it as filter instead of sort)
-            // But usually sort is handled afterwards.
-            
             return true;
         });
 
-        // 3. Logic Sắp xếp
+        // 5. Logic Sắp xếp
         if (!empty($sort)) {
             // Priority: Price Asc -> Price Desc -> Bestseller -> Featured (New)
             if (in_array('price_asc', $sort)) {
@@ -171,6 +127,7 @@ class CollectionController extends Controller
                 usort($filteredProducts, function($a, $b) { return $b['is_bestseller'] <=> $a['is_bestseller']; });
             } elseif (in_array('featured', $sort)) {
                 usort($filteredProducts, function($a, $b) { return $b['is_new'] <=> $a['is_new']; });
+
             }
         }
 

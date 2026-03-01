@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,   // roles, permissions (no FK deps)
             WarehouseAndShippingSeeder::class,  // warehouses, payment_methods, shipping_methods
-            AttributeGroupsSeeder::class,       // attribute_groups
+            AttributeGroupsSeeder::class,       // attribute_groups (empty mostly, rely on DemoDataSeeder)
+            DemoDataSeeder::class,              // Mock products, variants, collections, attributes
         ]);
     }
 }
