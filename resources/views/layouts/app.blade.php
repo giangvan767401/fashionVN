@@ -282,8 +282,8 @@
                             <div>
                                 <h3 class="font-medium text-black mb-6">Sản Phẩm Xanh</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
-                                    <li><a href="#" class="hover:text-black">Sứ Mệnh</a></li>
-                                    <li><a href="#" class="hover:text-black">Đang Xử Lý</a></li>
+                                    <li><a href="{{ route('page.mission') }}" class="hover:text-black">Sứ Mệnh</a></li>
+                                    <li><a href="{{ route('page.sustainability') }}" class="hover:text-black">Phát Triển Bền Vững</a></li>
                                     <li><a href="#" class="hover:text-black">Chất Liệu</a></li>
                                     <li><a href="#" class="hover:text-black">Bao Bì</a></li>
                                     <li><a href="#" class="hover:text-black">Chăm Sóc Sản Phẩm</a></li>
@@ -361,8 +361,9 @@
             <div>
                 <h3 class="font-bold mb-4">Giới Thiệu Về Lumiere</h3>
                 <ul class="space-y-2 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-white">Bộ Sưu Tập</a></li>
-                    <li><a href="#" class="hover:text-white">Sản Phẩm Xanh</a></li>
+                    <li><a href="{{ route('collection') }}" class="hover:text-white">Bộ Sưu Tập</a></li>
+                    <li><a href="{{ route('page.sustainability') }}" class="hover:text-white">Sản Phẩm Xanh</a></li>
+                    <li><a href="{{ route('page.mission') }}" class="hover:text-white">Sứ Mệnh</a></li>
                     <li><a href="#" class="hover:text-white">Chính Sách Bảo Mật</a></li>
                     <li><a href="#" class="hover:text-white">Hệ Thống Hỗ Trợ</a></li>
                     <li><a href="#" class="hover:text-white">Điều Khoản & Điều Kiện</a></li>
@@ -375,8 +376,8 @@
                 <ul class="space-y-2 text-sm text-gray-300">
                     <li><a href="#" class="hover:text-white">Vận Chuyển</a></li>
                     <li><a href="#" class="hover:text-white">Đổi Trả & Hoàn Tiền</a></li>
-                    <li><a href="#" class="hover:text-white">Hỏi & Đáp</a></li>
-                    <li><a href="#" class="hover:text-white">Liên Hệ</a></li>
+                    <li><a href="{{ route('page.faq') }}" class="hover:text-white">Hỏi & Đáp</a></li>
+                    <li><a href="{{ route('page.contact') }}" class="hover:text-white">Liên Hệ</a></li>
                 </ul>
             </div>
 
