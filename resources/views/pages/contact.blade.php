@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
 <div class="font-[Inter] text-[#333333] pt-8 md:pt-16 pb-20">
     <div class="max-w-[1200px] px-4 md:px-8 mx-auto">
         <div class="text-center mb-16">
@@ -98,4 +96,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-app-layout>

@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
 <div class="font-[Inter] text-[#333333] pt-8 md:pt-16 pb-20">
     <div class="max-w-[800px] px-4 md:px-8 mx-auto mb-16">
         <h1 class="text-4xl md:text-5xl font-bold uppercase tracking-wider mb-6 text-center">Câu Hỏi Thường Gặp</h1>
@@ -101,4 +99,4 @@
         });
     });
 </script>
-@endsection
+</x-app-layout>

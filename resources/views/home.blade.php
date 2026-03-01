@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
 <!-- Phần Hero -->
 <div class="relative w-full h-[600px] md:h-[calc(100vh-64px)] overflow-hidden">
     <img src="{{ asset('user/img/hero-desktop.jpeg') }}" alt="Ảnh Hero" class="w-full h-full object-cover object-[30%_40%]">
@@ -171,4 +169,4 @@
     @endfor
 </div>
 </div>
-@endsection
+</x-app-layout>
