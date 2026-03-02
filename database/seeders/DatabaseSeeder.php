@@ -18,5 +18,16 @@ class DatabaseSeeder extends Seeder
             AttributeGroupsSeeder::class,       // attribute_groups (empty mostly, rely on DemoDataSeeder)
             DemoDataSeeder::class,              // Mock products, variants, collections, attributes
         ]);
+
+        // Create a shared admin account for the team
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'full_name' => 'Admin FashionVN',
+                'password_hash' => \Illuminate\Support\Facades\Hash::make('123345678'),
+                'role_id' => 1,
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

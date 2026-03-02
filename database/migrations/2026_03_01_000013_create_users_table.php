@@ -13,7 +13,7 @@ return new class extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedTinyInteger('role_id')->default(6)->comment('default: customer');
+            $table->unsignedTinyInteger('role_id')->default(2)->comment('default: user');
             $table->string('email', 191)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password_hash', 255);

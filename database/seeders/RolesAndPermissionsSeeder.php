@@ -10,18 +10,17 @@ class RolesAndPermissionsSeeder extends Seeder
     public function run(): void
     {
         // Roles
-        DB::table('roles')->insert([
-            ['id' => 1, 'name' => 'admin',           'description' => 'Quản trị viên hệ thống',  'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 2, 'name' => 'staff',           'description' => 'Nhân viên nội bộ',         'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 3, 'name' => 'content_manager', 'description' => 'Quản lý nội dung',         'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 4, 'name' => 'marketing',       'description' => 'Nhân viên marketing',      'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 5, 'name' => 'warehouse',       'description' => 'Quản lý kho',             'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 6, 'name' => 'customer',        'description' => 'Khách hàng',              'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 7, 'name' => 'support',         'description' => 'Nhân viên hỗ trợ',        'created_at' => '2026-02-25 10:07:12'],
-        ]);
+        $roles = [
+            ['id' => 1, 'name' => 'admin', 'description' => 'Quản trị viên hệ thống'],
+            ['id' => 2, 'name' => 'user',  'description' => 'Người dùng hệ thống'],
+        ];
+
+        foreach ($roles as $role) {
+            DB::table('roles')->updateOrInsert(['id' => $role['id']], array_merge($role, ['created_at' => now()]));
+        }
 
         // Permissions
-        DB::table('permissions')->insert([
+        $permissions = [
             ['id' =>  1, 'name' => 'product.view',      'group_name' => 'product',   'description' => 'Xem sản phẩm'],
             ['id' =>  2, 'name' => 'product.create',    'group_name' => 'product',   'description' => 'Tạo sản phẩm'],
             ['id' =>  3, 'name' => 'product.update',    'group_name' => 'product',   'description' => 'Sửa sản phẩm'],
@@ -34,6 +33,10 @@ class RolesAndPermissionsSeeder extends Seeder
             ['id' => 10, 'name' => 'report.view',       'group_name' => 'report',    'description' => 'Xem báo cáo'],
             ['id' => 11, 'name' => 'content.manage',    'group_name' => 'content',   'description' => 'Quản lý banner/collection'],
             ['id' => 12, 'name' => 'marketing.manage',  'group_name' => 'marketing', 'description' => 'Quản lý email marketing'],
-        ]);
+        ];
+
+        foreach ($permissions as $permission) {
+            DB::table('permissions')->updateOrInsert(['id' => $permission['id']], $permission);
+        }
     }
 }
