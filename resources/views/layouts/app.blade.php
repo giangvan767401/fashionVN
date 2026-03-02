@@ -22,6 +22,20 @@
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col pt-16">
+    <!-- Fetch Cart Data -->
+    @php
+        $cart = null;
+        if (Auth::check()) {
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->with(['items.variant.product.images', 'items.variant.attributeValues.group'])->first();
+        } else {
+            $sessionId = session()->getId();
+            $cart = \App\Models\Cart::where('session_id', $sessionId)->with(['items.variant.product.images', 'items.variant.attributeValues.group'])->first();
+        }
+        $cartItems = $cart ? $cart->items : collect();
+        $cartTotal = $cartItems->sum(function($item) { return $item->quantity * $item->unit_price; });
+        $cartItemCount = $cartItems->sum('quantity');
+    @endphp
+
     <!-- Navbar -->
     <header class="fixed top-0 left-0 right-0 h-16 bg-[#FDFBF7] shadow-sm z-50 flex items-center justify-between px-8">
         <div class="flex items-center">
@@ -260,25 +274,23 @@
                         </form>
                     </div>
                 </div>
-
-                <form method="POST" action="{{ route('logout') }}" class="inline">
-                    @csrf
-                    <button type="submit" aria-label="Logout" class="hover:text-gray-600 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
-                    </button>
-                </form>
-
-                <button aria-label="Wishlist" class="hover:text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                </button>
-                <button aria-label="Cart" class="hover:text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                </button>
             @else
-                <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 hover:text-black transition-colors">
-                    Đăng ký / Đăng nhập
+                <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 hover:text-black transition-colors">
+                    Đăng nhập
                 </a>
             @endauth
+
+            <button aria-label="Wishlist" class="hover:text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+            <button aria-label="Cart" class="hover:text-gray-600 relative flex items-center justify-center p-1" onclick="openCart()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                @if($cartItemCount > 0)
+                    <span class="absolute -top-1 -right-1 bg-[#D32F2F] text-white text-[10px] font-bold min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1" style="line-height: 1;">
+                        {{ $cartItemCount }}
+                    </span>
+                @endif
+            </button>
         </div>
     </header>
 
@@ -354,8 +366,132 @@
         </div>
     </footer>
 
+    </footer>
+
+    <!-- Mini Cart Drawer & Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" onclick="closeCart(); return false;" style="cursor: pointer;"></div>
+    
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[300] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col hidden" style="width: 400px; max-width: 100vw;">
+        <!-- Cart Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <!-- Emtpy element for fine alignment if needed, or close button can be on the right -->
+            <div></div> 
+            <button onclick="closeCart()" class="text-gray-400 hover:text-black transition-colors p-2 absolute right-4 top-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <!-- Cart Body -->
+        @if($cartItems->isEmpty())
+            <div id="cart-body" class="flex-1 overflow-y-auto px-8 py-12 flex flex-col items-center justify-center text-center">
+                <h3 class="text-[17px] font-bold text-gray-900 mb-4">Giỏ Hàng Của Bạn Đang Trống</h3>
+                <p class="text-[13px] text-gray-600 mb-10 leading-relaxed px-4">
+                    Khám Phá Lumiere Và Thêm Sản Phẩm Vào Giỏ Hàng Của Bạn
+                </p>
+                <style>
+                    .cart-btn-green {
+                        background-color: #61715b;
+                        color: white;
+                        transition: background-color 0.3s;
+                    }
+                    .cart-btn-green:hover {
+                        background-color: #4a5845;
+                    }
+                </style>
+                <a href="{{ route('collection') }}" class="cart-btn-green py-3 px-6 text-[13px] font-medium mb-4 block text-center" style="width: 85%;">
+                    Bộ Sưu Tập
+                </a>
+                <a href="{{ route('collection') }}?collections[]=hang-moi" class="cart-btn-green py-3 px-6 text-[13px] font-medium block text-center" style="width: 85%;">
+                    Hàng Mới
+                </a>
+            </div>
+        @else
+            <div id="cart-body" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-6">
+                @foreach($cartItems as $item)
+                    @php
+                        $product = $item->variant->product;
+                        $primaryImage = $product->images->where('is_primary', true)->first();
+                        $imageUrl = $primaryImage ? asset($primaryImage->url) : asset('user/img/default-product.jpg');
+                        
+                        $color = $item->variant->attributeValues->filter(function($val) { return optional($val->group)->name == 'Màu Sắc'; })->first();
+                        $size = $item->variant->attributeValues->filter(function($val) { return optional($val->group)->name == 'Kích Thước'; })->first();
+                        $variantText = collect([$color ? $color->value : null, $size ? $size->value : null])->filter()->join(' / ');
+                    @endphp
+                    <div class="flex gap-4">
+                        <!-- Image -->
+                        <a href="{{ route('product.show', $product->slug) }}" class="flex-shrink-0 bg-gray-100 overflow-hidden block" style="width: 6rem; height: 120px;">
+                            <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                        </a>
+                        <!-- Info -->
+                        <div class="flex-1 flex flex-col py-1">
+                            <div class="flex justify-between items-start">
+                                <a href="{{ route('product.show', $product->slug) }}" class="text-[14px] font-medium text-gray-900 line-clamp-2 pr-4 hover:underline">
+                                    {{ $product->name }}
+                                </a>
+                                <!-- Remove button -->
+                                <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-gray-400 hover:text-red-500 mt-1" title="Xóa sản phẩm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                </form>
+                            </div>
+                            @if($variantText)
+                                <p class="text-[12px] text-gray-500 mt-1">{{ $variantText }}</p>
+                            @endif
+                            <div class="mt-auto flex justify-between items-end">
+                                <!-- Quantity -->
+                                <div class="flex items-center border border-gray-200 h-8">
+                                    <form action="{{ route('cart.update', $item->id) }}" method="POST" class="h-full">
+                                        @csrf
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" class="px-2 text-gray-500 hover:text-black hover:bg-gray-50 h-full flex items-center justify-center focus:outline-none">-</button>
+                                    </form>
+                                    
+                                    <input type="text" value="{{ $item->quantity }}" class="w-8 text-center text-[13px] border-none p-0 focus:ring-0 h-full" readonly>
+                                    
+                                    <form action="{{ route('cart.update', $item->id) }}" method="POST" class="h-full">
+                                        @csrf
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" class="px-2 text-gray-500 hover:text-black hover:bg-gray-50 h-full flex items-center justify-center focus:outline-none">+</button>
+                                    </form>
+                                </div>
+                                <!-- Price -->
+                                <span class="text-[14px] font-medium">{{ number_format($item->unit_price, 0, ',', '.') }}đ</span>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <!-- Cart Footer -->
+            <div class="border-t border-gray-100 p-6 bg-white">
+                <style>
+                    .cart-btn-green {
+                        background-color: #61715b;
+                        color: white;
+                        transition: background-color 0.3s;
+                    }
+                    .cart-btn-green:hover {
+                        background-color: #4a5845;
+                    }
+                </style>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[14px] font-medium text-gray-600">Tổng Tiền</span>
+                    <span class="text-[18px] font-bold">{{ number_format($cartTotal, 0, ',', '.') }}đ</span>
+                </div>
+                <p class="text-[12px] text-gray-500 mb-6 text-center">Phí vận chuyển và thuế được tính ở trang thanh toán.</p>
+                <a href="#" class="cart-btn-green py-4 px-6 text-[14px] font-medium block w-full text-center">
+                    Thanh Toán
+                </a>
+            </div>
+        @endif
+    </div>
+
     <!-- Scripts -->
     <script>
+        // ... Click outside to close megamenus
         document.addEventListener('click', function(event) {
             const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5'];
             const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5'];
@@ -371,6 +507,7 @@
             });
         });
 
+        // Search Handlers
         function openSearch() {
             document.getElementById('search-overlay').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -382,9 +519,56 @@
             document.body.style.overflow = '';
         }
 
+        // Cart Drawer Handlers
+        function openCart() {
+            const overlay = document.getElementById('cart-overlay');
+            const drawer = document.getElementById('cart-drawer');
+            
+            overlay.classList.remove('hidden');
+            drawer.classList.remove('hidden');
+            
+            // Timeout allows display:block to apply before animating opacity
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+            }, 10);
+            
+            setTimeout(() => {
+                drawer.classList.remove('translate-x-full');
+            }, 10);
+            
+            document.body.style.overflow = 'hidden';
+            
+            // TODO: In the future, fetch cart data via Fetch API and replace #cart-body content
+        }
+
+        function closeCart() {
+            const overlay = document.getElementById('cart-overlay');
+            const drawer = document.getElementById('cart-drawer');
+            
+            overlay.classList.add('opacity-0');
+            drawer.classList.add('translate-x-full');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                drawer.classList.add('hidden');
+            }, 300); // match transition duration-300
+            
+            document.body.style.overflow = '';
+        }
+
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeSearch();
+            if (e.key === 'Escape') {
+                closeSearch();
+                closeCart();
+            }
         });
+
+        // Automatically open cart if the session flag is set (e.g. after adding item)
+        @if(session('cart_drawer_open'))
+            document.addEventListener('DOMContentLoaded', function() {
+                openCart();
+            });
+        @endif
     </script>
 </body>
 </html>

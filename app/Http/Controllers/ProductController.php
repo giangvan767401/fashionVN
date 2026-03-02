@@ -54,6 +54,7 @@ class ProductController extends Controller
             'name' => $productModel->name,
             'price' => number_format($productModel->sale_price ?? $productModel->base_price, 0, ',', '.') . 'đ',
             'id' => $productModel->sku,
+            'product_id' => $productModel->id,
             'availability' => '90', // TODO: Tích hợp với tồn kho thực tế sau này
             'images' => $images,
             'colors' => $uniqueColors,

@@ -124,9 +124,17 @@
 
             <!-- Actions -->
             <div class="flex flex-col gap-3 mb-8">
-                <button class="w-full bg-[#333] text-white py-4 font-semibold uppercase tracking-wider hover:bg-black transition-colors">
-                    Thêm Vào Giỏ
-                </button>
+                <form action="{{ route('cart.add') }}" method="POST" id="add-to-cart-form">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product['product_id'] }}">
+                    <input type="hidden" name="color" id="form-color" value="{{ $product['colors'][0]['name'] ?? '' }}">
+                    <input type="hidden" name="size" id="form-size" value="">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="button" onclick="submitAddToCart()" class="w-full bg-[#333] text-white py-4 font-semibold uppercase tracking-wider hover:bg-black transition-colors mb-3">
+                        Thêm Vào Giỏ
+                    </button>
+                </form>
+                
                 <button class="w-full border border-gray-300 bg-white text-[#333] py-4 font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
                     <svg width="20" height="18" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16.5 5.5C16.5 8.5 9 14.5 9 14.5C9 14.5 1.5 8.5 1.5 5.5C1.5 3.5 3 2 5 2C6.5 2 7.7 2.8 8.5 4C9.3 2.8 10.5 2 12 2C14 2 16.5 3.5 16.5 5.5Z" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -267,6 +275,7 @@
     // Handle Color Selection
     function selectColor(btn, name) {
         document.getElementById('selected-color-name').textContent = name;
+        document.getElementById('form-color').value = name;
         
         const allColorBtns = btn.parentElement.querySelectorAll('button');
         allColorBtns.forEach(c => {
@@ -283,6 +292,7 @@
         if(btn.disabled) return;
 
         document.getElementById('selected-size').textContent = size;
+        document.getElementById('form-size').value = size;
         
         const allSizeBtns = document.querySelectorAll('.size-btn');
         allSizeBtns.forEach(s => {
@@ -294,6 +304,21 @@
         
         btn.classList.add('border-gray-900', 'bg-gray-900', 'text-white');
         btn.classList.remove('bg-white', 'text-[#333]');
+    }
+
+    // Submit form validation
+    function submitAddToCart() {
+        const size = document.getElementById('form-size').value;
+        const color = document.getElementById('form-color').value;
+        if (!size || size === 'Select Size') {
+            alert('Vui lòng chọn Kích Cỡ trước khi thêm vào giỏ hàng.');
+            return;
+        }
+        if (!color) {
+            alert('Vui lòng chọn Màu Sắc.');
+            return;
+        }
+        document.getElementById('add-to-cart-form').submit();
     }
 
     // Handle Product Accordions

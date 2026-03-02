@@ -17,6 +17,11 @@ Route::get('/collection', [CollectionController::class, 'index'])->name('collect
 // Trang chi tiết sản phẩm
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 
+// Giỏ hàng
+Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update/{id}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
 // Các trang tĩnh
 Route::get('/mission', [PageController::class, 'mission'])->name('page.mission');
 Route::get('/sustainability', [PageController::class, 'sustainability'])->name('page.sustainability');
