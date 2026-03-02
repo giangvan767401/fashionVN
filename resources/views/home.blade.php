@@ -7,7 +7,7 @@
             Thanh Lịch Tinh Tế,<br>
             Hài Hòa Với Thiên Nhiên
         </h1>
-        <a href="{{ url('/new-arrivals') }}" class="inline-block bg-white text-black px-6 md:px-9 py-2 uppercase text-sm font-semibold tracking-wider hover:bg-gray-100 transition-colors">
+        <a href="{{ route('collection') }}" class="inline-block bg-white text-black px-6 md:px-9 py-2 uppercase text-sm font-semibold tracking-wider hover:bg-gray-100 transition-colors">
             Hàng Mới
         </a>
     </div>
@@ -17,7 +17,7 @@
 <div class="max-w-7xl mx-auto px-4 py-16">
     <div class="flex justify-between items-center mb-8">
         <h2 class="text-2xl font-bold">Bán Chạy Nhất</h2>
-        <a href="#" class="text-sm font-medium underline">Xem Tất Cả</a>
+        <a href="{{ route('collection') }}" class="text-sm font-medium underline">Xem Tất Cả</a>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
         <!-- Danh sách 4 sản phẩm bán chạy -->

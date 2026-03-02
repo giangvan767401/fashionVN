@@ -43,7 +43,7 @@
                             <div>
                                 <h3 class="font-medium text-black mb-6">Danh Mục</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
-                                    <li><a href="#" class="hover:text-black">Xem Tất Cả</a></li>
+                                    <li><a href="{{ route('collection') }}" class="hover:text-black">Xem Tất Cả</a></li>
                                     <li><a href="#" class="hover:text-black">Blouses & Áo</a></li>
                                     <li><a href="#" class="hover:text-black">Quần Tây</a></li>
                                     <li><a href="#" class="hover:text-black">Váy & Jumpsuit</a></li>
@@ -101,7 +101,7 @@
                             <div>
                                 <h3 class="font-medium text-black mb-6">Danh Mục</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
-                                    <li><a href="#" class="hover:text-black">Xem Tất Cả</a></li>
+                                    <li><a href="{{ route('collection') }}" class="hover:text-black">Xem Tất Cả</a></li>
                                     <li><a href="#" class="hover:text-black">Blouses & Áo</a></li>
                                     <li><a href="#" class="hover:text-black">Áo Thun</a></li>
                                 </ul>
@@ -150,12 +150,97 @@
                 </div>
             </div>
             
-            <a href="#" class="hover:text-black py-4 flex items-center">Kích Thước</a>
-            <a href="#" class="hover:text-black py-4 flex items-center">Sản Phẩm Xanh</a>
+            <a href="{{ route('collection') }}" class="hover:text-black py-4 flex items-center">Kích Thước</a>
+            <a href="{{ route('page.sustainability') }}" class="hover:text-black py-4 flex items-center">Sản Phẩm Xanh</a>
         </nav>
 
+        <!-- Search Overlay (Full Screen Premium) -->
+        <div id="search-overlay" class="hidden fixed inset-0 z-[200]" style="background:rgba(255,255,255,0.97); backdrop-filter: blur(4px);">
+            <div id="search-panel" class="w-full h-full flex flex-col" style="animation: slideSearchDown 0.25s ease forwards;">
+                <!-- Header -->
+                <div class="flex items-center justify-between px-8 md:px-16 pt-5 pb-5 border-b border-gray-100">
+                    <a href="{{ url('/') }}" class="text-xl font-bold tracking-tight">Lumiere</a>
+                    <button onclick="closeSearch()" class="text-gray-400 hover:text-black transition-colors p-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+
+                <!-- Search Input Big -->
+                <div class="flex-1 flex flex-col items-center justify-start pt-16 px-6">
+                    <div class="w-full max-w-2xl">
+                        <form action="{{ route('collection') }}" method="GET" id="search-form">
+                            <div class="flex items-center border-b-2 border-black pb-3 gap-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 shrink-0"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input
+                                    id="search-input"
+                                    type="text"
+                                    name="q"
+                                    value="{{ request('q') }}"
+                                    placeholder="Bạn đang tìm kiếm gì?"
+                                    autocomplete="off"
+                                    class="flex-1 text-2xl font-light bg-transparent border-none outline-none focus:ring-0 placeholder-gray-300 text-gray-800"
+                                >
+                                <button type="submit" class="shrink-0 text-gray-400 hover:text-black transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Quick Suggestions -->
+                        <div class="mt-10">
+                            <p class="text-xs font-semibold text-gray-400 tracking-widest uppercase mb-4">Tìm Kiếm Phổ Biến</p>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach(['Áo Blouse', 'Váy Midi', 'Quần Linen', 'Áo Khoác', 'Đầm Dạ', 'Cotton', 'Hàng Mới'] as $tag)
+                                <a href="{{ route('collection') }}?q={{ urlencode($tag) }}"
+                                   class="px-4 py-2 border border-gray-200 text-sm text-gray-600 hover:border-black hover:text-black transition-colors rounded-full">
+                                    {{ $tag }}
+                                </a>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Quick Category Links -->
+                        <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <a href="{{ route('collection') }}?collections[]=hang-moi" class="group flex flex-col items-center text-center gap-2">
+                                <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100">
+                                    <img src="{{ asset('user/img/modiweek/1.webp') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Hàng Mới">
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-black">Hàng Mới</span>
+                            </a>
+                            <a href="{{ route('collection') }}?collections[]=ban-chay-nhat" class="group flex flex-col items-center text-center gap-2">
+                                <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100">
+                                    <img src="{{ asset('user/img/modiweek/2.webp') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Bán Chạy">
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-black">Bán Chạy Nhất</span>
+                            </a>
+                            <a href="{{ route('collection') }}" class="group flex flex-col items-center text-center gap-2">
+                                <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100">
+                                    <img src="{{ asset('user/img/modiweek/3.webp') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Tất Cả">
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-black">Tất Cả Sản Phẩm</span>
+                            </a>
+                            <a href="{{ route('page.sustainability') }}" class="group flex flex-col items-center text-center gap-2">
+                                <div class="w-full aspect-[4/3] overflow-hidden bg-gray-100">
+                                    <img src="{{ asset('user/img/modiweek/4.webp') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Sản Phẩm Xanh">
+                                </div>
+                                <span class="text-sm font-medium text-gray-700 group-hover:text-black">Sản Phẩm Xanh</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes slideSearchDown {
+                from { opacity: 0; transform: translateY(-12px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+        </style>
+
+
         <div class="flex items-center space-x-6">
-            <button aria-label="Search" class="hover:text-gray-600">
+            <button aria-label="Search" onclick="openSearch()" class="hover:text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
             
@@ -240,8 +325,8 @@
                 <ul class="space-y-2 text-sm text-gray-300">
                     <li><a href="#" class="hover:text-white">Vận Chuyển</a></li>
                     <li><a href="#" class="hover:text-white">Đổi Trả & Hoàn Tiền</a></li>
-                    <li><a href="#" class="hover:text-white">Hỏi & Đáp</a></li>
-                    <li><a href="#" class="hover:text-white">Liên Hệ</a></li>
+                    <li><a href="{{ route('page.faq') }}" class="hover:text-white">Hỏi & Đáp</a></li>
+                    <li><a href="{{ route('page.contact') }}" class="hover:text-white">Liên Hệ</a></li>
                 </ul>
             </div>
 
@@ -284,6 +369,21 @@
                     }
                 }
             });
+        });
+
+        function openSearch() {
+            document.getElementById('search-overlay').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('search-input').focus(), 100);
+        }
+
+        function closeSearch() {
+            document.getElementById('search-overlay').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSearch();
         });
     </script>
 </body>

@@ -68,9 +68,9 @@ class CollectionController extends Controller
                     if ($attr->group_id == 1) $sizes[] = $attr->value; // ID 1: Kích thước
                     if ($attr->group_id == 2) {
                         $colors[] = $attr->color_hex ?? '#000000'; // ID 2: Màu sắc
-                        $colorNames[] = strtolower($attr->value); 
+                        $colorNames[] = $attr->value; // Giữ nguyên case để khớp với DB: 'Đen', 'Trắng', 'Be'
                     }
-                    if ($attr->group_id == 3) $materials[] = strtolower($attr->value); // ID 3: Chất liệu
+                    if ($attr->group_id == 3) $materials[] = $attr->value; // ID 3: Chất liệu - giữ nguyên: 'Cotton', 'Linen', 'Lụa'
                 }
             }
 

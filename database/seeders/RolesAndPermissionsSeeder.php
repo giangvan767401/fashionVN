@@ -4,24 +4,28 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
     public function run(): void
     {
         // Roles
-        DB::table('roles')->insert([
-            ['id' => 1, 'name' => 'admin',           'description' => 'Quản trị viên hệ thống',  'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 2, 'name' => 'staff',           'description' => 'Nhân viên nội bộ',         'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 3, 'name' => 'content_manager', 'description' => 'Quản lý nội dung',         'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 4, 'name' => 'marketing',       'description' => 'Nhân viên marketing',      'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 5, 'name' => 'warehouse',       'description' => 'Quản lý kho',             'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 6, 'name' => 'customer',        'description' => 'Khách hàng',              'created_at' => '2026-02-25 10:07:12'],
-            ['id' => 7, 'name' => 'support',         'description' => 'Nhân viên hỗ trợ',        'created_at' => '2026-02-25 10:07:12'],
-        ]);
+        $roles = [
+            ['id' => 1, 'name' => 'admin',           'description' => 'Quản trị viên hệ thống',  'created_at' => now()],
+            ['id' => 2, 'name' => 'staff',           'description' => 'Nhân viên nội bộ',         'created_at' => now()],
+            ['id' => 3, 'name' => 'content_manager', 'description' => 'Quản lý nội dung',         'created_at' => now()],
+            ['id' => 4, 'name' => 'marketing',       'description' => 'Nhân viên marketing',      'created_at' => now()],
+            ['id' => 5, 'name' => 'warehouse',       'description' => 'Quản lý kho',             'created_at' => now()],
+            ['id' => 6, 'name' => 'customer',        'description' => 'Khách hàng',              'created_at' => now()],
+            ['id' => 7, 'name' => 'support',         'description' => 'Nhân viên hỗ trợ',        'created_at' => now()],
+        ];
+        foreach ($roles as $role) {
+            DB::table('roles')->updateOrInsert(['id' => $role['id']], $role);
+        }
 
         // Permissions
-        DB::table('permissions')->insert([
+        $permissions = [
             ['id' =>  1, 'name' => 'product.view',      'group_name' => 'product',   'description' => 'Xem sản phẩm'],
             ['id' =>  2, 'name' => 'product.create',    'group_name' => 'product',   'description' => 'Tạo sản phẩm'],
             ['id' =>  3, 'name' => 'product.update',    'group_name' => 'product',   'description' => 'Sửa sản phẩm'],
@@ -34,6 +38,55 @@ class RolesAndPermissionsSeeder extends Seeder
             ['id' => 10, 'name' => 'report.view',       'group_name' => 'report',    'description' => 'Xem báo cáo'],
             ['id' => 11, 'name' => 'content.manage',    'group_name' => 'content',   'description' => 'Quản lý banner/collection'],
             ['id' => 12, 'name' => 'marketing.manage',  'group_name' => 'marketing', 'description' => 'Quản lý email marketing'],
-        ]);
+        ];
+        foreach ($permissions as $permission) {
+            DB::table('permissions')->updateOrInsert(['id' => $permission['id']], $permission);
+        }
+
+        // Create a shared admin account for the team
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'full_name' => 'Admin FashionVN',
+                'password_hash' => \Illuminate\Support\Facades\Hash::make('123345678'),
+                'role_id' => 1,
+                'email_verified_at' => now(),
+                'is_active' => 1,
+            ]
+        );
+
+        // Demo Users
+        $users = [
+            [
+                'role_id'    => 1,
+                'email'      => 'admin@fashionvn.com',
+                'full_name'  => 'Admin',
+                'password_hash' => Hash::make('password'),
+                'is_active'  => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'role_id'    => 2,
+                'email'      => 'staff@fashionvn.com',
+                'full_name'  => 'Nhân Viên',
+                'password_hash' => Hash::make('password'),
+                'is_active'  => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'role_id'    => 6,
+                'email'      => 'customer@fashionvn.com',
+                'full_name'  => 'Khách Hàng',
+                'password_hash' => Hash::make('password'),
+                'is_active'  => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+        foreach ($users as $user) {
+            DB::table('users')->updateOrInsert(['email' => $user['email']], $user);
+        }
     }
 }
