@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
 <div class="font-[Inter] text-[#333333]">
     <!-- Breadcrumb -->
     <div class="max-w-[1440px] px-4 md:px-8 mx-auto mt-8 mb-4">
@@ -362,4 +360,4 @@
         // Auto submit form is removed. User must click "Áp Dụng Tùy Chọn".
     });
 </script>
-@endsection
+</x-app-layout>
