@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -44,11 +45,11 @@ class RolesAndPermissionsSeeder extends Seeder
         }
 
         // Create a shared admin account for the team
-        \App\Models\User::updateOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@gmail.com'],
             [
                 'full_name' => 'Admin FashionVN',
-                'password_hash' => \Illuminate\Support\Facades\Hash::make('123345678'),
+                'password_hash' => Hash::make('123345678'),
                 'role_id' => 1,
                 'email_verified_at' => now(),
                 'is_active' => 1,
