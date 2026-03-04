@@ -296,9 +296,9 @@
                 </a>
             @endauth
 
-            <button aria-label="Wishlist" class="hover:text-gray-600">
+            <a href="{{ route('wishlist.index') }}" aria-label="Wishlist" class="hover:text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            </button>
+            </a>
             <button aria-label="Cart" class="hover:text-gray-600 relative flex items-center justify-center p-1" onclick="openCart()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                 @if($cartItemCount > 0)
@@ -310,14 +310,14 @@
         </div>
     </header>
 
-    @if (Request::is('/'))
+    @if (Request::is('/') || Request::is('register') || Request::is('login'))
     <div class="bg-[#3D4B41] text-white text-xs w-full text-center py-2 absolute top-16 z-40">
         Nhận Ngay Dịch Vụ Giao Hàng Miễn Phí Cho Tất Cả Đơn Hàng
     </div>
     @endif
 
     <!-- Main Content -->
-    <main class="flex-grow {{ Request::is('/') ? 'mt-8' : '' }}">
+    <main class="flex-grow {{ Request::is('/') || Request::is('register') || Request::is('login') ? 'mt-8' : '' }}">
         {{ $slot }}
     </main>
 
@@ -429,9 +429,7 @@
                         $primaryImage = $product->images->where('is_primary', true)->first();
                         $imageUrl = $primaryImage ? asset($primaryImage->url) : asset('user/img/default-product.jpg');
                         
-                        $color = $item->variant->attributeValues->filter(function($val) { return optional($val->group)->name == 'Màu Sắc'; })->first();
-                        $size = $item->variant->attributeValues->filter(function($val) { return optional($val->group)->name == 'Kích Thước'; })->first();
-                        $variantText = collect([$color ? $color->value : null, $size ? $size->value : null])->filter()->join(' / ');
+                        $variantText = $item->variant_label;
                     @endphp
                     <div class="flex gap-4">
                         <!-- Image -->
@@ -454,7 +452,7 @@
                                 </form>
                             </div>
                             @if($variantText)
-                                <p class="text-[12px] text-gray-500 mt-1">{{ $variantText }}</p>
+                                <p class="text-[11px] font-semibold text-[#D32F2F] mt-1 tracking-wider">{{ $variantText }}</p>
                             @endif
                             <div class="mt-auto flex justify-between items-end">
                                 <!-- Quantity -->

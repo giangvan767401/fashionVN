@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\WishlistController;
 
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -21,6 +22,11 @@ Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product
 Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{id}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove/{id}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
+// Yêu thích
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->middleware('auth');
+Route::delete('/wishlist/remove/{variantId}', [WishlistController::class, 'remove'])->name('wishlist.remove')->middleware('auth');
 
 // Các trang tĩnh
 Route::get('/mission', [PageController::class, 'mission'])->name('page.mission');

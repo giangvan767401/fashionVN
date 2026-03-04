@@ -1,4 +1,18 @@
 <x-app-layout>
+
+<style>
+/* Collection - Heart hover effect */
+.collection-wishlist-btn:hover .wishlist-svg path,
+.collection-wishlist-btn:focus .wishlist-svg path {
+    fill: #ef4444;
+    stroke: #ef4444;
+    transition: fill 0.2s, stroke 0.2s;
+}
+.collection-wishlist-btn .wishlist-svg path {
+    transition: fill 0.2s, stroke 0.2s;
+}
+</style>
+
 <div class="font-[Inter] text-[#333333]">
     <!-- Breadcrumb -->
     <div class="max-w-[1440px] px-4 md:px-8 mx-auto mt-8 mb-4">
@@ -206,49 +220,70 @@
             @endif
 
             @if(count($products) > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-12 pl-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 pl-6" style="column-gap: 2.5rem; row-gap: 3.5rem;">
                 @foreach($products as $product)
-                <div class="product-card group cursor-pointer relative" onclick="window.location.href='{{ route('product.show', ['slug' => $product['slug']]) }}'">
-                    <!-- Image -->
-                    <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#e6e9e6] mb-4 p-4">
-                        <img src="{{ $product['image'] }}" 
-                             onerror="this.src='https://placehold.co/600x800/e2e8f0/a0aec0?text=Sản+Phẩm'"
-                             alt="{{ $product['name'] }}" 
-                             class="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
-                        
-                        <!-- Actions & Badges -->
-                        <div class="absolute top-4 left-4 flex flex-col gap-2">
-                            @if($product['is_new'])
-                            <span class="bg-white px-3 py-1 text-[11px] font-medium tracking-wide border border-gray-200 uppercase">
-                                New
-                            </span>
-                            @endif
-                        </div>
+                <div class="product-card group cursor-pointer flex flex-col w-full min-w-0" id="collection-card-{{ $product['first_variant_id'] }}" onclick="window.location.href='{{ route('product.show', ['slug' => $product['slug']]) }}'">
 
-                        <!-- Heart Icon -->
-                        <button type="button" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center hover:bg-white transition-colors z-10" onclick="event.stopPropagation()">
-                            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16.5 5.5C16.5 8.5 9 14.5 9 14.5C9 14.5 1.5 8.5 1.5 5.5C1.5 3.5 3 2 5 2C6.5 2 7.7 2.8 8.5 4C9.3 2.8 10.5 2 12 2C14 2 16.5 3.5 16.5 5.5Z" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    {{-- Product Image --}}
+                    <div class="block relative w-full aspect-[3/4] bg-[#e6e9e6] overflow-hidden">
+                        <img src="{{ $product['image'] }}"
+                             onerror="this.src='https://placehold.co/600x800/e2e8f0/a0aec0?text=Sản+Phẩm'"
+                             alt="{{ $product['name'] }}"
+                             class="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105">
+
+                        {{-- NEW badge (top-left) --}}
+                        @if($product['is_new'])
+                        <span class="absolute top-0 left-0 mt-3 ml-3 z-10 text-[11px] font-semibold tracking-widest text-gray-800 uppercase">NEW</span>
+                        @endif
+
+                        {{-- Heart / Wishlist icon (top-right) --}}
+                        @auth
+                        <button
+                            type="button"
+                            class="collection-wishlist-btn absolute top-0 right-0 mt-3 mr-3 z-10 w-7 h-7 flex items-center justify-center hover:scale-110 transition-transform"
+                            data-variant-id="{{ $product['first_variant_id'] }}"
+                            onclick="event.stopPropagation(); toggleCollectionWishlist(this)"
+                            title="Thêm vào yêu thích"
+                        >
+                            <svg class="wishlist-svg" width="20" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </button>
+                        @else
+                        <a href="{{ route('login') }}"
+                            class="absolute top-0 right-0 mt-3 mr-3 z-10 w-7 h-7 flex items-center justify-center hover:scale-110 transition-transform"
+                            onclick="event.stopPropagation()">
+                            <svg width="20" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        @endauth
                     </div>
 
-                    <!-- Info -->
-                    <div class="px-1 mt-3">
-                        <div class="flex justify-between items-start mb-1.5 align-top">
-                            <div>
-                                <h3 class="font-bold text-[15px] leading-tight text-gray-900 group-hover:underline">{{ $product['name'] }}</h3>
-                                <p class="text-gray-500 text-[13px] mt-1 line-clamp-1">{{ $product['description'] }}</p>
+                    {{-- Product Info --}}
+                    <div class="mt-3 px-1">
+                        {{-- Name + Price on same row --}}
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-bold text-[14px] leading-snug text-gray-900 group-hover:underline truncate">{{ $product['name'] }}</h3>
+                                @if(!empty($product['description']))
+                                <p class="text-gray-400 text-[12px] mt-0.5 truncate">{{ $product['description'] }}</p>
+                                @endif
                             </div>
-                            <span class="font-bold text-[15px] text-gray-900 ml-3 whitespace-nowrap">{{ $product['price'] }}</span>
+                            <span class="font-semibold text-[14px] text-gray-900 whitespace-nowrap ml-2">{{ $product['price'] }}</span>
                         </div>
-                        
-                        <!-- Colors -->
+
+                        {{-- Color swatches from color_hex --}}
+                        @if(!empty($product['colors']))
                         <div class="flex items-center gap-1.5 mt-2">
-                            @foreach($product['colors'] as $color)
-                            <div class="w-3.5 h-3.5 rounded-full border border-gray-300" style="background-color: {{ $color }};"></div>
+                            @foreach($product['colors'] as $colorHex)
+                            <span
+                                class="inline-block w-3.5 h-3.5 rounded-full border border-gray-200 shadow-sm flex-shrink-0"
+                                style="background-color: {{ $colorHex }};"
+                            ></span>
                             @endforeach
                         </div>
+                        @endif
                     </div>
                 </div>
                 @endforeach
@@ -316,5 +351,37 @@
 
         // Auto submit form is removed. User must click "Áp Dụng Tùy Chọn".
     });
+
+    // Wishlist toggle for product cards
+    function toggleCollectionWishlist(btn) {
+        const variantId = btn.dataset.variantId;
+        if (!variantId) return;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        const svgPath = btn.querySelector('path');
+
+        fetch('/wishlist/toggle', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ variant_id: variantId })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'added') {
+                svgPath.setAttribute('fill', '#ef4444');
+                svgPath.setAttribute('stroke', '#ef4444');
+                btn.title = 'Xóa khỏi yêu thích';
+            } else if (data.status === 'removed') {
+                svgPath.setAttribute('fill', 'none');
+                svgPath.setAttribute('stroke', '#333333');
+                btn.title = 'Thêm vào yêu thích';
+            }
+        })
+        .catch(err => console.error('Wishlist toggle error:', err));
+    }
 </script>
 </x-app-layout>
