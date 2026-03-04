@@ -16,6 +16,34 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <!-- Phone Number -->
+            <div>
+                <x-input-label for="phone" :value="__('Số điện thoại (Tùy chọn)')" />
+                <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone')" autocomplete="tel" />
+                <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+            </div>
+
+            <!-- Gender -->
+            <div>
+                <x-input-label for="gender" :value="__('Giới tính (Tùy chọn)')" />
+                <select id="gender" name="gender" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Chọn giới tính') }}</option>
+                    <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>{{ __('Nam') }}</option>
+                    <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>{{ __('Nữ') }}</option>
+                    <option value="other" {{ old('gender') === 'other' ? 'selected' : '' }}>{{ __('Khác') }}</option>
+                </select>
+                <x-input-error :messages="$errors->get('gender')" class="mt-2" />
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="md:col-span-2">
+                <x-input-label for="date_of_birth" :value="__('Ngày sinh (Tùy chọn)')" />
+                <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date" name="date_of_birth" :value="old('date_of_birth')" />
+                <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
+            </div>
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
