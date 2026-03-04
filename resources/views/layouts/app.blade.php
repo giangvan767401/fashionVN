@@ -58,13 +58,12 @@
                                 <h3 class="font-medium text-black mb-6">Danh Mục</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
                                     <li><a href="{{ route('collection') }}" class="hover:text-black">Xem Tất Cả</a></li>
-                                    <li><a href="#" class="hover:text-black">Blouses & Áo</a></li>
-                                    <li><a href="#" class="hover:text-black">Quần Tây</a></li>
-                                    <li><a href="#" class="hover:text-black">Váy & Jumpsuit</a></li>
-                                    <li><a href="#" class="hover:text-black">Áo Khoác</a></li>
-                                    <li><a href="#" class="hover:text-black">Áo Len</a></li>
-                                    <li><a href="#" class="hover:text-black">Áo Thun</a></li>
-                                    <li><a href="#" class="hover:text-black">Quần Short & Chân Váy</a></li>
+                                    @php
+                                        $mainCategories = \App\Models\Category::where('is_active', true)->whereNull('parent_id')->orderBy('sort_order')->get();
+                                    @endphp
+                                    @foreach($mainCategories as $cat)
+                                        <li><a href="{{ route('collection') }}?collections[]={{ $cat->slug }}" class="hover:text-black">{{ $cat->name }}</a></li>
+                                    @endforeach
                                 </ul>
                             </div>
                             <!-- Nổi Bật -->

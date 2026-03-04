@@ -1,17 +1,17 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Quản lý khách hàng') }}
-            </h2>
-            <div class="text-sm text-gray-500">
-                Tổng cộng: <span class="font-bold text-gray-900">{{ $users->total() }}</span> người dùng
-            </div>
-        </div>
-    </x-slot>
-
     <div class="py-12 bg-gray-50/50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Header Section -->
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Quản lý khách hàng</h1>
+                    <p class="text-sm text-gray-500 mt-1">Xem chi tiết và quản lý quyền hạn của người dùng trong hệ thống.</p>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-xl border border-gray-100 shadow-sm">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2">Tổng cộng:</span>
+                    <span class="text-lg font-bold text-indigo-600">{{ $users->total() }}</span>
+                </div>
+            </div>
             
             @if (session('status'))
                 <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 shadow-sm rounded-r-lg flex items-center">
