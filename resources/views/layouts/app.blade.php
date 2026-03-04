@@ -597,5 +597,58 @@
             });
         @endif
     </script>
+    @if(session('login_success'))
+    <!-- Welcome Modal -->
+    <div
+        x-data="{ open: true }"
+        x-show="open"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        style="position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);"
+        @click.self="open = false">
+
+        <div
+            x-show="open"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            style="background: white; border-radius: 4px; padding: 3.5rem 4rem; width: 600px; max-width: 90vw; position: relative; text-align: center; font-family: 'Montserrat', sans-serif;">
+
+            <!-- Close Button -->
+            <button @click="open = false"
+                style="position: absolute; top: 16px; left: 20px; background: none; border: none; cursor: pointer; color: #9ca3af; line-height: 1; font-size: 20px; padding: 4px;">
+                &times;
+            </button>
+
+            <!-- Title -->
+            <h2 style="font-size: 26px; font-weight: 700; color: #111827; margin: 0 0 1.5rem 0; letter-spacing: 0.01em;">
+                Chào Mừng Đến Lumiere
+            </h2>
+
+            <!-- Italic Tagline -->
+            <p style="font-size: 16px; font-style: italic; color: #6b7280; margin: 0 0 2rem 0; font-family: Georgia, serif; font-weight: 400;">
+                "Thanh Lịch Trong Giản Đơn – Hòa Hợp Cùng Thiên Nhiên."
+            </p>
+
+            <!-- Question -->
+            <p style="font-size: 17px; font-weight: 700; color: #111827; margin: 0 0 1.5rem 0;">
+                Bạn Mới Trải Nghiệm Lumiere Lần Đầu?
+            </p>
+
+            <!-- CTA Button -->
+            <a href="{{ route('collection') }}"
+                style="display: inline-block; padding: 13px 32px; background: #4a7c59; color: white; font-size: 14px; font-weight: 500; letter-spacing: 0.04em; border-radius: 3px; text-decoration: none;">
+                Phong Cách Của Bạn, Do Bạn Tạo Nên
+            </a>
+        </div>
+    </div>
+    @endif
 </body>
 </html>

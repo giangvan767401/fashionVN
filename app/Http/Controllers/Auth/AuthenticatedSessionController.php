@@ -28,6 +28,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $request->session()->flash('login_success', true);
+
         if ($request->user()->isAdmin()) {
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }
@@ -46,6 +48,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }
