@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'phone' => $request->phone,
             'gender' => $request->gender,
             'date_of_birth' => $request->date_of_birth,
-            'role_id' => 2, // default: user
+            'role_id' => 6, // default: customer
         ]);
 
         event(new Registered($user));

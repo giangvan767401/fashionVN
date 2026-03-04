@@ -46,16 +46,16 @@
                 </div>
 
                 <!-- Stat Card 3 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <a href="{{ route('admin.users.index') }}" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-100 transition-all group">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                        <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 group-hover:bg-amber-100 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         </div>
-                        <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-full">24 Online</span>
+                        <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-full group-hover:bg-amber-100 transition-colors">Quản lý →</span>
                     </div>
                     <p class="text-sm font-medium text-gray-500">Khách hàng</p>
                     <h3 class="text-2xl font-bold text-gray-900 mt-1">15,700</h3>
-                </div>
+                </a>
 
                 <!-- Stat Card 4 -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -129,6 +129,20 @@
                         <!-- Abstract circles for style -->
                         <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                         <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-indigo-400/20 rounded-full blur-2xl"></div>
+                    </div>
+
+                    <!-- Management Tools -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="font-bold text-gray-900 mb-4">Công cụ quản trị</h3>
+                        <div class="space-y-3">
+                            <a href="{{ route('admin.users.index') }}" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all group border border-transparent hover:border-indigo-100">
+                                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:scale-110 transition-transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                </div>
+                                <span class="font-bold text-sm">Quản lý người dùng</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
