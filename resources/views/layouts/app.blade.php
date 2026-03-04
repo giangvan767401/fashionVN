@@ -259,19 +259,36 @@
             </button>
             
             @auth
-                <div class="relative group">
-                    <button aria-label="Account" class="hover:text-gray-600 flex items-center">
+                <div class="relative">
+                    <button id="accountMenuBtn" onclick="toggleAccountMenu(event)" aria-label="Account" class="hover:text-gray-600 flex items-center focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <span class="ml-1 text-sm hidden lg:inline">{{ Auth::user()->full_name }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </button>
-                    <div class="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl z-50 hidden group-hover:block border border-gray-100">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Hồ sơ</a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Đăng xuất
-                            </button>
-                        </form>
+                    <div id="accountDropdown" class="absolute right-0 w-48 mt-2 py-2 bg-white rounded-md shadow-xl z-50 hidden border border-gray-100">
+                        <div class="px-4 py-2 border-b border-gray-50 mb-1">
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Tài khoản</p>
+                            <p class="text-sm font-medium text-gray-900 truncate">{{ Auth::user()->email }}</p>
+                        </div>
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            Hồ sơ
+                        </a>
+                        @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                            Trang quản trị
+                        </a>
+                        @endif
+                        <div class="border-t border-gray-50 mt-1 pt-1">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                    Đăng xuất
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             @else
@@ -493,8 +510,8 @@
     <script>
         // ... Click outside to close megamenus
         document.addEventListener('click', function(event) {
-            const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5'];
-            const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5'];
+            const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5', 'accountDropdown'];
+            const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5', 'accountMenuBtn'];
             
             menuIds.forEach((mId, index) => {
                 const menu = document.getElementById(mId);
@@ -556,10 +573,23 @@
             document.body.style.overflow = '';
         }
 
+        // Account Dropdown Handlers
+        function toggleAccountMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('accountDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function closeAccountMenu() {
+            const dropdown = document.getElementById('accountDropdown');
+            if (dropdown) dropdown.classList.add('hidden');
+        }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeSearch();
                 closeCart();
+                closeAccountMenu();
             }
         });
 

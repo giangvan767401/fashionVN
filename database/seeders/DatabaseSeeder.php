@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@gmail.com'],
             [
                 'full_name' => 'Admin FashionVN',
-                'password_hash' => \Illuminate\Support\Facades\Hash::make('123345678'),
+                'password_hash' => \Illuminate\Support\Facades\Hash::make('12345678'),
                 'role_id' => 1,
                 'email_verified_at' => now(),
             ]
