@@ -77,6 +77,8 @@ class CollectionController extends Controller
             $collectionSlugs = $product->collections->pluck('slug')->toArray();
 
             return [
+                'product_id'      => $product->id,
+                'first_variant_id' => $product->variants->first()?->id ?? null,
                 'name' => $product->name,
                 'description' => $product->short_desc,
                 'price' => number_format($product->sale_price ?? $product->base_price, 0, ',', '.') . 'đ',

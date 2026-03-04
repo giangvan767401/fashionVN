@@ -135,12 +135,26 @@
                     </button>
                 </form>
                 
-                <button class="w-full border border-gray-300 bg-white text-[#333] py-4 font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+                @auth
+                <button
+                    id="wishlist-btn"
+                    class="w-full border border-gray-300 bg-white text-[#333] py-4 font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                    data-variant-id=""
+                    onclick="toggleWishlist(this)"
+                >
+                    <svg id="wishlist-icon" width="20" height="18" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16.5 5.5C16.5 8.5 9 14.5 9 14.5C9 14.5 1.5 8.5 1.5 5.5C1.5 3.5 3 2 5 2C6.5 2 7.7 2.8 8.5 4C9.3 2.8 10.5 2 12 2C14 2 16.5 3.5 16.5 5.5Z" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="wishlist-label">Thêm Vào Yêu Thích</span>
+                </button>
+                @else
+                <a href="{{ route('login') }}" class="w-full border border-gray-300 bg-white text-[#333] py-4 font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
                     <svg width="20" height="18" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16.5 5.5C16.5 8.5 9 14.5 9 14.5C9 14.5 1.5 8.5 1.5 5.5C1.5 3.5 3 2 5 2C6.5 2 7.7 2.8 8.5 4C9.3 2.8 10.5 2 12 2C14 2 16.5 3.5 16.5 5.5Z" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     Thêm Vào Yêu Thích
-                </button>
+                </a>
+                @endauth
             </div>
             
             <!-- Availability indicator -->
@@ -364,6 +378,47 @@
             sizeGuide.classList.add('hidden');
             description.classList.remove('hidden');
         }
+    }
+
+    // Toggle wishlist via AJAX — sends product_id + color + size to server
+    function toggleWishlist(btn) {
+        const productId = document.querySelector('input[name="product_id"]')?.value;
+        const color     = document.getElementById('form-color')?.value || '';
+        const size      = document.getElementById('form-size')?.value  || '';
+
+        if (!productId) {
+            alert('Không tìm thấy sản phẩm.');
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        const label = document.getElementById('wishlist-label');
+        const icon  = document.getElementById('wishlist-icon').querySelector('path');
+
+        fetch('/wishlist/toggle', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ product_id: productId, color: color, size: size })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'added') {
+                icon.setAttribute('fill', '#ef4444');
+                icon.setAttribute('stroke', '#ef4444');
+                label.textContent = 'Đã Yêu Thích ♥';
+            } else if (data.status === 'removed') {
+                icon.setAttribute('fill', 'none');
+                icon.setAttribute('stroke', '#333333');
+                label.textContent = 'Thêm Vào Yêu Thích';
+            } else if (data.error) {
+                alert(data.error);
+            }
+        })
+        .catch(err => console.error('Wishlist toggle error:', err));
     }
 </script>
 </x-app-layout>
