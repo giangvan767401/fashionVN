@@ -32,10 +32,10 @@ class CartController extends Controller
             $hasColor = false;
             $hasSize = false;
             foreach ($variant->attributeValues as $attr) {
-                if (optional($attr->group)->name == 'Màu Sắc' && $attr->value === $request->color) {
+                if (mb_strtolower(optional($attr->group)->name, 'UTF-8') === 'màu sắc' && $attr->value === $request->color) {
                     $hasColor = true;
                 }
-                if (optional($attr->group)->name == 'Kích Thước' && $attr->value === $request->size) {
+                if (mb_strtolower(optional($attr->group)->name, 'UTF-8') === 'kích thước' && $attr->value === $request->size) {
                     $hasSize = true;
                 }
             }

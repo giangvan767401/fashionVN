@@ -430,9 +430,7 @@
                         $primaryImage = $product->images->where('is_primary', true)->first();
                         $imageUrl = $primaryImage ? asset($primaryImage->url) : asset('user/img/default-product.jpg');
                         
-                        $color = $item->variant->attributeValues->filter(function($val) { return optional($val->group)->name == 'Màu Sắc'; })->first();
-                        $size = $item->variant->attributeValues->filter(function($val) { return optional($val->group)->name == 'Kích Thước'; })->first();
-                        $variantText = collect([$color ? $color->value : null, $size ? $size->value : null])->filter()->join(' / ');
+                        $variantText = $item->variant_label;
                     @endphp
                     <div class="flex gap-4">
                         <!-- Image -->
@@ -455,7 +453,7 @@
                                 </form>
                             </div>
                             @if($variantText)
-                                <p class="text-[12px] text-gray-500 mt-1">{{ $variantText }}</p>
+                                <p class="text-[11px] font-semibold text-[#D32F2F] mt-1 tracking-wider">{{ $variantText }}</p>
                             @endif
                             <div class="mt-auto flex justify-between items-end">
                                 <!-- Quantity -->
