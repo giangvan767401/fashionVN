@@ -22,6 +22,26 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display standalone Edit Info form.
+     */
+    public function editInfo(Request $request): View
+    {
+        return view('profile.info', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Display standalone Change Password form.
+     */
+    public function editPassword(Request $request): View
+    {
+        return view('profile.password', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
