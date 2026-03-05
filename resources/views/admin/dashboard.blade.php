@@ -1,163 +1,301 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Admin Dashboard') }}
-        </h2>
-    </x-slot>
+<x-admin-layout>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p class="text-gray-500 mt-1">Welcome back, {{ Auth::user()->first_name }}. Here's what's happening with your business today.</p>
+    </div>
 
-    <div class="py-12 bg-gray-50/50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Welcome Section -->
-            <div class="mb-8 flex items-center justify-between">
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Revenue Card -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="flex justify-between items-start mb-4">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Dashboard Quản trị</h1>
-                    <p class="text-sm text-gray-500 mt-1">Chào mừng trở lại, <span class="font-semibold text-indigo-600">{{ Auth::user()->full_name }}</span>. Đây là giao diện quản lý trải nghiệm sản phẩm.</p>
+                    <p class="text-gray-500 text-sm font-medium">Total Revenue</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">$48,295</h3>
                 </div>
-                <div class="flex space-x-3">
-                    <button class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors shadow-sm">Xuất báo cáo</button>
-                    <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-200">+ Thêm sản phẩm</button>
-                </div>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Stat Card 1 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.91 8.18 12 17l-8.91-8.82L4.41 5.6l7.59 7.52 7.59-7.52z"/></svg>
-                        </div>
-                        <span class="text-xs font-bold text-green-500 bg-green-50 px-2 py-1 rounded-full">+12%</span>
-                    </div>
-                    <p class="text-sm font-medium text-gray-500">Tổng doanh thu</p>
-                    <h3 class="text-2xl font-bold text-gray-900 mt-1">128.500.000đ</h3>
-                </div>
-
-                <!-- Stat Card 2 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                        </div>
-                        <span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-full">480 mới</span>
-                    </div>
-                    <p class="text-sm font-medium text-gray-500">Đơn hàng</p>
-                    <h3 class="text-2xl font-bold text-gray-900 mt-1">2,450</h3>
-                </div>
-
-                <!-- Stat Card 3 -->
-                <a href="{{ route('admin.users.index') }}" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-indigo-100 transition-all group">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 group-hover:bg-amber-100 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </div>
-                        <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1 rounded-full group-hover:bg-amber-100 transition-colors">Quản lý →</span>
-                    </div>
-                    <p class="text-sm font-medium text-gray-500">Khách hàng</p>
-                    <h3 class="text-2xl font-bold text-gray-900 mt-1">15,700</h3>
-                </a>
-
-                <!-- Stat Card 4 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                        </div>
-                        <span class="text-xs font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-full">99+ SKU</span>
-                    </div>
-                    <p class="text-sm font-medium text-gray-500">Sản phẩm</p>
-                    <h3 class="text-2xl font-bold text-gray-900 mt-1">1,200</h3>
+                <div class="p-3 bg-emerald-50 rounded-2xl text-emerald-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
             </div>
+            <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold text-xs flex items-center gap-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                    +12.5%
+                </span>
+                <span class="text-gray-400 text-xs font-medium">vs last month</span>
+            </div>
+            <!-- Mini Sparkline -->
+            <div class="absolute bottom-0 left-0 right-0 h-10 opacity-20 group-hover:opacity-40 transition-opacity">
+                <div id="revenue-sparkline"></div>
+            </div>
+        </div>
 
-            <!-- Main Content Area -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Recent Orders Table -->
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-50 flex items-center justify-between">
-                        <h3 class="font-bold text-gray-900">Đơn hàng gần đây</h3>
-                        <a href="#" class="text-sm text-indigo-600 font-medium hover:text-indigo-700">Xem tất cả</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr class="bg-gray-50/50 text-gray-400 text-[10px] uppercase tracking-wider font-bold">
-                                    <th class="px-6 py-3">Mã đơn</th>
-                                    <th class="px-6 py-3">Khách hàng</th>
-                                    <th class="px-6 py-3">Trạng thái</th>
-                                    <th class="px-6 py-3 text-right">Tổng tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">#ORD-7721</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">Nguyễn Văn A</td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-2 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-full">ĐÃ GIAO</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm font-bold text-gray-900 text-right">1.250.000đ</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">#ORD-7720</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">Trần Thị B</td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-2 py-1 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-full">ĐANG XỬ LÝ</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm font-bold text-gray-900 text-right">890.000đ</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50/50 transition-colors">
-                                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">#ORD-7719</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">Lê Văn C</td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">ĐANG GIAO</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm font-bold text-gray-900 text-right">2.100.000đ</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+        <!-- Users Card -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Active Users</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">2,847</h3>
                 </div>
+                <div class="p-3 bg-sky-50 rounded-2xl text-sky-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M17.5 19l2 2 4-4"/></svg>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold text-xs flex items-center gap-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                    +8.2%
+                </span>
+                <span class="text-gray-400 text-xs font-medium">vs last month</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-10 opacity-20 group-hover:opacity-40 transition-opacity">
+                <div id="users-sparkline"></div>
+            </div>
+        </div>
 
-                <!-- Quick Actions/Info -->
-                <div class="space-y-6">
-                    <div class="bg-indigo-600 rounded-2xl p-6 text-white shadow-lg shadow-indigo-100 relative overflow-hidden">
-                        <div class="relative z-10">
-                            <h3 class="font-bold text-lg mb-2">Thông báo hệ thống</h3>
-                            <p class="text-indigo-100 text-sm mb-4">Hệ thống sẽ được bảo trì vào lúc 02:00 sáng mai. Vui lòng hoàn tất các tác vụ quan trọng.</p>
-                            <button class="w-full py-2 bg-white/20 hover:bg-white/30 transition-colors text-white rounded-lg text-sm font-medium backdrop-blur-sm">Chi tiết</button>
-                        </div>
-                        <!-- Abstract circles for style -->
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-                        <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-indigo-400/20 rounded-full blur-2xl"></div>
-                    </div>
+        <!-- Orders Card -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Total Orders</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">1,432</h3>
+                </div>
+                <div class="p-3 bg-indigo-50 rounded-2xl text-indigo-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-rose-500 font-bold text-xs flex items-center gap-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    -3.1%
+                </span>
+                <span class="text-gray-400 text-xs font-medium">vs last month</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-10 opacity-20 group-hover:opacity-40 transition-opacity">
+                <div id="orders-sparkline"></div>
+            </div>
+        </div>
 
-                    <!-- Management Tools -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <h3 class="font-bold text-gray-900 mb-4">Công cụ quản trị</h3>
-                        <div class="space-y-3">
-                            <a href="{{ route('admin.users.index') }}" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all group border border-transparent hover:border-indigo-100">
-                                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:scale-110 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                                </div>
-                                <span class="font-bold text-sm">Quản lý người dùng</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                            </a>
-                            <a href="{{ route('admin.categories.index') }}" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-indigo-50 hover:text-indigo-600 transition-all group border border-transparent hover:border-indigo-100">
-                                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:scale-110 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
-                                </div>
-                                <span class="font-bold text-sm">Quản lý danh mục</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                            </a>
-                        </div>
-                    </div>
+        <!-- Impressions Card -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-gray-500 text-sm font-medium">Page Views</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">284K</h3>
+                </div>
+                <div class="p-3 bg-amber-50 rounded-2xl text-amber-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-emerald-500 font-bold text-xs flex items-center gap-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                    +24.7%
+                </span>
+                <span class="text-gray-400 text-xs font-medium">vs last month</span>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-10 opacity-20 group-hover:opacity-40 transition-opacity">
+                <div id="views-sparkline"></div>
+            </div>
+        </div>
+    </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                        <h3 class="font-bold text-gray-900 mb-4">Ghi chú nhanh</h3>
-                        <textarea class="w-full h-32 bg-gray-50 border-none rounded-xl text-sm text-gray-600 focus:ring-1 focus:ring-indigo-100 placeholder:text-gray-400 p-4" placeholder="Nhập ghi chú tại đây..."></textarea>
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Main Area Chart -->
+        <div class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Overview</h3>
+                    <p class="text-gray-400 text-sm">Monthly performance for the current year</p>
+                </div>
+                <div class="flex bg-gray-50 p-1 rounded-xl">
+                    <button class="px-4 py-1.5 bg-white shadow-sm rounded-lg text-sm font-bold text-[#10b981]">Revenue</button>
+                    <button class="px-4 py-1.5 text-gray-500 rounded-lg text-sm font-medium hover:text-gray-900">Orders</button>
+                    <button class="px-4 py-1.5 text-gray-500 rounded-lg text-sm font-medium hover:text-gray-900">Profit</button>
+                </div>
+            </div>
+            <div id="main-chart" class="h-80"></div>
+        </div>
+
+        <!-- Traffic Sources -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Traffic Sources</h3>
+            <p class="text-gray-400 text-sm mb-8">Where your visitors come from</p>
+            <div id="traffic-chart" class="h-60 mb-6"></div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#10b981]"></span>
+                        <span class="text-sm font-medium text-gray-600">Direct</span>
                     </div>
+                    <span class="text-sm font-bold text-gray-900">35%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#3b82f6]"></span>
+                        <span class="text-sm font-medium text-gray-600">Organic</span>
+                    </div>
+                    <span class="text-sm font-bold text-gray-900">28%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#6366f1]"></span>
+                        <span class="text-sm font-medium text-gray-600">Referral</span>
+                    </div>
+                    <span class="text-sm font-bold text-gray-900">22%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-[#a855f7]"></span>
+                        <span class="text-sm font-medium text-gray-600">Social</span>
+                    </div>
+                    <span class="text-sm font-bold text-gray-900">15%</span>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+
+    <!-- Bottom Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Monthly Goals -->
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Monthly Goals</h3>
+            <p class="text-gray-400 text-sm mb-8">Track progress toward targets</p>
+            
+            <div class="space-y-8">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-gray-700">Monthly Revenue</span>
+                        <span class="text-sm font-bold text-emerald-600">88%</span>
+                    </div>
+                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-500 rounded-full" style="width: 88%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">48,295</span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">Target: 55,000</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-gray-700">New Customers</span>
+                        <span class="text-sm font-bold text-sky-600">85%</span>
+                    </div>
+                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-sky-500 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">847</span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">Target: 1,000</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-gray-700">Conversion Rate</span>
+                        <span class="text-sm font-bold text-indigo-600">76%</span>
+                    </div>
+                    <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-indigo-500 rounded-full" style="width: 76%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity/Placeholder -->
+        <div class="bg-[#10b981] p-8 rounded-3xl shadow-lg shadow-emerald-500/10 relative overflow-hidden group">
+            <div class="relative z-10 flex flex-col h-full">
+                <h3 class="text-2xl font-bold text-white mb-4">Mùa mới đã sẵn sàng!</h3>
+                <p class="text-emerald-50/80 text-lg leading-relaxed mb-8 pr-12">Các chỉ số về lượt xem và đơn hàng đang tăng mạnh. Hãy kiểm tra các danh mục sản phẩm mới nhất để chuẩn bị cho chiến dịch Marketing.</p>
+                <div class="mt-auto">
+                    <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-2xl text-[#10b981] font-bold shadow-xl hover:scale-105 transition-all">
+                        Quản lý danh mục
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+            <!-- Abstract background shapes -->
+            <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl"></div>
+            <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sparklines
+            const sparkOptions = {
+                chart: { type: 'area', height: 40, sparkline: { enabled: true }, animations: { enabled: true } },
+                stroke: { curve: 'smooth', width: 2 },
+                fill: { opacity: 0.1 },
+                tooltip: { enabled: false }
+            };
+
+            const data1 = [20, 40, 30, 50, 40, 60, 55, 75];
+            new ApexCharts(document.querySelector("#revenue-sparkline"), { ...sparkOptions, series: [{ data: data1 }], colors: ['#10b981'] }).render();
+            new ApexCharts(document.querySelector("#users-sparkline"), { ...sparkOptions, series: [{ data: [30, 25, 45, 40, 55, 50, 65, 60] }], colors: ['#0ea5e9'] }).render();
+            new ApexCharts(document.querySelector("#orders-sparkline"), { ...sparkOptions, series: [{ data: [60, 55, 50, 45, 55, 40, 35, 30] }], colors: ['#f43f5e'] }).render();
+            new ApexCharts(document.querySelector("#views-sparkline"), { ...sparkOptions, series: [{ data: [10, 25, 35, 40, 65, 80, 85, 95] }], colors: ['#f59e0b'] }).render();
+
+            // Main Overview Chart
+            const mainOptions = {
+                series: [{
+                    name: 'Revenue',
+                    data: [21000, 28000, 24000, 35000, 29000, 45000, 38000, 41000, 48295]
+                }],
+                chart: {
+                    type: 'area',
+                    height: 320,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                colors: ['#10b981'],
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 4 },
+                xaxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                },
+                yaxis: {
+                    labels: { style: { colors: '#9ca3af' }, formatter: (v) => '$' + (v / 1000) + 'k' }
+                },
+                grid: {
+                    borderColor: '#f1f5f9',
+                    strokeDashArray: 4,
+                    xaxis: { lines: { show: true } }
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: { shadeIntensity: 1, opacityFrom: 0.45, opacityTo: 0.05, stops: [20, 100] }
+                }
+            };
+            new ApexCharts(document.querySelector("#main-chart"), mainOptions).render();
+
+            // Traffic Sources Chart (Semi-donut style from image)
+            const trafficOptions = {
+                series: [35, 28, 22, 15],
+                chart: { type: 'donut', height: 260 },
+                labels: ['Direct', 'Organic', 'Referral', 'Social'],
+                colors: ['#10b981', '#3b82f6', '#6366f1', '#a855f7'],
+                dataLabels: { enabled: false },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '80%',
+                            labels: {
+                                show: true,
+                                name: { show: true, fontSize: '12px', fontWeight: 'bold', color: '#9ca3af', offsetY: -10 },
+                                value: { show: true, fontSize: '24px', fontWeight: 'bold', color: '#111827', offsetY: 10 },
+                                total: { show: true, label: 'Visits', fontSize: '12px', fontWeight: 'bold', color: '#9ca3af', formatter: () => '284K' }
+                            }
+                        }
+                    }
+                },
+                legend: { show: false }
+            };
+            new ApexCharts(document.querySelector("#traffic-chart"), trafficOptions).render();
+        });
+    </script>
+</x-admin-layout>
