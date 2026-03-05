@@ -61,33 +61,40 @@
                             <h3 class="text-base font-semibold text-gray-900 mb-6 tracking-wide">Đơn hàng gần đây</h3>
                             
                             <div class="space-y-6">
-                                <!-- Order Item 1 -->
-                                <div class="flex items-center justify-between border-b border-gray-50 pb-6 last:border-0 last:pb-0">
-                                    <div>
-                                        <p class="text-[14px] font-medium text-gray-900 mb-1">Đơn hàng #2</p>
-                                        <p class="text-[12px] text-gray-500 font-light">Ngày đặt: 31/01/2026</p>
+                                @forelse($orders ?? [] as $order)
+                                    <div class="flex items-center justify-between border-b border-gray-50 pb-6 last:border-0 last:pb-0">
+                                        <div>
+                                            <p class="text-[14px] font-medium text-gray-900 mb-1">Đơn hàng <span class="text-gray-500 font-normal">#{{ $order->order_number }}</span></p>
+                                            <p class="text-[12px] text-gray-500 font-light">Ngày đặt: {{ $order->created_at->format('d/m/Y') }}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-[14px] font-semibold text-gray-900 mb-1">{{ number_format($order->total_amount, 0, ',', '.') }}đ</p>
+                                            @php
+                                                $statusColors = [
+                                                    'pending' => 'bg-[#ffb800]',
+                                                    'completed' => 'bg-[#4a5845]',
+                                                    'cancelled' => 'bg-red-500'
+                                                ];
+                                                $statusLabels = [
+                                                    'pending' => 'Đang xử lý',
+                                                    'confirmed' => 'Đã xác nhận',
+                                                    'processing' => 'Đang đóng gói',
+                                                    'shipped' => 'Đang giao',
+                                                    'delivered' => 'Đã giao',
+                                                    'completed' => 'Hoàn thành',
+                                                    'cancelled' => 'Đã hủy',
+                                                ];
+                                                $color = $statusColors[$order->status] ?? 'bg-gray-400';
+                                                $label = $statusLabels[$order->status] ?? 'Không rõ';
+                                            @endphp
+                                            <span class="inline-block px-3 py-1 text-white text-[11px] font-medium rounded-full {{ $color }}">
+                                                {{ $label }}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="text-[14px] font-semibold text-gray-900 mb-1">$89.00</p>
-                                        <span class="inline-block px-3 py-1 bg-[#ffb800] text-white text-[11px] font-medium rounded-full">
-                                            Đang xử lý
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- Order Item 2 -->
-                                <div class="flex items-center justify-between border-b border-gray-50 pb-6 last:border-0 last:pb-0">
-                                    <div>
-                                        <p class="text-[14px] font-medium text-gray-900 mb-1">Đơn hàng #1</p>
-                                        <p class="text-[12px] text-gray-500 font-light">Ngày đặt: 31/01/2026</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-[14px] font-semibold text-gray-900 mb-1">$99.00</p>
-                                        <span class="inline-block px-3 py-1 bg-[#ffb800] text-white text-[11px] font-medium rounded-full">
-                                            Đang xử lý
-                                        </span>
-                                    </div>
-                                </div>
+                                @empty
+                                    <p class="text-[13px] text-gray-500">Bạn chưa có đơn hàng nào.</p>
+                                @endforelse
                             </div>
                         </div>
 

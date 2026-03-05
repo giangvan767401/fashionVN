@@ -10,6 +10,25 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+    public function index()
+    {
+        $cartItems = collect();
+        $cartTotal = 0;
+
+        if (Auth::check()) {
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+        } else {
+            $cart = \App\Models\Cart::where('session_id', session()->getId())->first();
+        }
+
+        if ($cart) {
+            $cartItems = $cart->items()->with(['variant.product.images', 'variant.attributeValues.group'])->get();
+            $cartTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
+        }
+
+        return view('cart', compact('cartItems', 'cartTotal'));
+    }
+
     public function add(Request $request)
     {
         $request->validate([
@@ -109,7 +128,10 @@ class CartController extends Controller
             }
         }
         
-        return back()->with('cart_drawer_open', true);
+        $fromCartPage = str_contains(request()->header('referer', ''), '/cart');
+        return $fromCartPage
+            ? redirect()->route('cart.index')
+            : back()->with('cart_drawer_open', true);
     }
 
     public function remove($id)
@@ -118,6 +140,9 @@ class CartController extends Controller
         if ($cartItem) {
             $cartItem->delete();
         }
-        return back()->with('cart_drawer_open', true);
+        $fromCartPage = str_contains(request()->header('referer', ''), '/cart');
+        return $fromCartPage
+            ? redirect()->route('cart.index')
+            : back()->with('cart_drawer_open', true);
     }
 }
