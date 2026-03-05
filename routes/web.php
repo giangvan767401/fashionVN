@@ -19,9 +19,19 @@ Route::get('/collection', [CollectionController::class, 'index'])->name('collect
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 
 // Giỏ hàng
+Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{id}', [\App\Http\Controllers\CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/remove/{id}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
+// Thanh toán
+Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'info'])->middleware('auth')->name('checkout');
+Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'storeInfo'])->middleware('auth')->name('checkout.store_info');
+Route::get('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'shipping'])->middleware('auth')->name('checkout.shipping');
+Route::post('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'storeShipping'])->middleware('auth')->name('checkout.store_shipping');
+Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'payment'])->middleware('auth')->name('checkout.payment');
+Route::post('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'storePayment'])->middleware('auth')->name('checkout.store_payment');
+Route::get('/checkout/success/{id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->middleware('auth')->name('checkout.success');
 
 // Yêu thích
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');

@@ -16,8 +16,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $orders = \App\Models\Order::where('user_id', Auth::id())->orderByDesc('id')->get();
+
         return view('profile.edit', [
             'user' => $request->user(),
+            'orders' => $orders,
         ]);
     }
 

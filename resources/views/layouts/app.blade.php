@@ -496,7 +496,7 @@
                     <span class="text-[18px] font-bold">{{ number_format($cartTotal, 0, ',', '.') }}đ</span>
                 </div>
                 <p class="text-[12px] text-gray-500 mb-6 text-center">Phí vận chuyển và thuế được tính ở trang thanh toán.</p>
-                <a href="#" class="cart-btn-green py-4 px-6 text-[14px] font-medium block w-full text-center">
+                <a href="{{ route('cart.index') }}" class="cart-btn-green py-4 px-6 text-[14px] font-medium block w-full text-center">
                     Thanh Toán
                 </a>
             </div>
