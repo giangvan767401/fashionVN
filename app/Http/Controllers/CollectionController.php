@@ -11,13 +11,14 @@ class CollectionController extends Controller
         // 1. Lấy parameters từ Request
         $sort = $request->query('sort'); // array
         $collections = $request->query('collections', []); // array
+        $categories = $request->query('category'); // single or array
         $sizes = $request->query('sizes', []); // array
         $materials = $request->query('materials', []); // array
         $colors = $request->query('colors', []); // array
         $q = $request->query('q'); // Search query
 
         // 2. Query từ Database
-        $query = \App\Models\Product::with(['images', 'collections', 'variants.attributeValues']);
+        $query = \App\Models\Product::with(['images', 'collections', 'variants.attributeValues', 'categories']);
 
         if (!empty($q)) {
             $query->where(function ($qBuilder) use ($q) {
@@ -29,6 +30,13 @@ class CollectionController extends Controller
         if (!empty($collections)) {
             $query->whereHas('collections', function ($qBuilder) use ($collections) {
                 $qBuilder->whereIn('slug', $collections);
+            });
+        }
+
+        if (!empty($categories)) {
+            $categoryIds = is_array($categories) ? $categories : [$categories];
+            $query->whereHas('categories', function ($qBuilder) use ($categoryIds) {
+                $qBuilder->whereIn('categories.id', $categoryIds);
             });
         }
 
@@ -54,8 +62,8 @@ class CollectionController extends Controller
             
             $imageUrl = asset('user/img/default-product.jpg');
             if ($image) {
-                // If it's already an absolute URL (like http://...), use it directly. Otherwise, wrap it in asset()
-                $imageUrl = filter_var($image->url, FILTER_VALIDATE_URL) ? $image->url : asset($image->url);
+                // If it's already an absolute URL (like http://...), use it directly. Otherwise, wrap it in asset('storage/...')
+                $imageUrl = filter_var($image->url, FILTER_VALIDATE_URL) ? $image->url : asset('storage/' . $image->url);
             }
 
             $sizes = [];

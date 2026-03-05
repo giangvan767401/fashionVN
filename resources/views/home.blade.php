@@ -19,95 +19,81 @@
         <h2 class="text-2xl font-bold">Bán Chạy Nhất</h2>
         <a href="{{ route('collection') }}" class="text-sm font-medium underline">Xem Tất Cả</a>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <!-- Danh sách 4 sản phẩm bán chạy -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+        @php
+            $bestSellers = \App\Models\Product::with(['images', 'categories'])->latest()->take(4)->get();
+        @endphp
 
-        <div class="group cursor-pointer">
-            <div class="relative aspect-[3/4] overflow-hidden mb-4">
-                <img src="{{ asset('user/img/ffdslfs.jpg') }}" alt="Sản phẩm 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x600?text=Product+1'">
-            </div>
-            <h3 class="text-sm font-medium text-gray-900 group-hover:underline">Váy Hoa Mùa Hè Cổ Chữ V</h3>
-            <div class="flex items-center space-x-2 mt-1">
-                <span class="text-sm">1.200.000₫</span>
-            </div>
-        </div>
+        @foreach($bestSellers as $product)
+            <x-product-card :product="$product" />
+        @endforeach
 
-        <div class="group cursor-pointer hidden md:block">
-            <div class="relative aspect-[3/4] overflow-hidden mb-4">
-                <img src="{{ asset('user/img/faw242q_ucbuq8.jpg') }}" alt="Sản phẩm 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x600?text=Product+2'">
+        @if($bestSellers->isEmpty())
+            <div class="col-span-full py-12 text-center text-gray-400 italic">
+                Sản phẩm đang được cập nhật...
             </div>
-            <h3 class="text-sm font-medium text-gray-900 group-hover:underline">Áo Sơ Mi Cotton Thoáng Mát</h3>
-            <div class="flex items-center space-x-2 mt-1">
-                <span class="text-sm">850.000₫</span>
-            </div>
-        </div>
-
-        <div class="group cursor-pointer hidden md:block">
-            <div class="relative aspect-[3/4] overflow-hidden mb-4">
-                <img src="{{ asset('user/img/ElbaDressOff-WhiteFreeTheLabel4.webp') }}" alt="Sản phẩm 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x600?text=Product+3'">
-            </div>
-            <h3 class="text-sm font-medium text-gray-900 group-hover:underline">Quần Linen Trắng Thanh Lịch</h3>
-            <div class="flex items-center space-x-2 mt-1">
-                <span class="text-sm">950.000₫</span>
-            </div>
-        </div>
-
-        <div class="group cursor-pointer">
-            <div class="relative aspect-[3/4] overflow-hidden mb-4">
-                <img src="{{ asset('user/img/Wind-Down-Dress-Coconut-Half_1400x.webp') }}" alt="Sản phẩm 4" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x600?text=Product+4'">
-            </div>
-            <h3 class="text-sm font-medium text-gray-900 group-hover:underline">Váy Midi Dáng Dài Cột Eo</h3>
-            <div class="flex items-center space-x-2 mt-1">
-                <span class="text-sm">1.450.000₫</span>
-            </div>
-        </div>
-
+        @endif
     </div>
 </div>
 
 <!-- Bộ Sưu Tập -->
 <div class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-12">Bộ Sưu Tập</h1>
+    <div class="flex items-center justify-between mb-12">
+        <h1 class="text-3xl font-bold">Bộ Sưu Tập</h1>
+        <a href="{{ route('collection') }}" class="text-sm font-medium hover:underline flex items-center gap-2">
+            Khám phá trọn bộ
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+    </div>
 
-    <!-- Masonry Grid (Image 2 configuration) -->
+    @php
+        $mainCategories = \App\Models\Category::whereNull('parent_id')->with(['products.images'])->take(4)->get();
+    @endphp
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">
+        @if($mainCategories->count() >= 2)
+            <!-- Left Column -->
+            <div class="flex flex-col gap-4">
+                @foreach($mainCategories->slice(0, 2) as $index => $category)
+                    @php
+                        $latestProduct = $category->products->last();
+                        $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
+                            ? asset('storage/' . $latestProduct->images->where('is_primary', true)->first()->url)
+                            : asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp');
+                        $height = $index == 0 ? 'h-[500px]' : 'h-[700px]';
+                    @endphp
+                    <div class="relative group overflow-hidden">
+                        <img src="{{ $bgImage }}" alt="{{ $category->name }}" class="w-full {{ $height }} object-cover object-top hover:scale-105 transition-transform duration-700">
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white shadow-xl translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <a href="{{ url('/collection?category=' . $category->id) }}" class="block text-black py-3 text-xs font-bold uppercase tracking-widest">{{ $category->name }}</a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
 
-        <!-- Left Column -->
-        <div class="flex flex-col gap-4">
-            <!-- Áo Blouse -->
-            <div class="relative group overflow-hidden">
-                <img src="{{ asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp') }}" alt="Áo Blouse" class="w-full h-[500px] object-cover object-top hover:scale-105 transition-transform duration-700">
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white">
-                    <a href="{{ url('/collection/tops') }}" class="block text-black py-2.5 text-xs font-medium tracking-wide">Áo Blouse</a>
-                </div>
+            <!-- Right Column -->
+            <div class="flex flex-col gap-4">
+                @foreach($mainCategories->slice(2, 2) as $index => $category)
+                    @php
+                        $latestProduct = $category->products->last();
+                        $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
+                            ? asset('storage/' . $latestProduct->images->where('is_primary', true)->first()->url)
+                            : asset('user/img/collection/Moodboard2_71ade389-dc80-49eb-b7e8-1c90a0273a2a_700x.webp');
+                        $height = $index == 0 ? 'h-[800px]' : 'h-[400px]';
+                    @endphp
+                    <div class="relative group overflow-hidden">
+                        <img src="{{ $bgImage }}" alt="{{ $category->name }}" class="w-full {{ $height }} object-cover object-center hover:scale-105 transition-transform duration-700">
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white shadow-xl translate-y-2 group-hover:translate-y-0 transition-transform">
+                            <a href="{{ url('/collection?category=' . $category->id) }}" class="block text-black py-3 text-xs font-bold uppercase tracking-widest">{{ $category->name }}</a>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-            <!-- Váy Cao Cấp -->
-            <div class="relative group overflow-hidden">
-                <img src="{{ asset('user/img/collection/Save_The_Date_Dress_Khaki_Lifestyle_Khaki_Main_720x.webp') }}" alt="Váy Cao Cấp" class="w-full h-[700px] object-cover object-center hover:scale-105 transition-transform duration-700">
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white">
-                    <a href="{{ url('/collection/dresses-premium') }}" class="block text-black py-2.5 text-xs font-medium tracking-wide">Váy Cao Cấp</a>
-                </div>
+        @else
+            <div class="col-span-full py-20 text-center border-2 border-dashed border-gray-100 rounded-3xl">
+                <p class="text-gray-400 italic">Dữ liệu bộ sưu tập đang được cập nhật...</p>
             </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="flex flex-col gap-4">
-            <!-- Quần Âu -->
-            <div class="relative group overflow-hidden">
-                <img src="{{ asset('user/img/collection/Moodboard2_71ade389-dc80-49eb-b7e8-1c90a0273a2a_700x.webp') }}" alt="Quần Âu" class="w-full h-[800px] object-cover object-center hover:scale-105 transition-transform duration-700">
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white">
-                    <a href="{{ url('/collection/pants') }}" class="block text-black py-2.5 text-xs font-medium tracking-wide">Quần Âu</a>
-                </div>
-            </div>
-            <!-- Áo Dạ -->
-            <div class="relative group overflow-hidden">
-                <img src="{{ asset('user/img/collection/ezgif-2-f137fd9d7d.png') }}" alt="Áo Dạ" class="w-full h-[400px] object-cover object-center hover:scale-105 transition-transform duration-700">
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white">
-                    <a href="{{ url('/collection/outwear') }}" class="block text-black py-2.5 text-xs font-medium tracking-wide">Áo Dạ</a>
-                </div>
-            </div>
-        </div>
-
+        @endif
     </div>
 </div>
 
