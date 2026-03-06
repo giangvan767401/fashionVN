@@ -131,7 +131,9 @@ class ProductController extends Controller
             // Handle multiple images
             if ($request->hasFile('image_files')) {
                 foreach ($request->file('image_files') as $index => $file) {
-                    $imagePath = $file->store('products', 'public');
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('images/products'), $fileName);
+                    $imagePath = 'images/products/' . $fileName;
                     ProductImage::create([
                         'product_id' => $product->id,
                         'url' => $imagePath,
@@ -382,7 +384,12 @@ class ProductController extends Controller
                                               ->whereIn('id', $request->delete_images)
                                               ->get();
                 foreach($imagesToDelete as $img) {
-                    Storage::disk('public')->delete($img->url);
+                    $fullPath = public_path($img->getRawOriginal('url'));
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    } else {
+                        Storage::disk('public')->delete($img->url);
+                    }
                     $img->delete();
                 }
             }
@@ -393,7 +400,9 @@ class ProductController extends Controller
                 $hasPrimary = ProductImage::where('product_id', $product->id)->where('is_primary', true)->exists();
                 
                 foreach ($request->file('image_files') as $index => $file) {
-                    $imagePath = $file->store('products', 'public');
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('images/products'), $fileName);
+                    $imagePath = 'images/products/' . $fileName;
                     ProductImage::create([
                         'product_id' => $product->id,
                         'url' => $imagePath,
@@ -473,9 +482,9 @@ class ProductController extends Controller
         }
 
         $fileName = 'pasted_' . time() . '_' . Str::random(10) . '.' . $type;
-        $path = 'products/' . $fileName;
+        $path = 'images/products/' . $fileName;
 
-        Storage::disk('public')->put($path, $data);
+        file_put_contents(public_path($path), $data);
 
         return $path;
     }

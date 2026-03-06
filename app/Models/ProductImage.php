@@ -26,7 +26,7 @@ class ProductImage extends Model
             return $value;
         }
 
-        if (str_starts_with($value, 'user/img')) {
+        if (str_starts_with($value, 'user/img') || str_starts_with($value, 'images/products')) {
             return asset($value);
         }
 
