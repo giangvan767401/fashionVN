@@ -50,50 +50,27 @@
         $mainCategories = \App\Models\Category::whereNull('parent_id')->with(['products' => function($q) { $q->where('is_active', true)->with('images'); }])->take(4)->get();
     @endphp
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">
-        @if($mainCategories->count() >= 2)
-            <!-- Left Column -->
-            <div class="flex flex-col gap-4">
-                @foreach($mainCategories->slice(0, 2) as $index => $category)
-                    @php
-                        $latestProduct = $category->products->last();
-                        $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
-                            ? $latestProduct->images->where('is_primary', true)->first()->url
-                            : asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp');
-                        $height = $index == 0 ? 'h-[500px]' : 'h-[700px]';
-                    @endphp
-                    <div class="relative group overflow-hidden">
-                        <img src="{{ $bgImage }}" alt="{{ $category->name }}" class="w-full {{ $height }} object-cover object-top hover:scale-105 transition-transform duration-700">
-                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white shadow-xl translate-y-2 group-hover:translate-y-0 transition-transform">
-                            <a href="{{ url('/collection?category=' . $category->id) }}" class="block text-black py-3 text-xs font-bold uppercase tracking-widest">{{ $category->name }}</a>
-                        </div>
-                    </div>
-                @endforeach
+    <div class="grid grid-cols-2 gap-4">
+        @forelse($mainCategories as $category)
+            @php
+                $latestProduct = $category->products->last();
+                $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
+                    ? $latestProduct->images->where('is_primary', true)->first()->url
+                    : asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp');
+            @endphp
+            <div class="relative group overflow-hidden rounded-sm">
+                <div class="aspect-[3/4] md:aspect-[4/5] overflow-hidden">
+                    <img src="{{ $bgImage }}" alt="{{ $category->name }}" class="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700">
+                </div>
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-40 md:w-48 text-center bg-white shadow-xl translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    <a href="{{ url('/collection?category=' . $category->id) }}" class="block text-black py-3 text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ $category->name }}</a>
+                </div>
             </div>
-
-            <!-- Right Column -->
-            <div class="flex flex-col gap-4">
-                @foreach($mainCategories->slice(2, 2) as $index => $category)
-                    @php
-                        $latestProduct = $category->products->last();
-                        $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
-                            ? $latestProduct->images->where('is_primary', true)->first()->url
-                            : asset('user/img/collection/Moodboard2_71ade389-dc80-49eb-b7e8-1c90a0273a2a_700x.webp');
-                        $height = $index == 0 ? 'h-[800px]' : 'h-[400px]';
-                    @endphp
-                    <div class="relative group overflow-hidden">
-                        <img src="{{ $bgImage }}" alt="{{ $category->name }}" class="w-full {{ $height }} object-cover object-center hover:scale-105 transition-transform duration-700">
-                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 text-center bg-white shadow-xl translate-y-2 group-hover:translate-y-0 transition-transform">
-                            <a href="{{ url('/collection?category=' . $category->id) }}" class="block text-black py-3 text-xs font-bold uppercase tracking-widest">{{ $category->name }}</a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
+        @empty
             <div class="col-span-full py-20 text-center border-2 border-dashed border-gray-100 rounded-3xl">
                 <p class="text-gray-400 italic">Dữ liệu bộ sưu tập đang được cập nhật...</p>
             </div>
-        @endif
+        @endforelse
     </div>
 </div>
 
