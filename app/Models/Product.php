@@ -36,4 +36,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Category::class, 'product_categories')->withPivot('is_primary');
     }
+
+    public function getTotalQuantityAttribute()
+    {
+        return $this->variants->sum('quantity');
+    }
 }

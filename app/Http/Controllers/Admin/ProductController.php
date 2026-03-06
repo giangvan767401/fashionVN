@@ -53,6 +53,7 @@ class ProductController extends Controller
             'sizes.*' => 'nullable|string|max:100',
             'colors' => 'nullable|array',
             'colors.*' => 'nullable|string|max:100',
+            'quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'image_files' => 'nullable|array',
             'image_files.*' => 'image|max:5120',
@@ -99,11 +100,16 @@ class ProductController extends Controller
                 if ($combo['size']) $skuParts[] = strtoupper($combo['size']->value);
                 $skuParts[] = time();
                 
+                $sId = $combo['size']?->id ?? 0;
+                $cId = $combo['color']?->id ?? 0;
+                // Default variant quantity to 0 if not provided in variant_stock
+                $variantQty = $request->input("variant_stock.{$cId}.{$sId}", 0);
+
                 $variant = \App\Models\ProductVariant::create([
                     'product_id' => $product->id,
                     'sku' => implode('-', $skuParts),
                     'price' => $request->base_price,
-                    'quantity' => 100,
+                    'quantity' => $variantQty,
                     'status' => 'active'
                 ]);
 
@@ -202,21 +208,30 @@ class ProductController extends Controller
             $q->where('name', 'like', '%Color%')->orWhere('name', 'like', '%Màu sắc%');
         })->get();
 
-        $selectedSizes = $product->variants()->whereHas('attributeValues.group', function($q) {
-            $q->where('name', 'like', '%Size%')->orWhere('name', 'like', '%Kích thước%');
-        })->with('attributeValues')->get()->flatMap(function($v) {
-            return $v->attributeValues->pluck('id');
-        })->unique()->toArray();
+        $sizeGroupIds = $sizes->pluck('group_id')->unique();
+        $colorGroupIds = $colors->pluck('group_id')->unique();
 
-        $selectedColors = $product->variants()->whereHas('attributeValues.group', function($q) {
-            $q->where('name', 'like', '%Color%')->orWhere('name', 'like', '%Màu sắc%');
-        })->with('attributeValues')->get()->flatMap(function($v) {
-            return $v->attributeValues->pluck('id');
-        })->unique()->toArray();
+        $selectedSizes = $product->variants()->with('attributeValues')->get()->flatMap(function($v) use ($sizeGroupIds) {
+            return $v->attributeValues->whereIn('group_id', $sizeGroupIds)->pluck('id');
+        })->unique()->filter()->values()->toArray();
+
+        $selectedColors = $product->variants()->with('attributeValues')->get()->flatMap(function($v) use ($colorGroupIds) {
+            return $v->attributeValues->whereIn('group_id', $colorGroupIds)->pluck('id');
+        })->unique()->filter()->values()->toArray();
 
         $selectedCategories = $product->categories->pluck('id')->toArray();
 
-        return view('admin.products.edit', compact('product', 'categories', 'selectedCategories', 'sizes', 'selectedSizes', 'colors', 'selectedColors'));
+        // Map existing variant stock for the frontend
+        $variantStock = [];
+        foreach ($product->variants()->with('attributeValues')->get() as $v) {
+            $vSize = $v->attributeValues->whereIn('group_id', $sizeGroupIds)->first();
+            $vColor = $v->attributeValues->whereIn('group_id', $colorGroupIds)->first();
+            $sId = $vSize ? $vSize->id : 0;
+            $cId = $vColor ? $vColor->id : 0;
+            $variantStock["{$cId}_{$sId}"] = $v->quantity;
+        }
+
+        return view('admin.products.edit', compact('product', 'categories', 'selectedCategories', 'sizes', 'selectedSizes', 'colors', 'selectedColors', 'variantStock'));
     }
 
     /**
@@ -233,6 +248,7 @@ class ProductController extends Controller
             'sizes.*' => 'nullable|string|max:100',
             'colors' => 'nullable|array',
             'colors.*' => 'nullable|string|max:100',
+            // 'quantity' => 'required|integer|min:0', // Removed as per instruction
             'description' => 'nullable|string',
             'image_files' => 'nullable|array',
             'image_files.*' => 'image|max:5120',
@@ -295,6 +311,11 @@ class ProductController extends Controller
                 $sig = "{$vSizeId}-{$vColorId}";
                 
                 if (in_array($sig, $desiredSignatures)) {
+                    $v->update([
+                        'price' => $request->base_price,
+                        // Default variant quantity to 0 if not provided in variant_stock
+                        'quantity' => $request->input("variant_stock.{$vColorId}.{$vSizeId}", 0),
+                    ]);
                     $existingSignatures[] = $sig;
                 } else {
                     $variantsToDelete[] = $v;
@@ -319,11 +340,23 @@ class ProductController extends Controller
                     if ($combo['size']) $skuParts[] = strtoupper($combo['size']->value);
                     $skuParts[] = time();
 
+                    // Determine variant quantity, falling back to 0 if not specified
+                    $variantQty = 0;
+                    if ($combo['color'] && $combo['size']) {
+                        $variantQty = $request->input("variant_stock.{$combo['color']->id}.{$combo['size']->id}", 0);
+                    } elseif ($combo['color']) {
+                        $variantQty = $request->input("variant_stock.{$combo['color']->id}.0", 0); // Use 0 for no size
+                    } elseif ($combo['size']) {
+                        $variantQty = $request->input("variant_stock.0.{$combo['size']->id}", 0); // Use 0 for no color
+                    } else {
+                        $variantQty = $request->input("variant_stock.0.0", 0); // For no attributes
+                    }
+
                     $variant = \App\Models\ProductVariant::create([
                         'product_id' => $product->id,
                         'sku' => implode('-', $skuParts),
                         'price' => $request->base_price,
-                        'quantity' => 100,
+                        'quantity' => $variantQty,
                         'status' => 'active'
                     ]);
 

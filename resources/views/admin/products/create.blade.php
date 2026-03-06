@@ -54,7 +54,53 @@
                 </div>
 
                 <!-- Right: Content Section -->
-                <div class="md:col-span-2 space-y-6">
+                <div class="md:col-span-2 space-y-6" x-data="{
+                    selectedCategories: @js(old('categories', [])),
+                    selectedSizes: @js(old('sizes', [])).map(id => id.toString()),
+                    selectedColors: @js(old('colors', [])).map(id => id.toString()),
+                    sizeOptions: @js($sizes->map(fn($s) => ['id' => $s->id, 'name' => $s->value])),
+                    colorOptions: @js($colors->map(fn($c) => ['id' => $c->id, 'name' => $c->value, 'hex' => $c->color_hex])),
+                    categoryOptions: @js($categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name, 'parent' => $c->parent ? $c->parent->name : null])),
+                    
+                    get combinations() {
+                        if (this.selectedSizes.length === 0 && this.selectedColors.length === 0) return [];
+                        
+                        let sizes = this.selectedSizes.length > 0 ? this.selectedSizes : [0];
+                        let colors = this.selectedColors.length > 0 ? this.selectedColors : [0];
+                        
+                        let result = [];
+                        colors.forEach(cId => {
+                            sizes.forEach(sId => {
+                                let sName = this.sizeOptions.find(o => o.id.toString() === sId.toString())?.name || (sId === 0 ? '--' : sId);
+                                let cName = this.colorOptions.find(o => o.id.toString() === cId.toString())?.name || (cId === 0 ? '--' : cId);
+                                result.push({ sId, cId, sName, cName });
+                            });
+                        });
+                        return result;
+                    },
+                    addNewSize(val) {
+                        val = val.trim().toUpperCase();
+                        if (val !== '') {
+                            const existing = this.sizeOptions.find(o => o.name.toUpperCase() === val);
+                            if (existing) {
+                                if (!this.selectedSizes.includes(existing.id.toString())) this.selectedSizes.push(existing.id.toString());
+                            } else {
+                                if (!this.selectedSizes.includes(val)) this.selectedSizes.push(val);
+                            }
+                        }
+                    },
+                    addNewColor(val) {
+                        val = val.trim();
+                        if (val !== '') {
+                            const existing = this.colorOptions.find(o => o.name.toLowerCase() === val.toLowerCase());
+                            if (existing) {
+                                if (!this.selectedColors.includes(existing.id.toString())) this.selectedColors.push(existing.id.toString());
+                            } else {
+                                if (!this.selectedColors.includes(val)) this.selectedColors.push(val);
+                            }
+                        }
+                    }
+                }">
                     <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-6">
                         <!-- Name & Category -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,41 +108,72 @@
                                 <label for="name" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Tên sản phẩm *</label>
                                 <input type="text" name="name" id="name" value="{{ old('name') }}" required
                                        class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all placeholder:text-gray-400"
-                                       placeholder="Ví dụ: Áo Sơ Mi Lụa Premium">
+                                       placeholder="Ví dụ: Áo Sơ Mi Lụa Cao Cấp">
                                 @error('name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="space-y-2">
-                                <label for="base_price" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Giá niêm yết (₫) *</label>
+                                <label for="base_price" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Giá bán lẻ *</label>
                                 <input type="number" name="base_price" id="base_price" value="{{ old('base_price') }}" required
                                        class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all placeholder:text-gray-400"
-                                       placeholder="950000">
+                                       placeholder="500000">
                                 @error('base_price') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        <!-- Variant Stock Table -->
+                        <div x-show="combinations.length > 0" x-transition class="space-y-4 pt-4 border-t border-gray-50">
+                            <div class="flex items-center justify-between">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Quản lý tồn kho theo biến thể</label>
+                                <span class="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full" x-text="combinations.length + ' biến thể được tạo'"></span>
+                            </div>
+                            
+                            <div class="overflow-x-auto rounded-2xl border border-gray-100">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                        <tr>
+                                            <th class="px-4 py-3">Màu sắc</th>
+                                            <th class="px-4 py-3">Kích thước</th>
+                                            <th class="px-4 py-3 w-32">Số lượng tồn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-50">
+                                        <template x-for="combo in combinations" :key="combo.cId + '-' + combo.sId">
+                                            <tr class="hover:bg-gray-50/50 transition-colors">
+                                                <td class="px-4 py-3">
+                                                    <div class="flex items-center gap-2">
+                                                        <div x-show="combo.cId !== 0 && colorOptions.find(o => o.id.toString() === combo.cId.toString())?.hex" 
+                                                             class="w-3 h-3 rounded-full border border-gray-200"
+                                                             :style="'background-color: ' + colorOptions.find(o => o.id.toString() === combo.cId.toString())?.hex"></div>
+                                                        <span class="font-medium text-gray-700" x-text="combo.cName"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <span class="font-medium text-gray-700" x-text="combo.sName"></span>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <input type="number" :name="'variant_stock[' + combo.cId + '][' + combo.sId + ']'" 
+                                                           required
+                                                           class="w-full bg-white border-gray-100 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all font-bold text-gray-900 shadow-sm"
+                                                           value="0">
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Category Selection -->
-                            <div class="space-y-2" x-data="{ 
-                                open: false, 
-                                search: '', 
-                                selected: @js(old('categories', [])).map(id => id.toString()),
-                                options: @js($categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name, 'parent' => $c->parent ? $c->parent->name : null])),
-                                get filteredOptions() {
-                                    if (!this.search) return this.options;
-                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                },
-                                getSelectedNames() {
-                                    return this.options.filter(o => this.selected.includes(o.id.toString())).map(o => o.name).join(', ');
-                                }
-                            }">
+                            <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Danh mục *</label>
                                 
-                                <div class="relative" @click.away="open = false">
+                                <div class="relative" x-data="{ open: false, search: '' }" @click.away="open = false">
                                     <button type="button" @click="open = !open" 
                                             class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-left flex items-center justify-between hover:border-emerald-500 transition-all focus:ring-2 focus:ring-emerald-500/10">
-                                        <span x-text="selected.length ? getSelectedNames() : 'Chọn danh mục sản phẩm...'" 
-                                              class="truncate pr-4" :class="selected.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
+                                        <span x-text="selectedCategories.length ? categoryOptions.filter(o => selectedCategories.includes(o.id.toString())).map(o => o.name).join(', ') : 'Chọn danh mục sản phẩm...'" 
+                                              class="truncate pr-4" :class="selectedCategories.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
                                     </button>
 
@@ -107,14 +184,14 @@
                                                    class="w-full bg-white border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all">
                                         </div>
                                         <div class="max-h-60 overflow-y-auto p-2 space-y-1">
-                                            <template x-for="option in filteredOptions" :key="option.id">
+                                            <template x-for="option in categoryOptions.filter(o => !search || o.name.toLowerCase().includes(search.toLowerCase()))" :key="option.id">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group"
-                                                       :class="selected.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
-                                                    <input type="checkbox" :value="option.id.toString()" x-model="selected" class="sr-only">
+                                                       :class="selectedCategories.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
+                                                    <input type="checkbox" :value="option.id.toString()" x-model="selectedCategories" class="sr-only">
                                                     <div class="flex flex-col">
-                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selected.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
+                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selectedCategories.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
                                                         <template x-if="option.parent">
-                                                            <span class="text-[10px] italic transition-colors" x-text="'/ ' + option.parent" :class="selected.includes(option.id.toString()) ? 'text-emerald-100' : 'opacity-60 text-gray-400'"></span>
+                                                            <span class="text-[10px] italic transition-colors" x-text="'/ ' + option.parent" :class="selectedCategories.includes(option.id.toString()) ? 'text-emerald-100' : 'opacity-60 text-gray-400'"></span>
                                                         </template>
                                                     </div>
                                                 </label>
@@ -122,53 +199,21 @@
                                         </div>
                                     </div>
                                 </div>
-                                <template x-for="id in selected" :key="id">
+                                <template x-for="id in selectedCategories" :key="id">
                                     <input type="hidden" name="categories[]" :value="id">
                                 </template>
                                 @error('categories') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <!-- Size Selection -->
-                            <div class="space-y-2" x-data="{ 
-                                open: false, 
-                                search: '', 
-                                selected: @js(old('sizes', [])).map(id => id.toString()),
-                                options: @js($sizes->map(fn($s) => ['id' => $s->id, 'name' => $s->value])),
-                                get filteredOptions() {
-                                    if (!this.search) return this.options;
-                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                },
-                                getSelectedNames() {
-                                    return this.selected.map(id => {
-                                        const opt = this.options.find(o => o.id.toString() === id);
-                                        return opt ? opt.name : id;
-                                    }).join(', ');
-                                },
-                                addNewSize() {
-                                    const val = this.search.trim().toUpperCase();
-                                    if (val !== '') {
-                                        const existing = this.options.find(o => o.name.toUpperCase() === val);
-                                        if (existing) {
-                                            if (!this.selected.includes(existing.id.toString())) {
-                                                this.selected.push(existing.id.toString());
-                                            }
-                                        } else {
-                                            if (!this.selected.includes(val)) {
-                                                this.selected.push(val);
-                                            }
-                                        }
-                                        this.search = '';
-                                        this.open = true;
-                                    }
-                                }
-                            }">
+                            <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Size sản phẩm</label>
                                 
-                                <div class="relative" @click.away="open = false">
+                                <div class="relative" x-data="{ open: false, search: '' }" @click.away="open = false">
                                     <button type="button" @click="open = !open" 
                                             class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-left flex items-center justify-between hover:border-emerald-500 transition-all focus:ring-2 focus:ring-emerald-500/10">
-                                        <span x-text="selected.length ? getSelectedNames() : 'Chọn hoặc thêm size (S, M, L...)'" 
-                                              class="truncate pr-4" :class="selected.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
+                                        <span x-text="selectedSizes.length ? selectedSizes.map(id => { let o = sizeOptions.find(opt => opt.id.toString() === id.toString()); return o ? o.name : id; }).join(', ') : 'Chọn hoặc thêm size (S, M, L...)'" 
+                                              class="truncate pr-4" :class="selectedSizes.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
                                     </button>
 
@@ -176,15 +221,15 @@
                                          class="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden animate-fade-in">
                                         <div class="p-3 border-b border-gray-50 bg-gray-50/50">
                                             <div class="flex gap-2">
-                                                <input type="text" x-model="search" @keydown.enter.prevent="addNewSize" placeholder="Tìm hoặc nhập size mới..." 
+                                                <input type="text" x-model="search" @keydown.enter.prevent="addNewSize(search); search=''" placeholder="Tìm hoặc nhập size mới..." 
                                                        class="w-full bg-white border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all">
-                                                <button type="button" @click="addNewSize" x-show="search.trim() !== ''" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all">Thêm</button>
+                                                <button type="button" @click="addNewSize(search); search=''" x-show="search.trim() !== ''" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all">Thêm</button>
                                             </div>
                                         </div>
                                         <div class="max-h-60 overflow-y-auto p-2 space-y-1">
-                                            <template x-for="customSize in selected.filter(s => !options.find(o => o.id.toString() === s))" :key="customSize">
+                                            <template x-for="customSize in selectedSizes.filter(s => !sizeOptions.find(o => o.id.toString() === s.toString()))" :key="customSize">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group bg-emerald-600 text-white shadow-md">
-                                                    <input type="checkbox" :value="customSize" x-model="selected" class="sr-only">
+                                                    <input type="checkbox" :value="customSize" x-model="selectedSizes" class="sr-only">
                                                     <div class="flex flex-col">
                                                         <span class="text-xs font-bold uppercase tracking-wide transition-colors text-white" x-text="customSize"></span>
                                                         <span class="text-[10px] italic text-emerald-100 mt-0.5">Size mới</span>
@@ -192,64 +237,32 @@
                                                 </label>
                                             </template>
 
-                                            <template x-for="option in filteredOptions" :key="option.id">
+                                            <template x-for="option in sizeOptions.filter(o => !search || o.name.toLowerCase().includes(search.toLowerCase()))" :key="option.id">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group"
-                                                       :class="selected.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
-                                                    <input type="checkbox" :value="option.id.toString()" x-model="selected" class="sr-only">
+                                                       :class="selectedSizes.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
+                                                    <input type="checkbox" :value="option.id.toString()" x-model="selectedSizes" class="sr-only">
                                                     <div class="flex flex-col">
-                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selected.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
+                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selectedSizes.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
                                                     </div>
                                                 </label>
                                             </template>
                                         </div>
                                     </div>
                                 </div>
-                                <template x-for="val in selected" :key="val">
+                                <template x-for="val in selectedSizes" :key="val">
                                     <input type="hidden" name="sizes[]" :value="val">
                                 </template>
                             </div>
 
                             <!-- Color Selection -->
-                            <div class="space-y-2" x-data="{ 
-                                open: false, 
-                                search: '', 
-                                selected: @js(old('colors', [])).map(id => id.toString()),
-                                options: @js($colors->map(fn($c) => ['id' => $c->id, 'name' => $c->value, 'hex' => $c->color_hex])),
-                                get filteredOptions() {
-                                    if (!this.search) return this.options;
-                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
-                                },
-                                getSelectedNames() {
-                                    return this.selected.map(id => {
-                                        const opt = this.options.find(o => o.id.toString() === id);
-                                        return opt ? opt.name : id;
-                                    }).join(', ');
-                                },
-                                addNewColor() {
-                                    const val = this.search.trim();
-                                    if (val !== '') {
-                                        const existing = this.options.find(o => o.name.toLowerCase() === val.toLowerCase());
-                                        if (existing) {
-                                            if (!this.selected.includes(existing.id.toString())) {
-                                                this.selected.push(existing.id.toString());
-                                            }
-                                        } else {
-                                            if (!this.selected.includes(val)) {
-                                                this.selected.push(val);
-                                            }
-                                        }
-                                        this.search = '';
-                                        this.open = true;
-                                    }
-                                }
-                            }">
+                            <div class="space-y-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Màu sắc</label>
                                 
-                                <div class="relative" @click.away="open = false">
+                                <div class="relative" x-data="{ open: false, search: '' }" @click.away="open = false">
                                     <button type="button" @click="open = !open" 
                                             class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-left flex items-center justify-between hover:border-emerald-500 transition-all focus:ring-2 focus:ring-emerald-500/10">
-                                        <span x-text="selected.length ? getSelectedNames() : 'Chọn hoặc thêm màu sắc...'" 
-                                              class="truncate pr-4" :class="selected.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
+                                        <span x-text="selectedColors.length ? selectedColors.map(id => { let o = colorOptions.find(opt => opt.id.toString() === id.toString()); return o ? o.name : id; }).join(', ') : 'Chọn hoặc thêm màu sắc...'" 
+                                              class="truncate pr-4" :class="selectedColors.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
                                     </button>
 
@@ -257,15 +270,15 @@
                                          class="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden animate-fade-in">
                                         <div class="p-3 border-b border-gray-50 bg-gray-50/50">
                                             <div class="flex gap-2">
-                                                <input type="text" x-model="search" @keydown.enter.prevent="addNewColor" placeholder="Tìm hoặc nhập màu mới..." 
+                                                <input type="text" x-model="search" @keydown.enter.prevent="addNewColor(search); search=''" placeholder="Tìm hoặc nhập màu mới..." 
                                                        class="w-full bg-white border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all">
-                                                <button type="button" @click="addNewColor" x-show="search.trim() !== ''" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all">Thêm</button>
+                                                <button type="button" @click="addNewColor(search); search=''" x-show="search.trim() !== ''" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all">Thêm</button>
                                             </div>
                                         </div>
                                         <div class="max-h-60 overflow-y-auto p-2 space-y-1">
-                                            <template x-for="customColor in selected.filter(s => !options.find(o => o.id.toString() === s))" :key="customColor">
+                                            <template x-for="customColor in selectedColors.filter(s => !colorOptions.find(o => o.id.toString() === s.toString()))" :key="customColor">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group bg-emerald-600 text-white shadow-md">
-                                                    <input type="checkbox" :value="customColor" x-model="selected" class="sr-only">
+                                                    <input type="checkbox" :value="customColor" x-model="selectedColors" class="sr-only">
                                                     <div class="flex items-center gap-2">
                                                         <span class="text-xs font-bold uppercase tracking-wide transition-colors text-white" x-text="customColor"></span>
                                                         <span class="text-[10px] italic text-emerald-100">Mới</span>
@@ -273,12 +286,12 @@
                                                 </label>
                                             </template>
 
-                                            <template x-for="option in filteredOptions" :key="option.id">
+                                            <template x-for="option in colorOptions.filter(o => !search || o.name.toLowerCase().includes(search.toLowerCase()))" :key="option.id">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group"
-                                                       :class="selected.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
-                                                    <input type="checkbox" :value="option.id.toString()" x-model="selected" class="sr-only">
+                                                       :class="selectedColors.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
+                                                    <input type="checkbox" :value="option.id.toString()" x-model="selectedColors" class="sr-only">
                                                     <div class="flex items-center justify-between">
-                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selected.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
+                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selectedColors.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
                                                         <template x-if="option.hex">
                                                             <div class="w-4 h-4 rounded-full border border-gray-200 shadow-sm" :style="'background-color: ' + option.hex"></div>
                                                         </template>
@@ -288,7 +301,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <template x-for="val in selected" :key="val">
+                                <template x-for="val in selectedColors" :key="val">
                                     <input type="hidden" name="colors[]" :value="val">
                                 </template>
                                 @error('colors') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror

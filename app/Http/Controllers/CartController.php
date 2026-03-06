@@ -93,6 +93,13 @@ class CartController extends Controller
             ->where('variant_id', $matchedVariant->id)
             ->first();
 
+        $currentInCart = $cartItem ? $cartItem->quantity : 0;
+        $requestedTotal = $currentInCart + $quantity;
+
+        if ($matchedVariant->quantity < $requestedTotal) {
+            return back()->with('error', "Rất tiếc, sản phẩm này chỉ còn {$matchedVariant->quantity} chiếc trong kho.");
+        }
+
         if ($cartItem) {
             $cartItem->quantity += $quantity;
             $cartItem->save();
@@ -110,14 +117,17 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        $cartItem = CartItem::find($id);
+        $cartItem = CartItem::with('variant')->find($id);
         
-        // Ensure the item belongs to the current user's cart (security check could be added here)
         if ($cartItem) {
             $action = $request->input('action');
             if ($action === 'increase') {
-                $cartItem->quantity++;
-                $cartItem->save();
+                if ($cartItem->variant->quantity > $cartItem->quantity) {
+                    $cartItem->quantity++;
+                    $cartItem->save();
+                } else {
+                    return back()->with('error', "Không thể tăng thêm, chỉ còn {$cartItem->variant->quantity} chiếc trong kho.");
+                }
             } elseif ($action === 'decrease') {
                 if ($cartItem->quantity > 1) {
                     $cartItem->quantity--;

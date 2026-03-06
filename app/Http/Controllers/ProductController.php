@@ -66,7 +66,7 @@ class ProductController extends Controller
             'price' => number_format($productModel->sale_price ?? $productModel->base_price, 0, ',', '.') . 'đ',
             'id' => $productModel->sku,
             'product_id' => $productModel->id,
-            'availability' => '90', // TODO: Tích hợp với tồn kho thực tế sau này
+            'availability' => $productModel->variants->sum('quantity'),
             'images' => $images,
             'colors' => $uniqueColors,
             'sizes' => $uniqueSizes,
@@ -110,6 +110,18 @@ class ProductController extends Controller
             ];
         })->toArray();
 
-        return view('product', compact('product', 'relatedProducts'));
+        $variantMap = [];
+        foreach ($productModel->variants as $variant) {
+            $vSize = $variant->attributeValues->where('group_id', $sizeGroupId)->first()?->value ?? '';
+            $vColor = $variant->attributeValues->where('group_id', $colorGroupId)->first()?->value ?? '';
+            $variantMap[] = [
+                'id' => $variant->id,
+                'size' => $vSize,
+                'color' => $vColor,
+                'stock' => $variant->quantity
+            ];
+        }
+
+        return view('product', compact('product', 'relatedProducts', 'variantMap'));
     }
 }

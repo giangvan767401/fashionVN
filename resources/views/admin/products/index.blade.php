@@ -29,6 +29,7 @@
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Danh mục</th>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest">Giá niêm yết</th>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest text-center">Trạng thái</th>
+                            <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest text-center">Số lượng</th>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest text-right">Thao tác</th>
                         </tr>
                     </thead>
@@ -87,6 +88,11 @@
                                         </button>
                                     </form>
                                 </td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-sm font-bold {{ $product->total_quantity > 10 ? 'text-gray-900' : 'text-rose-600' }}">
+                                        {{ $product->total_quantity }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('admin.products.edit', $product) }}" class="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Chỉnh sửa">
@@ -104,7 +110,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-gray-500 italic">
+                                <td colspan="6" class="px-6 py-12 text-center text-gray-500 italic">
                                     Chưa có sản phẩm nào trong cửa hàng.
                                 </td>
                             </tr>

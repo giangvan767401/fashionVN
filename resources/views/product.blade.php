@@ -161,8 +161,8 @@
             </div>
             
             <!-- Availability indicator -->
-            <div class="flex gap-2 items-center text-sm font-medium mb-10 text-[#5c7a6b]">
-                <div class="w-2 h-2 rounded-full bg-[#5c7a6b]"></div> Cỡ của bạn còn lại {{ $product['availability'] }} chiếc
+            <div id="availability-text" class="flex gap-2 items-center text-sm font-medium mb-10 text-[#5c7a6b]">
+                <div class="w-2 h-2 rounded-full bg-[#5c7a6b]"></div> Sản phẩm hiện còn {{ count($variantMap) > 0 ? array_sum(array_column($variantMap, 'stock')) : $product['availability'] }} chiếc
             </div>
 
             <!-- Accordions -->
@@ -319,7 +319,72 @@
         activeInner.classList.remove('bg-transparent');
         activeText.classList.add('text-black');
         activeText.classList.remove('text-gray-500');
+
+        updateAvailability();
     }
+
+    const variantMap = @js($variantMap);
+
+    function updateAvailability() {
+        const selectedColor = document.getElementById('form-color').value;
+        const selectedSize = document.getElementById('form-size').value;
+        const availabilityText = document.getElementById('availability-text');
+        
+        // Update size button states based on selected color
+        const allSizeBtns = document.querySelectorAll('.size-btn');
+        allSizeBtns.forEach(btn => {
+            const size = btn.textContent.trim();
+            // Find if this variant exists and has stock
+            const variant = variantMap.find(v => v.color === selectedColor && v.size === size);
+            
+            if (variant && variant.stock > 0) {
+                btn.classList.remove('opacity-40', 'cursor-not-allowed', 'border-red-200');
+                btn.classList.add('cursor-pointer');
+                btn.removeAttribute('disabled');
+            } else {
+                btn.classList.add('opacity-40', 'cursor-not-allowed');
+                btn.classList.remove('cursor-pointer');
+                btn.setAttribute('disabled', 'true');
+                
+                // If the currently selected size is now disabled, clear it
+                if (selectedSize === size) {
+                    document.getElementById('selected-size').textContent = 'Select Size';
+                    document.getElementById('form-size').value = '';
+                    btn.classList.remove('border-gray-900', 'bg-gray-900', 'text-white');
+                    btn.classList.add('bg-white', 'text-[#333]');
+                }
+            }
+        });
+
+        if (selectedColor && selectedSize) {
+            const variant = variantMap.find(v => v.color === selectedColor && v.size === selectedSize);
+            if (variant) {
+                if (variant.stock > 0) {
+                    availabilityText.innerHTML = `<div class="w-2 h-2 rounded-full bg-[#5c7a6b]"></div> Cỡ của bạn còn lại ${variant.stock} chiếc`;
+                    availabilityText.classList.remove('text-rose-500');
+                    availabilityText.classList.add('text-[#5c7a6b]');
+                } else {
+                    availabilityText.innerHTML = `<div class="w-2 h-2 rounded-full bg-rose-500"></div> Hết hàng cho lựa chọn này`;
+                    availabilityText.classList.remove('text-[#5c7a6b]');
+                    availabilityText.classList.add('text-rose-500');
+                }
+            } else {
+                availabilityText.innerHTML = `<div class="w-2 h-2 rounded-full bg-rose-500"></div> Không có sẵn sự kết hợp này`;
+                availabilityText.classList.remove('text-[#5c7a6b]');
+                availabilityText.classList.add('text-rose-500');
+            }
+        } else if (selectedColor) {
+            const colorStock = variantMap.filter(v => v.color === selectedColor).reduce((acc, v) => acc + v.stock, 0);
+            availabilityText.innerHTML = `<div class="w-2 h-2 rounded-full bg-[#5c7a6b]"></div> Màu này còn tổng cộng ${colorStock} chiếc`;
+            availabilityText.classList.remove('text-rose-500');
+            availabilityText.classList.add('text-[#5c7a6b]');
+        }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateAvailability();
+    });
 
     // Handle Size Selection
     function selectSize(btn, size) {
@@ -338,6 +403,8 @@
         
         btn.classList.add('border-gray-900', 'bg-gray-900', 'text-white');
         btn.classList.remove('bg-white', 'text-[#333]');
+
+        updateAvailability();
     }
 
     // Submit form validation
