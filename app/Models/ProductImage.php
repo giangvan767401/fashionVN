@@ -19,4 +19,17 @@ class ProductImage extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function getUrlAttribute($value)
+    {
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+
+        if (str_starts_with($value, 'user/img')) {
+            return asset($value);
+        }
+
+        return asset('storage/' . $value);
+    }
 }

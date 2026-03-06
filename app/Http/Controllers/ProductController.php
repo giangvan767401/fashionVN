@@ -17,7 +17,7 @@ class ProductController extends Controller
         // 2. Map sang mảng format cho View
         // Lấy tất cả ảnh, ưu tiên ảnh chính lên đầu, xử lý absolute URL
         $images = $productModel->images->sortByDesc('is_primary')->map(function($img) {
-            return filter_var($img->url, FILTER_VALIDATE_URL) ? $img->url : asset('storage/' . $img->url);
+            return $img->url;
         })->toArray();
         if (empty($images)) {
             $images = [asset('user/img/default-product.jpg')];
@@ -101,11 +101,11 @@ class ProductController extends Controller
 
         $relatedProducts = $relatedDbProducts->map(function($relProd) {
             $img = $relProd->images->firstWhere('is_primary', true) ?? $relProd->images->first();
-            $imgUrl = $img ? (filter_var($img->url, FILTER_VALIDATE_URL) ? $img->url : asset($img->url)) : asset('user/img/default-product.jpg');
+            
             return [
                 'name' => $relProd->name,
                 'price' => number_format($relProd->sale_price ?? $relProd->base_price, 0, ',', '.') . 'đ',
-                'image' => $imgUrl,
+                'image' => $img ? $img->url : asset('user/img/default-product.jpg'),
                 'slug' => $relProd->slug
             ];
         })->toArray();

@@ -388,7 +388,7 @@
                         addFileToPreview(file);
                     });
                     updateFileInput();
-                    this.value = ''; 
+                    // this.value = ''; // Đã xóa dòng này để tránh mất file khi submit
                 }
             });
 

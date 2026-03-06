@@ -58,7 +58,7 @@
                     @php
                         $latestProduct = $category->products->last();
                         $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
-                            ? asset('storage/' . $latestProduct->images->where('is_primary', true)->first()->url)
+                            ? $latestProduct->images->where('is_primary', true)->first()->url
                             : asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp');
                         $height = $index == 0 ? 'h-[500px]' : 'h-[700px]';
                     @endphp
@@ -77,7 +77,7 @@
                     @php
                         $latestProduct = $category->products->last();
                         $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
-                            ? asset('storage/' . $latestProduct->images->where('is_primary', true)->first()->url)
+                            ? $latestProduct->images->where('is_primary', true)->first()->url
                             : asset('user/img/collection/Moodboard2_71ade389-dc80-49eb-b7e8-1c90a0273a2a_700x.webp');
                         $height = $index == 0 ? 'h-[800px]' : 'h-[400px]';
                     @endphp

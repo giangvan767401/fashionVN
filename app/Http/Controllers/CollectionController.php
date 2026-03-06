@@ -60,11 +60,7 @@ class CollectionController extends Controller
         $mappedProducts = $dbProducts->map(function ($product) {
             $image = $product->images->firstWhere('is_primary', true) ?? $product->images->first();
             
-            $imageUrl = asset('user/img/default-product.jpg');
-            if ($image) {
-                // If it's already an absolute URL (like http://...), use it directly. Otherwise, wrap it in asset('storage/...')
-                $imageUrl = filter_var($image->url, FILTER_VALIDATE_URL) ? $image->url : asset('storage/' . $image->url);
-            }
+            $imageUrl = $image ? $image->url : asset('user/img/default-product.jpg');
 
             $sizes = [];
             $colors = [];

@@ -38,8 +38,12 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-4">
                                         <div class="w-12 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
-                                            @if($product->images->where('is_primary', true)->first())
-                                                <img src="{{ asset('storage/' . $product->images->where('is_primary', true)->first()->url) }}" 
+                                            @php
+                                                $primaryImg = $product->images->where('is_primary', true)->first();
+                                                $imgUrl = $primaryImg ? $primaryImg->url : '';
+                                            @endphp
+                                            @if($imgUrl)
+                                                <img src="{{ $imgUrl }}" 
                                                      alt="{{ $product->name }}" 
                                                      class="w-full h-full object-cover">
                                             @else

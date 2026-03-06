@@ -9,7 +9,7 @@
     <div class="relative aspect-[3/4] overflow-hidden mb-5 bg-[#f5f5f5]">
         <!-- Image with hover zoom -->
         @if($primaryImage)
-            <img src="{{ asset('storage/' . $primaryImage->url) }}" 
+            <img src="{{ $primaryImage->url }}" 
                  alt="{{ $product->name }}" 
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         @else

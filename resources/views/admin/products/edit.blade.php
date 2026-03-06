@@ -48,7 +48,7 @@
                             <div class="relative aspect-[3/4] rounded-xl" data-img-id="{{ $img->id }}" style="border:1px solid #e5e7eb;">
                                 {{-- Inner image container with overflow-hidden --}}
                                 <div class="absolute inset-0 rounded-xl overflow-hidden">
-                                    <img src="{{ asset('storage/' . $img->url) }}" class="w-full h-full object-cover">
+                                    <img src="{{ $img->url }}" class="w-full h-full object-cover">
                                     @if($img->is_primary)
                                         <div style="position:absolute;bottom:8px;left:8px;right:8px;background:#059669;color:white;font-size:10px;font-weight:700;text-align:center;padding:4px 0;border-radius:6px;">Ảnh chính</div>
                                     @endif
