@@ -5,7 +5,7 @@
     $isNew = $product->created_at->diffInDays(now()) < 7 || $product->is_featured;
 @endphp
 
-<div class="group cursor-pointer">
+<a href="{{ route('product.show', $product->slug) }}" class="group cursor-pointer block">
     <div class="relative aspect-[3/4] overflow-hidden mb-5 bg-[#f5f5f5]">
         <!-- Image with hover zoom -->
         @if($primaryImage)
@@ -27,7 +27,7 @@
 
         <!-- Wishlist Icon -->
         <div class="absolute top-4 right-4">
-            <button class="text-black/30 hover:text-black transition-colors">
+            <button class="text-black/30 hover:text-black transition-colors" onclick="event.preventDefault()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
             </button>
         </div>
@@ -52,7 +52,7 @@
 
         <!-- Color indicator placeholder -->
         <div class="pt-1">
-            <div class="w-1.5 h-1.5 rounded-full bg-black border border-white ring-1 ring-gray-100"></div>
+            <div class="w-1.5 h-1.5 rounded-sm bg-black border border-white ring-1 ring-gray-100"></div>
         </div>
     </div>
-</div>
+</a>

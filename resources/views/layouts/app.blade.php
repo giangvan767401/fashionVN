@@ -62,7 +62,7 @@
                                         $mainCategories = \App\Models\Category::where('is_active', true)->whereNull('parent_id')->orderBy('sort_order')->get();
                                     @endphp
                                     @foreach($mainCategories as $cat)
-                                        <li><a href="{{ route('collection') }}?collections[]={{ $cat->slug }}" class="hover:text-black">{{ $cat->name }}</a></li>
+                                        <li><a href="{{ route('collection') }}?category={{ $cat->id }}" class="hover:text-black">{{ $cat->name }}</a></li>
                                     @endforeach
                                 </ul>
                             </div>

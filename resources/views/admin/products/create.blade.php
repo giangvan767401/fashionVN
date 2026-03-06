@@ -40,27 +40,16 @@
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Ảnh sản phẩm</label>
                         
                         <!-- Image Preview Area -->
-                        <div id="imagePreviewContainer" class="relative group aspect-[3/4] rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden transition-all hover:border-emerald-300">
-                            <div id="placeholderUI" class="text-center px-4 space-y-2">
-                                <div class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:text-emerald-500 transition-colors"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <div id="imagePreviewContainer" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="relative aspect-[3/4] rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-300 transition-all group">
+                                <div class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:text-emerald-500"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                                 </div>
-                                <p class="text-xs font-bold text-gray-500">Kéo thả, chọn file hoặc <span class="text-emerald-600">Dán (Ctrl+V)</span></p>
-                                <p class="text-[10px] text-gray-400">JPG, PNG, WebP (Max 5MB)</p>
-                            </div>
-                            <img id="imagePreview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
-                            <button type="button" id="removeImage" class="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hidden">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                            </button>
+                                <span class="text-[10px] font-bold text-gray-500 text-center px-2">Thêm nhiều ảnh</span>
+                                <input type="file" name="image_files[]" id="imageFileInput" class="hidden" accept="image/*" multiple>
+                            </label>
+                            <!-- Dynamic previews inserted here -->
                         </div>
-
-                        <!-- Hidden Inputs -->
-                        <input type="file" name="image_file" id="imageFileInput" class="hidden" accept="image/*">
-                        <input type="hidden" name="image_paste" id="imagePasteInput">
-                        
-                        <button type="button" onclick="document.getElementById('imageFileInput').click()" class="w-full py-2.5 px-4 bg-gray-50 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-100 transition-all border border-gray-200">
-                            Chọn từ máy tính
-                        </button>
                     </div>
                 </div>
 
@@ -158,7 +147,6 @@
                                 addNewSize() {
                                     const val = this.search.trim().toUpperCase();
                                     if (val !== '') {
-                                        // Check if already in options
                                         const existing = this.options.find(o => o.name.toUpperCase() === val);
                                         if (existing) {
                                             if (!this.selected.includes(existing.id.toString())) {
@@ -170,7 +158,7 @@
                                             }
                                         }
                                         this.search = '';
-                                        this.open = true; // Keep open
+                                        this.open = true;
                                     }
                                 }
                             }">
@@ -179,7 +167,7 @@
                                 <div class="relative" @click.away="open = false">
                                     <button type="button" @click="open = !open" 
                                             class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-left flex items-center justify-between hover:border-emerald-500 transition-all focus:ring-2 focus:ring-emerald-500/10">
-                                        <span x-text="selected.length ? getSelectedNames() : 'Chọn hoặc thêm kích thước (S, M, L...)'" 
+                                        <span x-text="selected.length ? getSelectedNames() : 'Chọn hoặc thêm size (S, M, L...)'" 
                                               class="truncate pr-4" :class="selected.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
                                     </button>
@@ -194,7 +182,6 @@
                                             </div>
                                         </div>
                                         <div class="max-h-60 overflow-y-auto p-2 space-y-1">
-                                            <!-- Show newly added custom sizes that are not in options -->
                                             <template x-for="customSize in selected.filter(s => !options.find(o => o.id.toString() === s))" :key="customSize">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group bg-emerald-600 text-white shadow-md">
                                                     <input type="checkbox" :value="customSize" x-model="selected" class="sr-only">
@@ -205,7 +192,6 @@
                                                 </label>
                                             </template>
 
-                                            <!-- Existing options -->
                                             <template x-for="option in filteredOptions" :key="option.id">
                                                 <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group"
                                                        :class="selected.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
@@ -215,17 +201,97 @@
                                                     </div>
                                                 </label>
                                             </template>
-                                            
-                                            <div x-show="search.trim() !== '' && filteredOptions.length === 0" class="p-3 text-center text-xs text-gray-500">
-                                                Nhấn Enter hoặc nút Thêm để tạo size "<span x-text="search.trim().toUpperCase()" class="font-bold"></span>"
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <template x-for="val in selected" :key="val">
                                     <input type="hidden" name="sizes[]" :value="val">
                                 </template>
-                                @error('sizes') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <!-- Color Selection -->
+                            <div class="space-y-2" x-data="{ 
+                                open: false, 
+                                search: '', 
+                                selected: @js(old('colors', [])).map(id => id.toString()),
+                                options: @js($colors->map(fn($c) => ['id' => $c->id, 'name' => $c->value, 'hex' => $c->color_hex])),
+                                get filteredOptions() {
+                                    if (!this.search) return this.options;
+                                    return this.options.filter(o => o.name.toLowerCase().includes(this.search.toLowerCase()));
+                                },
+                                getSelectedNames() {
+                                    return this.selected.map(id => {
+                                        const opt = this.options.find(o => o.id.toString() === id);
+                                        return opt ? opt.name : id;
+                                    }).join(', ');
+                                },
+                                addNewColor() {
+                                    const val = this.search.trim();
+                                    if (val !== '') {
+                                        const existing = this.options.find(o => o.name.toLowerCase() === val.toLowerCase());
+                                        if (existing) {
+                                            if (!this.selected.includes(existing.id.toString())) {
+                                                this.selected.push(existing.id.toString());
+                                            }
+                                        } else {
+                                            if (!this.selected.includes(val)) {
+                                                this.selected.push(val);
+                                            }
+                                        }
+                                        this.search = '';
+                                        this.open = true;
+                                    }
+                                }
+                            }">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Màu sắc</label>
+                                
+                                <div class="relative" @click.away="open = false">
+                                    <button type="button" @click="open = !open" 
+                                            class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-left flex items-center justify-between hover:border-emerald-500 transition-all focus:ring-2 focus:ring-emerald-500/10">
+                                        <span x-text="selected.length ? getSelectedNames() : 'Chọn hoặc thêm màu sắc...'" 
+                                              class="truncate pr-4" :class="selected.length ? 'text-gray-900 font-medium' : 'text-gray-400'"></span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''"><path d="m6 9 6 6 6-6"/></svg>
+                                    </button>
+
+                                    <div x-show="open" x-transition 
+                                         class="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden animate-fade-in">
+                                        <div class="p-3 border-b border-gray-50 bg-gray-50/50">
+                                            <div class="flex gap-2">
+                                                <input type="text" x-model="search" @keydown.enter.prevent="addNewColor" placeholder="Tìm hoặc nhập màu mới..." 
+                                                       class="w-full bg-white border-gray-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all">
+                                                <button type="button" @click="addNewColor" x-show="search.trim() !== ''" class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all">Thêm</button>
+                                            </div>
+                                        </div>
+                                        <div class="max-h-60 overflow-y-auto p-2 space-y-1">
+                                            <template x-for="customColor in selected.filter(s => !options.find(o => o.id.toString() === s))" :key="customColor">
+                                                <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group bg-emerald-600 text-white shadow-md">
+                                                    <input type="checkbox" :value="customColor" x-model="selected" class="sr-only">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors text-white" x-text="customColor"></span>
+                                                        <span class="text-[10px] italic text-emerald-100">Mới</span>
+                                                    </div>
+                                                </label>
+                                            </template>
+
+                                            <template x-for="option in filteredOptions" :key="option.id">
+                                                <label class="flex flex-col p-3 rounded-xl cursor-pointer transition-all group"
+                                                       :class="selected.includes(option.id.toString()) ? 'bg-emerald-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600'">
+                                                    <input type="checkbox" :value="option.id.toString()" x-model="selected" class="sr-only">
+                                                    <div class="flex items-center justify-between">
+                                                        <span class="text-xs font-bold uppercase tracking-wide transition-colors" x-text="option.name" :class="selected.includes(option.id.toString()) ? 'text-white' : 'group-hover:text-emerald-600'"></span>
+                                                        <template x-if="option.hex">
+                                                            <div class="w-4 h-4 rounded-full border border-gray-200 shadow-sm" :style="'background-color: ' + option.hex"></div>
+                                                        </template>
+                                                    </div>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <template x-for="val in selected" :key="val">
+                                    <input type="hidden" name="colors[]" :value="val">
+                                </template>
+                                @error('colors') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
@@ -233,7 +299,7 @@
                             <label for="description" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Mô tả tóm tắt</label>
                             <textarea name="description" id="description" rows="4" 
                                       class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all placeholder:text-gray-400"
-                                      placeholder="Mô tả chất liệu, phom dáng..."></textarea>
+                                      placeholder="Mô tả chất liệu, phom dáng...">{{ old('description') }}</textarea>
                             @error('description') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                         </div>
 
@@ -255,27 +321,76 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const preview = document.getElementById('imagePreview');
-            const placeholder = document.getElementById('placeholderUI');
             const fileInput = document.getElementById('imageFileInput');
-            const pasteInput = document.getElementById('imagePasteInput');
-            const removeBtn = document.getElementById('removeImage');
+            const container = document.getElementById('imagePreviewContainer');
+            const addBtn = fileInput.parentElement; // the label
+            
+            // DataTransfer object to hold all files to be uploaded
+            let dt = new DataTransfer();
 
-            function showPreview(src) {
-                preview.src = src;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                removeBtn.classList.remove('hidden');
+            function updateFileInput() {
+                fileInput.files = dt.files;
             }
 
-            function clearPreview() {
-                preview.src = "";
-                preview.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                removeBtn.classList.add('hidden');
-                fileInput.value = "";
-                pasteInput.value = "";
+            function addFileToPreview(file, isFirst = false) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'relative aspect-[3/4] rounded-xl overflow-hidden dynamic-preview border border-gray-200 shadow-sm group transition-all hover:scale-[1.02]';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="w-full h-full object-cover">
+                        <div class="primary-label absolute bottom-2 left-2 right-2 bg-emerald-600 text-white text-[10px] font-bold text-center py-1 rounded-lg ${isFirst ? '' : 'hidden'}">Ảnh chính</div>
+                        <button type="button" class="remove-new-img absolute top-1 right-1 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    `;
+                    
+                    // Handle removal
+                    div.querySelector('.remove-new-img').addEventListener('click', function() {
+                        const newDt = new DataTransfer();
+                        let found = false;
+                        for(let i = 0; i < dt.items.length; i++) {
+                            const f = dt.items[i].getAsFile();
+                            if(!found && f.name === file.name && f.size === file.size && f.lastModified === file.lastModified) {
+                                found = true;
+                                continue;
+                            }
+                            newDt.items.add(f);
+                        }
+                        dt = newDt;
+                        updateFileInput();
+                        div.remove();
+                        updatePrimaryLabels();
+                    });
+
+                    // Insert before the add button
+                    container.insertBefore(div, addBtn);
+                    updatePrimaryLabels();
+                }
+                reader.readAsDataURL(file);
             }
+
+            function updatePrimaryLabels() {
+                const previews = container.querySelectorAll('.dynamic-preview');
+                previews.forEach((p, index) => {
+                    const label = p.querySelector('.primary-label');
+                    if (label) {
+                        if (index === 0) label.classList.remove('hidden');
+                        else label.classList.add('hidden');
+                    }
+                });
+            }
+
+            fileInput.addEventListener('change', function(e) {
+                if (this.files) {
+                    Array.from(this.files).forEach((file) => {
+                        dt.items.add(file);
+                        addFileToPreview(file);
+                    });
+                    updateFileInput();
+                    this.value = ''; 
+                }
+            });
 
             // Handle Paste
             window.addEventListener('paste', e => {
@@ -283,59 +398,13 @@
                 for (let i = 0; i < items.length; i++) {
                     if (items[i].type.indexOf('image') !== -1) {
                         const blob = items[i].getAsFile();
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            showPreview(event.target.result);
-                            pasteInput.value = event.target.result;
-                            fileInput.value = ""; // Clear file input if pasted
-                        };
-                        reader.readAsDataURL(blob);
-                        break;
+                        const timestamp = new Date().getTime();
+                        const file = new File([blob], `pasted_image_${timestamp}.png`, { type: blob.type, lastModified: timestamp });
+                        
+                        dt.items.add(file);
+                        addFileToPreview(file);
+                        updateFileInput();
                     }
-                }
-            });
-
-            // Handle File Input
-            fileInput.addEventListener('change', function(e) {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        showPreview(e.target.result);
-                        pasteInput.value = ""; // Clear paste input if file chosen
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-
-            // Remove Image
-            removeBtn.addEventListener('click', e => {
-                e.preventDefault();
-                clearPreview();
-            });
-
-            // Drag and Drop
-            const dropZone = document.getElementById('imagePreviewContainer');
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, e => {
-                    e.preventDefault(); e.stopPropagation();
-                }, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => dropZone.classList.add('border-emerald-500', 'bg-emerald-50/10'), false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-emerald-500', 'bg-emerald-50/10'), false);
-            });
-
-            dropZone.addEventListener('drop', e => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files && files[0]) {
-                    fileInput.files = files;
-                    const event = new Event('change');
-                    fileInput.dispatchEvent(event);
                 }
             });
         });

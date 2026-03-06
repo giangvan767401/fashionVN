@@ -62,7 +62,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->names('categories');
     Route::patch('/categories/{category}/toggle-status', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
 
-    // Quản lý sản phẩm
+    Route::patch('/products/{product}/toggle-status', [\App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names('products');
 });
 

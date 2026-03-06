@@ -11,12 +11,13 @@ class ProductController extends Controller
         // 1. Lấy sản phẩm hiện tại từ DB
         $productModel = \App\Models\Product::with(['images', 'variants.attributeValues', 'collections'])
             ->where('slug', $slug)
+            ->where('is_active', true)
             ->firstOrFail();
 
         // 2. Map sang mảng format cho View
         // Lấy tất cả ảnh, ưu tiên ảnh chính lên đầu, xử lý absolute URL
         $images = $productModel->images->sortByDesc('is_primary')->map(function($img) {
-            return filter_var($img->url, FILTER_VALIDATE_URL) ? $img->url : asset($img->url);
+            return filter_var($img->url, FILTER_VALIDATE_URL) ? $img->url : asset('storage/' . $img->url);
         })->toArray();
         if (empty($images)) {
             $images = [asset('user/img/default-product.jpg')];
@@ -26,15 +27,25 @@ class ProductController extends Controller
         $sizes = [];
         $materialTags = [];
 
+        $sizeGroupId   = \App\Models\AttributeGroup::where('name', 'like', '%Size%')
+                            ->orWhere('name', 'like', '%Kích thước%')
+                            ->value('id');
+        $colorGroupId  = \App\Models\AttributeGroup::where('name', 'like', '%Màu%')
+                            ->orWhere('name', 'like', '%Color%')
+                            ->value('id');
+        $materialGroupId = \App\Models\AttributeGroup::where('name', 'like', '%Chất liệu%')
+                            ->orWhere('name', 'like', '%Material%')
+                            ->value('id');
+
         foreach ($productModel->variants as $variant) {
             foreach ($variant->attributeValues as $attr) {
-                if ($attr->group_id == 1) { // 1: Màu Sắc
+                if ($colorGroupId && $attr->group_id == $colorGroupId) {
                     $colors->push(['name' => $attr->value, 'hex' => $attr->color_hex ?? '#000000']);
                 }
-                if ($attr->group_id == 2) { // 2: Kích Thước
+                if ($sizeGroupId && $attr->group_id == $sizeGroupId) {
                     $sizes[] = $attr->value;
                 }
-                if ($attr->group_id == 3) { // 3: Chất Liệu
+                if ($materialGroupId && $attr->group_id == $materialGroupId) {
                     $materialTags[] = $attr->value;
                 }
             }
@@ -68,6 +79,7 @@ class ProductController extends Controller
         
         $relatedDbProducts = \App\Models\Product::with(['images'])
             ->where('id', '!=', $productModel->id) // Loại trừ sản phẩm đang xem
+            ->where('is_active', true)
             ->whereHas('collections', function($q) use ($collectionIds) {
                 $q->whereIn('collections.id', $collectionIds); 
             })
@@ -79,6 +91,7 @@ class ProductController extends Controller
         if ($relatedDbProducts->count() < 3) {
             $moreProducts = \App\Models\Product::with(['images'])
                 ->where('id', '!=', $productModel->id)
+                ->where('is_active', true)
                 ->whereNotIn('id', $relatedDbProducts->pluck('id'))
                 ->inRandomOrder()
                 ->take(3 - $relatedDbProducts->count())

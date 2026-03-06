@@ -21,7 +21,7 @@
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
         @php
-            $bestSellers = \App\Models\Product::with(['images', 'categories'])->latest()->take(4)->get();
+            $bestSellers = \App\Models\Product::where('is_active', true)->with(['images', 'categories'])->latest()->take(4)->get();
         @endphp
 
         @foreach($bestSellers as $product)
@@ -47,7 +47,7 @@
     </div>
 
     @php
-        $mainCategories = \App\Models\Category::whereNull('parent_id')->with(['products.images'])->take(4)->get();
+        $mainCategories = \App\Models\Category::whereNull('parent_id')->with(['products' => function($q) { $q->where('is_active', true)->with('images'); }])->take(4)->get();
     @endphp
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">

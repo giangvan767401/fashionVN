@@ -17,8 +17,8 @@ class CollectionController extends Controller
         $colors = $request->query('colors', []); // array
         $q = $request->query('q'); // Search query
 
-        // 2. Query từ Database
-        $query = \App\Models\Product::with(['images', 'collections', 'variants.attributeValues', 'categories']);
+        // 2. Query từ Database (chỉ lấy sản phẩm đang bán)
+        $query = \App\Models\Product::where('is_active', true)->with(['images', 'collections', 'variants.attributeValues', 'categories']);
 
         if (!empty($q)) {
             $query->where(function ($qBuilder) use ($q) {

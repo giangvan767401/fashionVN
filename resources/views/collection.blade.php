@@ -44,6 +44,11 @@
                 @if(request()->has('q') && request()->get('q') !== '')
                     <input type="hidden" name="q" value="{{ request('q') }}">
                 @endif
+                @if(request()->has('category'))
+                    @foreach((array)request()->get('category') as $catId)
+                        <input type="hidden" name="category[]" value="{{ $catId }}">
+                    @endforeach
+                @endif
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold font-serif">Filters</h2>
                 </div>
@@ -55,11 +60,13 @@
                     $collectionLabels = ['hang-moi' => 'Hàng Mới', 'ban-chay-nhat' => 'Bán Chạy Nhất'];
                     $materialLabels = ['Cotton' => 'Cotton', 'Linen' => 'Linen', 'Lụa' => 'Lụa'];
                     $colorLabels = ['Đen'=>'Đen','Trắng'=>'Trắng','Be'=>'Be'];
+                    $categoryLabels = \App\Models\Category::pluck('name', 'id')->toArray();
                     foreach((array)request()->query('sort', []) as $v) $activeFilters[] = ['param'=>'sort','value'=>$v,'label'=>$sortLabels[$v]??$v];
                     foreach((array)request()->query('collections', []) as $v) $activeFilters[] = ['param'=>'collections','value'=>$v,'label'=>$collectionLabels[$v]??ucfirst($v)];
                     foreach((array)request()->query('sizes', []) as $v) $activeFilters[] = ['param'=>'sizes','value'=>$v,'label'=>$v];
                     foreach((array)request()->query('materials', []) as $v) $activeFilters[] = ['param'=>'materials','value'=>$v,'label'=>$materialLabels[$v]??ucfirst($v)];
                     foreach((array)request()->query('colors', []) as $v) $activeFilters[] = ['param'=>'colors','value'=>$v,'label'=>$colorLabels[$v]??ucfirst($v)];
+                    foreach((array)request()->query('category', []) as $v) $activeFilters[] = ['param'=>'category','value'=>$v,'label'=>$categoryLabels[$v]??'Category'];
                 @endphp
                 @if(count($activeFilters) > 0)
                 <div class="w-full max-w-[200px] mb-5 border border-gray-200 divide-y divide-gray-200">

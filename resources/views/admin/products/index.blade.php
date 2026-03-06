@@ -67,15 +67,21 @@
                                     <span class="text-sm font-bold text-gray-900">{{ number_format($product->base_price, 0, ',', '.') }}₫</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    @if ($product->is_active)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                            Đang bán
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            Tạm ngưng
-                                        </span>
-                                    @endif
+                                    <form action="{{ route('admin.products.toggle-status', $product) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="focus:outline-none" title="Nhấn để đổi trạng thái">
+                                            @if ($product->is_active)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 hover:bg-emerald-200 transition-colors">
+                                                    Đang bán
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
+                                                    Ngừng bán
+                                                </span>
+                                            @endif
+                                        </button>
+                                    </form>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
