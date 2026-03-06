@@ -53,7 +53,6 @@ class ProductController extends Controller
             'sizes.*' => 'nullable|string|max:100',
             'colors' => 'nullable|array',
             'colors.*' => 'nullable|string|max:100',
-            'quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'image_files' => 'nullable|array',
             'image_files.*' => 'image|max:5120',
