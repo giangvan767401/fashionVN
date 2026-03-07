@@ -164,7 +164,12 @@
             @php
                 $product = $item->variant->product ?? null;
                 $primaryImage = $product?->images->where('is_primary', true)->first() ?? $product?->images->first();
-                $imageUrl = $primaryImage ? asset($primaryImage->url) : asset('user/img/default-product.jpg');
+                $imageUrl = asset('user/img/default-product.jpg');
+                if ($primaryImage) {
+                    $imageUrl = \Illuminate\Support\Str::startsWith($primaryImage->url, 'http') 
+                        ? $primaryImage->url 
+                        : (\Illuminate\Support\Str::startsWith($primaryImage->url, 'images/') ? asset($primaryImage->url) : asset('storage/' . $primaryImage->url));
+                }
                 $size = null; $color = null;
                 foreach ($item->variant->attributeValues as $attr) {
                     $g = mb_strtolower(optional($attr->group)->name ?? '', 'UTF-8');

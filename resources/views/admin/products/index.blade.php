@@ -41,7 +41,12 @@
                                         <div class="w-12 h-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100">
                                             @php
                                                 $primaryImg = $product->images->where('is_primary', true)->first();
-                                                $imgUrl = $primaryImg ? $primaryImg->url : '';
+                                                $imgUrl = '';
+                                                if ($primaryImg) {
+                                                    $imgUrl = \Illuminate\Support\Str::startsWith($primaryImg->url, 'http') 
+                                                        ? $primaryImg->url 
+                                                        : (\Illuminate\Support\Str::startsWith($primaryImg->url, 'images/') ? asset($primaryImg->url) : asset('storage/' . $primaryImg->url));
+                                                }
                                             @endphp
                                             @if($imgUrl)
                                                 <img src="{{ $imgUrl }}" 

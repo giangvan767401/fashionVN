@@ -9,7 +9,12 @@
     <div class="relative aspect-[3/4] overflow-hidden mb-5 bg-[#f5f5f5]">
         <!-- Image with hover zoom -->
         @if($primaryImage)
-            <img src="{{ $primaryImage->url }}" 
+            @php
+                $imgUrl = Str::startsWith($primaryImage->url, 'http') 
+                    ? $primaryImage->url 
+                    : (Str::startsWith($primaryImage->url, 'images/') ? asset($primaryImage->url) : asset('storage/' . $primaryImage->url));
+            @endphp
+            <img src="{{ $imgUrl }}" 
                  alt="{{ $product->name }}" 
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         @else

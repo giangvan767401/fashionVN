@@ -36,10 +36,10 @@
     </div>
 </div>
 
-<!-- Bộ Sưu Tập -->
+<!-- Khám phá sản phẩm (trước đây là Bộ Sưu Tập) -->
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-12">
-        <h1 class="text-3xl font-bold">Bộ Sưu Tập</h1>
+        <h1 class="text-3xl font-bold">Khám phá sản phẩm</h1>
         <a href="{{ route('collection') }}" class="text-sm font-medium hover:underline flex items-center gap-2">
             Khám phá trọn bộ
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -47,15 +47,17 @@
     </div>
 
     @php
-        $mainCategories = \App\Models\Category::whereNull('parent_id')->with(['products' => function($q) { $q->where('is_active', true)->with('images'); }])->take(4)->get();
+        $mainCategories = \App\Models\Category::whereNull('parent_id')
+            ->where('is_active', true)
+            ->take(4)
+            ->get();
     @endphp
 
     <div class="grid grid-cols-2 gap-4">
         @forelse($mainCategories as $category)
             @php
-                $latestProduct = $category->products->last();
-                $bgImage = $latestProduct && $latestProduct->images->where('is_primary', true)->first() 
-                    ? $latestProduct->images->where('is_primary', true)->first()->url
+                $bgImage = $category->image_url 
+                    ? (Str::startsWith($category->image_url, 'http') ? $category->image_url : asset('storage/' . $category->image_url))
                     : asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp');
             @endphp
             <div class="relative group overflow-hidden rounded-sm">

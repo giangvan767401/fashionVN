@@ -15,9 +15,10 @@ class ProductController extends Controller
             ->firstOrFail();
 
         // 2. Map sang mảng format cho View
-        // Lấy tất cả ảnh, ưu tiên ảnh chính lên đầu, xử lý absolute URL
         $images = $productModel->images->sortByDesc('is_primary')->map(function($img) {
-            return $img->url;
+            return \Illuminate\Support\Str::startsWith($img->url, 'http') 
+                ? $img->url 
+                : (\Illuminate\Support\Str::startsWith($img->url, 'images/') ? asset($img->url) : asset('storage/' . $img->url));
         })->toArray();
         if (empty($images)) {
             $images = [asset('user/img/default-product.jpg')];
@@ -102,10 +103,17 @@ class ProductController extends Controller
         $relatedProducts = $relatedDbProducts->map(function($relProd) {
             $img = $relProd->images->firstWhere('is_primary', true) ?? $relProd->images->first();
             
+            $imgUrl = asset('user/img/default-product.jpg');
+            if ($img) {
+                $imgUrl = \Illuminate\Support\Str::startsWith($img->url, 'http') 
+                    ? $img->url 
+                    : (\Illuminate\Support\Str::startsWith($img->url, 'images/') ? asset($img->url) : asset('storage/' . $img->url));
+            }
+
             return [
                 'name' => $relProd->name,
                 'price' => number_format($relProd->sale_price ?? $relProd->base_price, 0, ',', '.') . 'đ',
-                'image' => $img ? $img->url : asset('user/img/default-product.jpg'),
+                'image' => $imgUrl,
                 'slug' => $relProd->slug
             ];
         })->toArray();

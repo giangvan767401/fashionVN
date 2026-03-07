@@ -60,7 +60,12 @@ class CollectionController extends Controller
         $mappedProducts = $dbProducts->map(function ($product) {
             $image = $product->images->firstWhere('is_primary', true) ?? $product->images->first();
             
-            $imageUrl = $image ? $image->url : asset('user/img/default-product.jpg');
+            $imageUrl = asset('user/img/default-product.jpg');
+            if ($image) {
+                $imageUrl = \Illuminate\Support\Str::startsWith($image->url, 'http') 
+                    ? $image->url 
+                    : (\Illuminate\Support\Str::startsWith($image->url, 'images/') ? asset($image->url) : asset('storage/' . $image->url));
+            }
 
             $sizes = [];
             $colors = [];
