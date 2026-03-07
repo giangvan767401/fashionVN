@@ -188,7 +188,7 @@ class CheckoutController extends Controller
             'payment_status' => 'unpaid',
         ]);
 
-        // 3. Create Order Items
+        // 3. Create Order Items and Update Stock
         foreach ($cartItems as $item) {
             $product = $item->variant->product;
             $primaryImage = $product?->images->where('is_primary', true)->first() ?? $product?->images->first();
@@ -204,11 +204,16 @@ class CheckoutController extends Controller
                 'total_price' => $item->unit_price * $item->quantity,
                 'image_url' => $imageUrl,
             ]);
+
+            // 4. Subtract stock quantity
+            $item->variant->decrement('quantity', $item->quantity);
         }
 
-        // 4. Clear Cart
-        $cart->items()->delete();
-        $cart->delete();
+        // 5. Clear Cart
+        if ($cart) {
+            $cart->items()->delete();
+            $cart->delete();
+        }
 
         // 5. Clear Session
         session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee']);

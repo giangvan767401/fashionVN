@@ -64,6 +64,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     Route::patch('/products/{product}/toggle-status', [\App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('products.toggle-status');
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names('products');
+
+    // Quản lý đơn hàng
+    Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
+    Route::patch('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
 });
 
 Route::middleware('auth')->group(function () {
@@ -72,6 +78,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Đơn hàng của tôi
+    Route::get('/profile/orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('profile.orders');
+    Route::get('/profile/orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('profile.orders.show');
+    Route::post('/profile/orders/{id}/cancel', [\App\Http\Controllers\UserOrderController::class, 'cancel'])->name('profile.orders.cancel');
 });
 
 require __DIR__.'/auth.php';
