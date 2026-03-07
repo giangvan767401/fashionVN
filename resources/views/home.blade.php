@@ -16,7 +16,7 @@
 <!-- Sản Phẩm Bán Chạy -->
 <div class="max-w-7xl mx-auto px-4 py-16">
     <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-bold">Bán Chạy Nhất</h2>
+        <h2 class="text-2xl font-bold">Sản Phẩm Mới</h2>
         <a href="{{ route('collection') }}" class="text-sm font-medium underline">Xem Tất Cả</a>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
@@ -33,6 +33,60 @@
                 Sản phẩm đang được cập nhật...
             </div>
         @endif
+    </div>
+</div>
+
+<!-- Bộ Sưu Tập -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="mb-4">
+        <h2 class="text-2xl font-bold text-gray-900">Bộ Sưu Tập</h2>
+    </div>
+
+    <!-- Masonry-style Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Cột Trái -->
+        <div class="flex flex-col gap-4">
+            
+            <!-- Áo Blouse (Top Left) -->
+            <div class="relative group cursor-pointer overflow-hidden aspect-[4/3] md:aspect-auto md:h-[45%]">
+                <img src="{{ asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp') }}" alt="Áo Blouse" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                <div class="absolute bottom-4 right-4 bg-white px-8 py-2 shadow-md">
+                    <span class="text-[11px] font-semibold text-gray-800 tracking-widest uppercase">Áo Blouse</span>
+                </div>
+            </div>
+
+            <!-- Váy Cao Cấp (Bottom Left) -->
+            <div class="relative group cursor-pointer overflow-hidden aspect-[3/4] md:aspect-auto md:h-[55%]">
+                <img src="{{ asset('user/img/collection/Save_The_Date_Dress_Khaki_Lifestyle_Khaki_Main_720x.webp') }}" alt="Váy Cao Cấp" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                <div class="absolute bottom-4 right-4 bg-white px-8 py-2 shadow-md">
+                    <span class="text-[11px] font-semibold text-gray-800 tracking-widest uppercase">Váy Cao Cấp</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Cột Phải -->
+        <div class="flex flex-col gap-4">
+            
+            <!-- Quần Âu (Top Right) -->
+            <div class="relative group cursor-pointer overflow-hidden aspect-[3/4] md:aspect-auto md:h-[65%]">
+                <img src="{{ asset('user/img/collection/P00831921_d1.avif') }}" alt="Quần Âu" class="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700">
+                <div class="absolute bottom-4 left-4 bg-white px-8 py-2 shadow-md">
+                    <span class="text-[11px] font-semibold text-gray-800 tracking-widest uppercase">Quần Âu</span>
+                </div>
+            </div>
+
+            <!-- Áo Dạ (Bottom Right) -->
+            <div class="relative group cursor-pointer overflow-hidden aspect-[4/3] md:aspect-auto md:h-[35%]">
+                <img src="{{ asset('user/img/collection/Moodboard2_71ade389-dc80-49eb-b7e8-1c90a0273a2a_700x.webp') }}" alt="Áo Dạ" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
+                <div class="absolute bottom-4 right-4 bg-white px-8 py-2 shadow-md">
+                    <span class="text-[11px] font-semibold text-gray-800 tracking-widest uppercase">Áo Dạ</span>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 </div>
 
