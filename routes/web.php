@@ -83,6 +83,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('profile.orders');
     Route::get('/profile/orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('profile.orders.show');
     Route::post('/profile/orders/{id}/cancel', [\App\Http\Controllers\UserOrderController::class, 'cancel'])->name('profile.orders.cancel');
+
+    // Đánh giá sản phẩm
+    Route::post('/reviews', [\App\Http\Controllers\UserReviewController::class, 'store'])->name('reviews.store');
 });
 
 require __DIR__.'/auth.php';

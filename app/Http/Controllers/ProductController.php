@@ -122,6 +122,29 @@ class ProductController extends Controller
             ];
         }
 
-        return view('product', compact('product', 'relatedProducts', 'variantMap'));
+        $canReview = false;
+        $userReview = null;
+
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $productId = $productModel->id;
+            
+            $canReview = \App\Models\Order::where('user_id', $user->id)
+                ->where('status', 'completed')
+                ->whereHas('items.variant', function ($query) use ($productId) {
+                    $query->where('product_id', $productId);
+                })
+                ->exists();
+            
+            $userReview = \App\Models\ProductReview::where('user_id', $user->id)
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        $reviews = $productModel->reviews()->with('user')->orderBy('created_at', 'desc')->get();
+        $averageRating = $productModel->average_rating;
+        $totalReviews = $reviews->count();
+
+        return view('product', compact('product', 'relatedProducts', 'variantMap', 'canReview', 'userReview', 'reviews', 'averageRating', 'totalReviews'));
     }
 }

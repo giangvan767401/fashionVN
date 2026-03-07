@@ -45,7 +45,15 @@
             
             <!-- Title & ID -->
             <h1 class="text-3xl font-bold mb-2">{{ $product['name'] }}</h1>
-            <p class="text-sm text-gray-500 mb-4">Mã SP: {{ $product['id'] }}</p>
+            
+            <div class="flex items-center gap-4 mb-4 mt-2">
+                <p class="text-sm text-gray-500">Mã SP: {{ $product['id'] }}</p>
+                <div class="flex items-center gap-1 cursor-pointer" onclick="document.getElementById('reviews').scrollIntoView({behavior: 'smooth'})">
+                    <span class="text-amber-400 text-lg leading-none mt-[1px]">★</span>
+                    <span class="text-sm font-bold text-gray-900">{{ number_format($averageRating, 1) }}</span>
+                    <span class="text-sm text-gray-500 underline underline-offset-2">({{ $totalReviews }} đánh giá)</span>
+                </div>
+            </div>
             
             <!-- Price -->
             <div class="inline-block border border-gray-300 px-4 py-2 text-2xl font-bold mb-6">{{ $product['price'] }}</div>
@@ -207,6 +215,122 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Reviews -->
+    <div id="reviews" class="max-w-[1440px] px-4 md:px-8 mx-auto mt-16 mb-20 border-t border-gray-200 pt-16">
+        <h2 class="text-2xl font-bold mb-8 uppercase tracking-wide">Đánh Giá Sản Phẩm</h2>
+        
+        <div class="flex flex-col md:flex-row gap-12">
+            <!-- Review Summary & Form -->
+            <div class="w-full md:w-1/3">
+                <div class="mb-8">
+                    <div class="text-5xl font-black text-gray-900 mb-2">{{ number_format($averageRating, 1) }}<span class="text-2xl text-gray-400 font-normal">/5</span></div>
+                    <div class="flex text-amber-400 text-xl mb-2">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= round($averageRating))
+                                ★
+                            @else
+                                <span class="text-gray-200">★</span>
+                            @endif
+                        @endfor
+                    </div>
+                    <p class="text-sm text-gray-500">Dựa trên {{ $totalReviews }} đánh giá</p>
+                </div>
+
+                @if(session('success'))
+                    <div class="mb-4 p-4 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100 text-sm font-medium">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if(session('error'))
+                    <div class="mb-4 p-4 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 text-sm font-medium">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if($canReview)
+                    <div class="bg-gray-50 p-6 rounded-2xl">
+                        <h3 class="font-bold text-lg mb-4">{{ $userReview ? 'Cập nhật đánh giá của bạn' : 'Viết đánh giá' }}</h3>
+                        <form action="{{ route('reviews.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product['product_id'] }}">
+                            
+                            <div class="mb-4">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Đánh giá sao</label>
+                                <div class="flex flex-row-reverse justify-end gap-1 star-rating mb-2">
+                                    @for($i = 5; $i >= 1; $i--)
+                                        <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}" class="hidden" {{ ($userReview && $userReview->rating == $i) ? 'checked' : ($i==5 && !$userReview ? 'checked' : '') }}>
+                                        <label for="star{{ $i }}" class="text-3xl text-gray-300 cursor-pointer transition-colors">★</label>
+                                    @endfor
+                                </div>
+                                <style>
+                                    .star-rating label:hover,
+                                    .star-rating label:hover ~ label,
+                                    .star-rating input:checked ~ label { color: #fbbf24 !important; }
+                                </style>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Bình luận</label>
+                                <textarea name="comment" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:outline-none text-sm" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm...">{{ $userReview ? $userReview->body : '' }}</textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-colors">
+                                {{ $userReview ? 'Cập Nhật' : 'Gửi Đánh Giá' }}
+                            </button>
+                        </form>
+                    </div>
+                @elseif(!Auth::check())
+                    <div class="bg-gray-50 p-6 rounded-2xl text-center">
+                        <p class="text-gray-600 mb-4 text-sm">Vui lòng đăng nhập để đánh giá sản phẩm.</p>
+                        <a href="{{ route('login') }}" class="inline-block border border-gray-900 text-gray-900 px-6 py-2 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors text-sm">Đăng nhập</a>
+                    </div>
+                @else
+                    <div class="bg-gray-50 p-6 rounded-2xl">
+                        <p class="text-gray-600 text-sm">Bạn chỉ có thể đánh giá sau khi đã mua và nhận sản phẩm này.</p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Review List -->
+            <div class="w-full md:w-2/3">
+                @if($reviews->isEmpty())
+                    <div class="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl">
+                        Chưa có đánh giá nào. Hãy là người đầu tiên nhận xét về sản phẩm này!
+                    </div>
+                @else
+                    <div class="space-y-6">
+                        @foreach($reviews as $review)
+                            <div class="border-b border-gray-100 pb-6 last:border-0">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="font-bold text-gray-900">{{ $review->user->full_name ?? $review->user->name }}</div>
+                                    <div class="text-xs text-gray-400">{{ $review->created_at->format('d/m/Y') }}</div>
+                                </div>
+                                <div class="flex text-amber-400 text-sm mb-3">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $review->rating)
+                                            ★
+                                        @else
+                                            <span class="text-gray-200">★</span>
+                                        @endif
+                                    @endfor
+                                    @if($review->is_verified)
+                                        <span class="ml-3 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                                            Đã mua hàng
+                                        </span>
+                                    @endif
+                                </div>
+                                @if($review->body)
+                                    <p class="text-gray-600 text-sm leading-relaxed">{{ $review->body }}</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
     </div>

@@ -41,4 +41,14 @@ class Product extends Model
     {
         return $this->variants->sum('quantity');
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->where('status', 'approved')->avg('rating') ?? 0, 1);
+    }
 }
