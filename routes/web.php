@@ -25,18 +25,18 @@ Route::post('/cart/update/{id}', [\App\Http\Controllers\CartController::class, '
 Route::delete('/cart/remove/{id}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
 
 // Thanh toán
-Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'info'])->middleware('auth')->name('checkout');
-Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'storeInfo'])->middleware('auth')->name('checkout.store_info');
-Route::get('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'shipping'])->middleware('auth')->name('checkout.shipping');
-Route::post('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'storeShipping'])->middleware('auth')->name('checkout.store_shipping');
-Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'payment'])->middleware('auth')->name('checkout.payment');
-Route::post('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'storePayment'])->middleware('auth')->name('checkout.store_payment');
-Route::get('/checkout/success/{id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->middleware('auth')->name('checkout.success');
+Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'info'])->middleware(['auth', 'verified'])->name('checkout');
+Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'storeInfo'])->middleware(['auth', 'verified'])->name('checkout.store_info');
+Route::get('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'shipping'])->middleware(['auth', 'verified'])->name('checkout.shipping');
+Route::post('/checkout/shipping', [\App\Http\Controllers\CheckoutController::class, 'storeShipping'])->middleware(['auth', 'verified'])->name('checkout.store_shipping');
+Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'payment'])->middleware(['auth', 'verified'])->name('checkout.payment');
+Route::post('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'storePayment'])->middleware(['auth', 'verified'])->name('checkout.store_payment');
+Route::get('/checkout/success/{id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->middleware(['auth', 'verified'])->name('checkout.success');
 
 // Yêu thích
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->middleware('auth');
-Route::delete('/wishlist/remove/{variantId}', [WishlistController::class, 'remove'])->name('wishlist.remove')->middleware('auth');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->middleware(['auth', 'verified']);
+Route::delete('/wishlist/remove/{variantId}', [WishlistController::class, 'remove'])->name('wishlist.remove')->middleware(['auth', 'verified']);
 
 // Các trang tĩnh
 Route::get('/mission', [PageController::class, 'mission'])->name('page.mission');
@@ -83,7 +83,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/info', [ProfileController::class, 'editInfo'])->name('profile.info');
     Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.password');

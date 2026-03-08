@@ -45,6 +45,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        return redirect(route('login'))->with('status', 'Đăng ký thành công! Vui lòng đăng nhập.');
+        // Let Laravel handle login immediately if verification is active, 
+        // Auth flow will handle verification notice appropriately.
+        Auth::login($user);
+
+        return redirect(route('dashboard', absolute: false));
     }
 }
