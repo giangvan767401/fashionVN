@@ -51,10 +51,10 @@
     <aside class="sidebar flex flex-col transition-all duration-300">
         <!-- Brand -->
         <div class="p-6 flex items-center gap-3">
-            <div class="w-8 h-8 bg-[#10b981] rounded-lg flex items-center justify-center text-white font-bold">A</div>
+            <div class="w-8 h-8 bg-[#10b981] rounded-lg flex items-center justify-center text-white font-bold">L</div>
             <div class="flex flex-col">
-                <span class="text-white font-bold text-lg leading-tight uppercase tracking-wider">Apex</span>
-                <span class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Dashboard</span>
+                <span class="text-white font-bold text-lg leading-tight uppercase tracking-wider">Lumiere</span>
+                <span class="text-gray-500 text-[10px] uppercase font-bold tracking-widest">women clothing</span>
             </div>
         </div>
 
@@ -67,7 +67,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
                         <span class="text-sm font-medium italic">Dashboard</span>
                     </a>
-                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                    <a href="{{ route('admin.analytics') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('admin.analytics') ? 'sidebar-item-active text-[#10b981]' : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                         <span class="text-sm font-medium">Analytics</span>
                     </a>
@@ -126,14 +126,9 @@
         <!-- Header -->
         <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-30 flex-shrink-0">
             <div class="flex items-center gap-4 w-1/3">
-                <div class="relative w-full max-w-xs group">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 group-focus-within:text-[#10b981]">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    </span>
-                    <input type="text" placeholder="Search anything..." class="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-[#10b981]/10 transition-all">
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-3">
-                        <kbd class="px-1.5 py-0.5 text-[10px] font-bold text-gray-400 border border-gray-200 rounded-md">⌘K</kbd>
-                    </span>
+                <div class="text-sm font-medium text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Hôm nay: {{ \Carbon\Carbon::now()->format('d/m/Y') }}
                 </div>
             </div>
 
