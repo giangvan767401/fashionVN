@@ -87,10 +87,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/orders', [\App\Http\Controllers\UserOrderController::class, 'index'])->name('profile.orders');
     Route::get('/profile/orders/{id}', [\App\Http\Controllers\UserOrderController::class, 'show'])->name('profile.orders.show');
     Route::post('/profile/orders/{id}/cancel', [\App\Http\Controllers\UserOrderController::class, 'cancel'])->name('profile.orders.cancel');
+    Route::post('/profile/orders/{id}/confirm-received', [\App\Http\Controllers\UserOrderController::class, 'confirmReceived'])->name('profile.orders.confirm-received');
 
     // Đánh giá sản phẩm
     Route::post('/reviews', [\App\Http\Controllers\UserReviewController::class, 'store'])->name('reviews.store');
+
+    // Thông báo
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'readAll'])->name('notifications.read-all');
 });
 
 require __DIR__.'/auth.php';
-

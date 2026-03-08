@@ -35,6 +35,7 @@
                                     'pending' => 'Đang xử lý',
                                     'shipped' => 'Đang giao hàng',
                                     'completed' => 'Đã giao hàng',
+                                    'finished' => 'Hoàn thành',
                                     'cancelled' => 'Đã hủy',
                                     'delivery_failed' => 'Giao hàng không thành công',
                                 ];
@@ -42,6 +43,7 @@
                                     'pending' => 'text-amber-600',
                                     'shipped' => 'text-sky-600',
                                     'completed' => 'text-emerald-600',
+                                    'finished' => 'text-violet-600',
                                     'cancelled' => 'text-rose-600',
                                     'delivery_failed' => 'text-rose-600',
                                 ];
@@ -56,12 +58,13 @@
                                 $progress = match($order->status) {
                                     'pending' => 25,
                                     'shipped' => 60,
-                                    'completed' => 100,
+                                    'completed' => 85,
+                                    'finished' => 100,
                                     'cancelled' => 0,
                                     'delivery_failed' => 0,
                                     default => 10,
                                 };
-                                $progressColor = in_array($order->status, ['cancelled', 'delivery_failed']) ? 'bg-rose-500' : 'bg-[#61715B]';
+                                $progressColor = in_array($order->status, ['cancelled', 'delivery_failed']) ? 'bg-rose-500' : ($order->status === 'finished' ? 'bg-violet-500' : 'bg-[#61715B]');
                             @endphp
                             <div class="absolute inset-y-0 left-0 {{ $progressColor }} rounded-full transition-all duration-1000" style="width: {{ $progress }}%"></div>
                         </div>
@@ -79,6 +82,30 @@
                                         Hủy đơn hàng
                                     </button>
                                 </form>
+                            </div>
+                        @endif
+
+                        @if($order->status == 'completed')
+                            <div class="mt-8 pt-6 border-t border-gray-50">
+                                <p class="text-xs text-gray-500 mb-4 font-medium">Bạn đã nhận được hàng chưa?</p>
+                                <div class="flex flex-wrap gap-3">
+                                    <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="action" value="received">
+                                        <button type="submit" class="px-5 py-2.5 text-white rounded-xl text-sm font-bold active:scale-95 transition-all flex items-center gap-2" style="background-color:#61715B;" onmouseover="this.style.backgroundColor='#4A5845'" onmouseout="this.style.backgroundColor='#61715B'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            Đã nhận hàng
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" onsubmit="return confirm('Bạn xác nhận chưa nhận được hàng?')">
+                                        @csrf
+                                        <input type="hidden" name="action" value="not_received">
+                                        <button type="submit" class="px-5 py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 active:scale-95 transition-all flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            Chưa nhận được hàng
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         @endif
                     </div>

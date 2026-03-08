@@ -39,6 +39,7 @@
                                                 'pending' => 'Đang xử lý',
                                                 'shipped' => 'Đang giao hàng',
                                                 'completed' => 'Đã giao hàng',
+                                                'finished' => 'Hoàn thành',
                                                 'cancelled' => 'Đã hủy',
                                                 'delivery_failed' => 'Giao hàng thất bại',
                                             ];
@@ -46,6 +47,7 @@
                                                 'pending' => 'text-amber-600 bg-amber-50 border-amber-100',
                                                 'shipped' => 'text-sky-600 bg-sky-50 border-sky-100',
                                                 'completed' => 'text-emerald-600 bg-emerald-50 border-emerald-100',
+                                                'finished' => 'text-violet-600 bg-violet-50 border-violet-100',
                                                 'cancelled' => 'text-rose-600 bg-rose-50 border-rose-100',
                                                 'delivery_failed' => 'text-rose-600 bg-rose-50 border-rose-100',
                                             ];

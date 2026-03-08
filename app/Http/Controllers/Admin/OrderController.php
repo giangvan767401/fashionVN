@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -60,6 +61,7 @@ class OrderController extends Controller
                     'pending' => 'Cho xu ly',
                     'shipped' => 'Dang giao',
                     'completed' => 'Da giao',
+                    'finished' => 'Hoan thanh',
                     'cancelled' => 'Da huy',
                     'delivery_failed' => 'Giao hang that bai',
                 ];
@@ -101,11 +103,24 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,shipped,completed,cancelled,delivery_failed'
+            'status' => 'required|in:pending,shipped,completed,finished,cancelled,delivery_failed'
         ]);
 
-        $order = Order::findOrFail($id);
+        $order = Order::with('user')->findOrFail($id);
         $order->update(['status' => $request->status]);
+
+        // Gửi thông báo cho user khi đơn được chuyển sang "Đã giao"
+        if ($request->status === 'completed' && $order->user) {
+            Notification::create([
+                'user_id'    => $order->user->id,
+                'type'       => 'order_delivered',
+                'title'      => 'Đơn hàng đã được giao',
+                'body'       => 'Đơn hàng #' . $order->order_number . ' đã được giao đến bạn. Vui lòng xác nhận nhận hàng.',
+                'action_url' => '/profile/orders/' . $order->id,
+                'is_read'    => 0,
+                'created_at' => now(),
+            ]);
+        }
 
         return back()->with('success', 'Trạng thái đơn hàng đã được cập nhật.');
     }
@@ -114,7 +129,7 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
 
-        if (!in_array($order->status, ['completed', 'cancelled', 'delivery_failed'])) {
+        if (!in_array($order->status, ['completed', 'finished', 'cancelled', 'delivery_failed'])) {
             return back()->with('error', 'Chỉ có thể xóa đơn hàng đã hoàn thành, đã hủy hoặc giao không thành công.');
         }
 

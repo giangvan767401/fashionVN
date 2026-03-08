@@ -129,6 +129,7 @@
                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                             <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Đang giao</option>
                             <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Đã giao</option>
+                            <option value="finished" {{ $order->status == 'finished' ? 'selected' : '' }}>Hoàn thành</option>
                             <option value="delivery_failed" {{ $order->status == 'delivery_failed' ? 'selected' : '' }}>Giao hàng thất bại</option>
                         </select>
                     </div>

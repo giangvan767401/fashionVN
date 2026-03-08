@@ -43,7 +43,9 @@
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                         <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Đang giao</option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Đã giao</option>
+                        <option value="finished" {{ request('status') == 'finished' ? 'selected' : '' }}>Hoàn thành</option>
                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                        <option value="delivery_failed" {{ request('status') == 'delivery_failed' ? 'selected' : '' }}>Giao hàng thất bại</option>
                     </select>
                 </form>
             </div>
@@ -104,6 +106,7 @@
                                         'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
                                         'shipped' => 'bg-sky-50 text-sky-600 border-sky-100',
                                         'completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        'finished' => 'bg-violet-50 text-violet-600 border-violet-100',
                                         'cancelled' => 'bg-rose-50 text-rose-600 border-rose-100',
                                         'delivery_failed' => 'bg-rose-50 text-rose-600 border-rose-100',
                                     ];
@@ -111,6 +114,7 @@
                                         'pending' => 'Chờ xử lý',
                                         'shipped' => 'Đang giao',
                                         'completed' => 'Đã giao',
+                                        'finished' => 'Hoàn thành',
                                         'cancelled' => 'Đã hủy',
                                         'delivery_failed' => 'Giao hàng thất bại',
                                     ];

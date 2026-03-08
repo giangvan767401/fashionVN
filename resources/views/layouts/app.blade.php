@@ -294,6 +294,58 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Bell Notification Icon --}}
+                @php
+                    $unreadNotifications = \App\Models\Notification::where('user_id', Auth::id())
+                        ->where('is_read', 0)
+                        ->latest('created_at')
+                        ->take(10)
+                        ->get();
+                    $unreadCount = $unreadNotifications->count();
+                @endphp
+                <div class="relative" id="bellMenuWrapper">
+                    <button id="bellMenuBtn" onclick="toggleBellMenu(event)" aria-label="Thông báo" class="hover:text-gray-600 relative flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        @if($unreadCount > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1" style="line-height:1;">
+                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <div id="bellDropdown" class="hidden absolute right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden" style="width:340px;">
+                        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-50">
+                            <p class="font-bold text-gray-900 text-sm">Thông báo</p>
+                            @if($unreadCount > 0)
+                                <form action="{{ route('notifications.read-all') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-gray-400 hover:text-gray-700 transition-colors font-medium">Đánh dấu tất cả đã đọc</button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                            @forelse($unreadNotifications as $notification)
+                                    <a href="{{ $notification->action_url }}"
+                                       class="flex items-start gap-3 px-5 py-4 hover:bg-gray-50 transition-colors block">
+                                        <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background-color:#e8f0e8;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#61715B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 leading-snug">{{ $notification->body }}</p>
+                                            <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <div class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 mt-2"></div>
+                                    </a>
+                            @empty
+                                <div class="px-5 py-10 text-center text-gray-400 text-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto mb-3 opacity-40"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                    Không có thông báo mới
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
             @else
                 <a href="{{ route('login') }}" class="text-sm font-medium text-gray-700 hover:text-black transition-colors">
                     Đăng nhập
@@ -313,6 +365,7 @@
             </button>
         </div>
     </header>
+
 
     @if (Request::is('/') || Request::is('register') || Request::is('login'))
     <div class="bg-[#3D4B41] text-white text-xs w-full text-center py-2 absolute top-16 z-40">
@@ -511,14 +564,14 @@
     <script>
         // ... Click outside to close megamenus
         document.addEventListener('click', function(event) {
-            const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5', 'accountDropdown'];
-            const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5', 'accountMenuBtn'];
+            const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5', 'accountDropdown', 'bellDropdown'];
+            const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5', 'accountMenuBtn', 'bellMenuBtn'];
             
             menuIds.forEach((mId, index) => {
                 const menu = document.getElementById(mId);
                 const btn = document.getElementById(btnIds[index]);
                 if (menu && !menu.classList.contains('hidden')) {
-                    if (!menu.contains(event.target) && !btn.contains(event.target)) {
+                    if (!menu.contains(event.target) && btn && !btn.contains(event.target)) {
                         menu.classList.add('hidden');
                     }
                 }
@@ -584,6 +637,13 @@
         function closeAccountMenu() {
             const dropdown = document.getElementById('accountDropdown');
             if (dropdown) dropdown.classList.add('hidden');
+        }
+
+        // Bell Notification Handlers
+        function toggleBellMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('bellDropdown');
+            dropdown.classList.toggle('hidden');
         }
 
         document.addEventListener('keydown', function(e) {
