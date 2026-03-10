@@ -38,7 +38,7 @@
 
     <!-- Navbar -->
     <header class="fixed top-0 left-0 right-0 h-16 bg-[#FDFBF7] shadow-sm z-50 flex items-center justify-between px-8">
-        <div class="flex items-center">
+        <div class="flex items-center flex-1">
             <a href="{{ url('/') }}" class="text-2xl font-bold tracking-tight">Lumiere</a>
             <span class="text-[10px] ml-1 mt-2 text-gray-500">women clothing</span>
         </div>
@@ -110,22 +110,53 @@
                 <button type="button" id="megaMenuBtn2" onclick="document.getElementById('megaMenu2').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Hàng Mới</button>
                 <div id="megaMenu2" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
                     <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between">
+                        <!-- Columns 1-2: Text Links -->
                         <div class="flex space-x-16">
+                            <!-- Danh Mục -->
                             <div>
                                 <h3 class="font-medium text-black mb-6">Danh Mục</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
-                                    <li><a href="{{ route('collection') }}" class="hover:text-black">Xem Tất Cả</a></li>
-                                    <li><a href="#" class="hover:text-black">Blouses & Áo</a></li>
-                                    <li><a href="#" class="hover:text-black">Áo Thun</a></li>
+                                    <li><a href="{{ route('collection') }}?collections[]=hang-moi" class="hover:text-black">Tất Cả Hàng Mới</a></li>
+                                    @php
+                                        // Sử dụng lại $mainCategories đã query ở trên
+                                    @endphp
+                                    @foreach($mainCategories as $cat)
+                                        <li><a href="{{ route('collection') }}?category={{ $cat->id }}&collections[]=hang-moi" class="hover:text-black">{{ $cat->name }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <!-- Xu Hướng -->
+                            <div>
+                                <h3 class="font-medium text-black mb-6">Xu Hướng</h3>
+                                <ul class="space-y-4 text-[14px] text-gray-600">
+                                    <li><a href="#" class="hover:text-black">Trang Phục Văn Phòng</a></li>
+                                    <li><a href="#" class="hover:text-black">Mùa Lễ Hội</a></li>
+                                    <li><a href="#" class="hover:text-black">Dạo Phố Cuối Tuần</a></li>
                                 </ul>
                             </div>
                         </div>
+                        
+                        <!-- Columns 3-5: 3 Images Column side by side -->
                         <div class="flex space-x-6">
-                            <div class="w-64">
-                                <div class="relative aspect-[1/2] overflow-hidden mb-3">
-                                    <img src="{{ asset('user/img/Wind-Down-Dress-Coconut-Half_1400x.webp') }}" alt="Bộ Sưu Tập" class="w-full h-full object-cover">
-                                </div>
-                                <h3 class="text-sm font-medium">Bộ Sưu Tập Mùa Thu</h3>
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/Wind-Down-Dress-Coconut-Half_1400x.webp') }}" alt="Bộ Sưu Tập Mùa Thu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Bộ Sưu Tập Mùa Thu</h3>
+                            </div>
+                            
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp') }}" alt="Blouses" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Blouses</h3>
+                            </div>
+
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/collection/Save_The_Date_Dress_Khaki_Lifestyle_Khaki_Main_720x.webp') }}" alt="Váy" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Váy</h3>
                             </div>
                         </div>
                     </div>
@@ -136,35 +167,136 @@
                 <button type="button" id="megaMenuBtn5" onclick="document.getElementById('megaMenu5').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Modiweek</button>
                 <!-- Mega Menu Dropdown -->
                 <div id="megaMenu5" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
-                    <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between">
-                        <div class="flex space-x-16">
-                            <div>
-                                <h3 class="font-medium text-black mb-6">Phong Cách Mỗi Ngày</h3>
+                    <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between gap-8">
+                        <div class="flex space-x-16 min-w-[300px]">
+                            <div class="flex-1">
+                                <h3 class="font-medium text-black mb-6 whitespace-nowrap">Phong Cách Mỗi Ngày</h3>
                                 <ul class="space-y-4 text-[14px] text-gray-600">
-                                    <li><a href="#" class="hover:text-black">Thứ Hai</a></li>
-                                    <li><a href="#" class="hover:text-black">Thứ Ba</a></li>
-                                    <li><a href="#" class="hover:text-black">Thứ Tư</a></li>
-                                    <li><a href="#" class="hover:text-black">Thứ Năm</a></li>
-                                    <li><a href="#" class="hover:text-black">Thứ Sáu</a></li>
-                                    <li><a href="#" class="hover:text-black">Thứ Bảy</a></li>
-                                    <li><a href="#" class="hover:text-black">Chủ Nhật</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Thứ Hai</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Thứ Ba</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Thứ Tư</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Thứ Năm</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Thứ Sáu</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Thứ Bảy</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Chủ Nhật</a></li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="flex space-x-6">
-                            <div class="w-64">
-                                <div class="relative aspect-[4/5] overflow-hidden mb-3">
-                                    <img src="{{ asset('user/img/modiweek/1.webp') }}" alt="Thứ Hai" class="w-full h-full object-cover">
-                                </div>
-                                <h3 class="text-sm font-medium">Thứ Hai Năng Động</h3>
+                        <!-- Images Column section: 3 side-by-side images -->
+                        <div class="flex space-x-6 flex-1 justify-end max-w-[800px]">
+                            <!-- Column 1 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/modiweek/1.webp') }}" alt="Thứ Hai" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Thứ Hai Năng Động</h3>
+                            </div>
+                            <!-- Column 2 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/modiweek/2.webp') }}" onerror="this.src='{{ asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp') }}'" alt="Thứ Ba" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Thứ Ba Thanh Lịch</h3>
+                            </div>
+                            <!-- Column 3 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/modiweek/3.webp') }}" onerror="this.src='{{ asset('user/img/collection/Save_The_Date_Dress_Khaki_Lifestyle_Khaki_Main_720x.webp') }}'" alt="Thứ Tư" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Thứ Tư Nổi Bật</h3>
+                            </div>
+                            <!-- Column 4 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/modiweek/4.webp') }}" onerror="this.src='{{ asset('user/img/collection/1.jpg') }}'" alt="Thứ Năm" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Thứ Năm Hiện Đại</h3>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <a href="{{ route('collection') }}" class="hover:text-black py-4 flex items-center">Kích Thước</a>
-            <a href="{{ route('page.sustainability') }}" class="hover:text-black py-4 flex items-center">Sản Phẩm Xanh</a>
+            <div class="h-full flex items-center">
+                <button type="button" id="megaMenuBtn4" onclick="document.getElementById('megaMenu4').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Kích Thước</button>
+                <!-- Mega Menu Dropdown -->
+                <div id="megaMenu4" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
+                    <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between gap-8">
+                        <div class="flex space-x-16 min-w-[300px]">
+                            <div class="flex-1">
+                                <h3 class="font-medium text-black mb-6 whitespace-nowrap">Danh Mục</h3>
+                                <ul class="space-y-4 text-[14px] text-gray-600">
+                                    <li><a href="{{ route('collection') }}" class="hover:text-black whitespace-nowrap">Xem Tất Cả</a></li>
+                                    @php
+                                        // Sử dụng lại $mainCategories đã query ở trên
+                                    @endphp
+                                    @foreach($mainCategories as $cat)
+                                        <li><a href="{{ route('collection') }}?category={{ $cat->id }}" class="hover:text-black whitespace-nowrap">{{ $cat->name }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex space-x-6 flex-1 justify-end max-w-[800px]">
+                            <!-- Column 1 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/size/1.webp') }}" onerror="this.src='{{ asset('user/img/scale_1200.jpg') }}'" alt="Quần Tây" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Sơ Mi</h3>
+                            </div>
+                            <!-- Column 2 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/size/2.webp') }}" onerror="this.src='{{ asset('user/img/Something-Borrowed-Shirt-Black-Half_1400x.webp') }}'" alt="Váy" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Quần Tây</h3>
+                            </div>
+                            <!-- Column 3 -->
+                            <div class="w-48 flex flex-col">
+                                <a href="#" class="group relative aspect-[1/2] overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/size/3.webp') }}" onerror="this.src='{{ asset('user/img/Wind-Down-Dress-Coconut-Half_1400x.webp') }}'" alt="Blouses" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <h3 class="text-xs font-medium text-gray-800">Váy</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="h-full flex items-center">
+                <button type="button" id="megaMenuBtn6" onclick="document.getElementById('megaMenu6').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Sản Phẩm Xanh</button>
+                <!-- Mega Menu Dropdown -->
+                <div id="megaMenu6" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
+                    <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between gap-8">
+                        <div class="flex space-x-16 min-w-[300px]">
+                            <div class="flex-1">
+                                <h3 class="font-medium text-black mb-6 whitespace-nowrap">Sản Phẩm Xanh</h3>
+                                <ul class="space-y-4 text-[14px] text-gray-600">
+                                    <li><a href="{{ route('page.sustainability') }}" class="hover:text-black whitespace-nowrap">Sứ Mệnh</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Đang Xử Lý</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Chất Liệu</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Bao Bì</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Chăm Sóc Sản Phẩm</a></li>
+                                    <li><a href="#" class="hover:text-black whitespace-nowrap">Nhà Cung Ứng</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex space-x-6 flex-1 justify-end max-w-[800px]">
+                            <!-- Column 1 (Large Image) -->
+                            <div class="w-72 flex flex-col">
+                                <a href="#" class="group relative aspect-square overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/Sustainability.png') }}" onerror="this.src='{{ asset('user/img/collection/1.jpg') }}'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                            </div>
+                            <!-- Column 2 (Large Image) -->
+                            <div class="w-72 flex flex-col">
+                                <a href="#" class="group relative aspect-square overflow-hidden bg-gray-100 flex-1 mb-3">
+                                    <img src="{{ asset('user/img/collection/Lifestyle_Detail_Something_Tailored_Shirt_White_1400x.webp') }}" onerror="this.src='{{ asset('user/img/collection/1.jpg') }}'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </nav>
 
         <!-- Search Overlay (Full Screen Premium) -->
@@ -252,7 +384,7 @@
         </style>
 
 
-        <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-6 flex-1 justify-end">
             <button aria-label="Search" onclick="openSearch()" class="hover:text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>

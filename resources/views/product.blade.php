@@ -342,31 +342,39 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
         
         @foreach($relatedProducts as $related)
-        <div class="product-card group cursor-pointer" onclick="window.location.href='{{ route('product.show', $related['slug']) }}'">
-            <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#f3f3f3] mb-4 flex items-center justify-center">
+        <div class="product-card group cursor-pointer flex flex-col" onclick="window.location.href='{{ route('product.show', $related['slug']) }}'">
+            <div class="relative w-full aspect-[3/4] overflow-hidden bg-[#EAE8E4] mb-4">
                 <img src="{{ $related['image'] }}" alt="{{ $related['name'] }}" 
-                     class="max-w-[95%] max-h-[95%] object-contain transition-transform duration-500 group-hover:scale-105">
+                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 
-                <button class="absolute top-4 right-4 text-gray-400 group-hover:text-black hover:!text-red-500 transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                </button>
+                <!-- NEW Badge -->
+                <div class="absolute top-4 left-4 text-[10px] font-bold tracking-widest text-black uppercase">
+                    NEW
+                </div>
 
-                <!-- Quick Add Action -->
-                <button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-black font-medium px-6 py-3 w-[85%] opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-black hover:text-white shadow-lg text-sm uppercase tracking-wide">
-                    Thêm Nhanh
+                <!-- Heart Icon -->
+                <button class="absolute top-3 right-3 text-black transition-transform hover:scale-110 p-2 focus:outline-none z-10" onclick="event.stopPropagation();">
+                    <svg width="22" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
                 </button>
             </div>
             
-            <div class="flex flex-col px-4">
-                <h3 class="font-bold text-sm md:text-base uppercase leading-tight group-hover:underline underline-offset-4">{{ $related['name'] }}</h3>
-                <div class="flex justify-between items-start mt-0.5"> 
-                    <p class="text-gray-500 text-xs md:text-sm leading-tight line-clamp-1"></p>
-                    <span class="font-bold text-sm md:text-base ml-2 whitespace-nowrap">{{ $related['price'] }}</span>
+            <div class="flex flex-col px-1 flex-1">
+                <!-- Title & Price Row -->
+                <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-[14px] text-gray-900 leading-tight group-hover:underline pr-2 line-clamp-1">{{ $related['name'] }}</h3>
+                    <span class="font-bold text-[14px] text-gray-900 ml-auto whitespace-nowrap">{{ $related['price'] }}</span>
                 </div>
-                <div class="flex gap-2 mt-3 text-transparent text-xs hover:text-gray-400">
-                    <div class="w-4 h-4 rounded-sm bg-gray-300 border border-gray-200 shadow-sm"></div>
+                
+                <!-- Subtitle Row -->
+                <p class="text-[12px] text-[#888888] line-clamp-1 mt-1 font-medium">{{ $related['short_description'] }}</p>
+                
+                <!-- Color Swatch Row -->
+                <div class="flex items-center gap-1.5 mt-3">
+                    @foreach($related['colors'] as $color)
+                        <div class="w-3.5 h-3.5 rounded-full border border-gray-200" style="background-color: {{ $color['hex'] }};" title="{{ $color['name'] }}"></div>
+                    @endforeach
                 </div>
             </div>
         </div>

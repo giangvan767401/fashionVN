@@ -100,7 +100,7 @@ class ProductController extends Controller
             $relatedDbProducts = $relatedDbProducts->merge($moreProducts);
         }
 
-        $relatedProducts = $relatedDbProducts->map(function($relProd) {
+        $relatedProducts = $relatedDbProducts->map(function($relProd) use ($colorGroupId) {
             $img = $relProd->images->firstWhere('is_primary', true) ?? $relProd->images->first();
             
             $imgUrl = asset('user/img/default-product.jpg');
@@ -110,11 +110,28 @@ class ProductController extends Controller
                     : (\Illuminate\Support\Str::startsWith($img->url, 'images/') ? asset($img->url) : asset('storage/' . $img->url));
             }
 
+            // Lấy danh sách màu sắc độc nhất của sản phẩm liên quan
+            $relColors = collect();
+            if ($colorGroupId) {
+                foreach ($relProd->variants as $variant) {
+                    $colorAttr = $variant->attributeValues->where('group_id', $colorGroupId)->first();
+                    if ($colorAttr) {
+                        $relColors->push(['name' => $colorAttr->value, 'hex' => $colorAttr->color_hex ?? '#1A1A1A']);
+                    }
+                }
+            }
+            $uniqueRelColors = $relColors->unique('name')->values()->toArray();
+            if (empty($uniqueRelColors)) {
+                $uniqueRelColors = [['name' => 'Mặc định', 'hex' => '#1A1A1A']];
+            }
+
             return [
                 'name' => $relProd->name,
                 'price' => number_format($relProd->sale_price ?? $relProd->base_price, 0, ',', '.') . 'đ',
                 'image' => $imgUrl,
-                'slug' => $relProd->slug
+                'slug' => $relProd->slug,
+                'short_description' => $relProd->short_desc ?: 'Áo dáng cơ bản năng động', // Fallback nếu DB trống
+                'colors' => $uniqueRelColors
             ];
         })->toArray();
 
