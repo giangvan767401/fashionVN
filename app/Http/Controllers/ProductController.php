@@ -143,7 +143,8 @@ class ProductController extends Controller
                 'id' => $variant->id,
                 'size' => $vSize,
                 'color' => $vColor,
-                'stock' => $variant->quantity
+                'stock' => $variant->quantity,
+                'sku' => $variant->sku ?? '',
             ];
         }
 

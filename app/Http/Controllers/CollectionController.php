@@ -28,9 +28,31 @@ class CollectionController extends Controller
         }
 
         if (!empty($collections)) {
-            $query->whereHas('collections', function ($qBuilder) use ($collections) {
-                $qBuilder->whereIn('slug', $collections);
-            });
+            // Tách riêng "hang-moi" ra khỏi các collection khác
+            $hasHangMoi = in_array('hang-moi', $collections);
+            $otherCollections = array_diff($collections, ['hang-moi']);
+
+            if ($hasHangMoi && !empty($otherCollections)) {
+                // Lọc: (trong hang-moi collection HOẶC created ≤ 30 ngày) VÀ trong các collection khác
+                $query->where(function($q) use ($otherCollections) {
+                    $q->where(function($subQ) {
+                        $subQ->whereHas('collections', fn($qb) => $qb->where('slug', 'hang-moi'))
+                             ->orWhere('created_at', '>=', now()->subDays(30));
+                    })->whereHas('collections', fn($qb) => $qb->whereIn('slug', $otherCollections));
+                });
+            } elseif ($hasHangMoi) {
+                // Chỉ lọc hàng mới: trong hang-moi collection HOẶC created ≤ 30 ngày
+                $query->where(function($q) {
+                    $q->whereHas('collections', function ($qb) {
+                        $qb->where('slug', 'hang-moi');
+                    })->orWhere('created_at', '>=', now()->subDays(30));
+                });
+            } else {
+                // Các collection khác (bình thường)
+                $query->whereHas('collections', function ($qBuilder) use ($otherCollections) {
+                    $qBuilder->whereIn('slug', $otherCollections);
+                });
+            }
         }
 
         if (!empty($categories)) {
@@ -85,6 +107,10 @@ class CollectionController extends Controller
 
             $collectionSlugs = $product->collections->pluck('slug')->toArray();
 
+            // Đánh dấu "Hàng Mới" nếu: (1) trong collection hang-moi, HOẶC (2) tạo trong vòng 30 ngày
+            $isNew = in_array('hang-moi', $collectionSlugs) 
+                     || $product->created_at->diffInDays(now()) <= 30;
+
             return [
                 'product_id'      => $product->id,
                 'first_variant_id' => $product->variants->first()?->id ?? null,
@@ -98,7 +124,7 @@ class CollectionController extends Controller
                 'sizes' => array_values(array_unique($sizes)),
                 'materials' => array_values(array_unique($materials)),
                 'collections' => $collectionSlugs,
-                'is_new' => in_array('hang-moi', $collectionSlugs),
+                'is_new' => $isNew,
                 'is_bestseller' => in_array('ban-chay-nhat', $collectionSlugs),
                 'slug' => $product->slug,
             ];

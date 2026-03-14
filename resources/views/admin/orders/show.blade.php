@@ -1,7 +1,9 @@
 <x-admin-layout>
     <div class="mb-8 flex items-center gap-4">
         <a href="{{ route('admin.orders.index') }}" class="p-2 bg-white border border-gray-100 rounded-2xl text-gray-400 hover:text-gray-900 hover:shadow-sm transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6" />
+            </svg>
         </a>
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Chi tiết đơn hàng #{{ $order->id }}</h1>
@@ -10,15 +12,15 @@
     </div>
 
     @if(session('success'))
-        <div class="mb-6 p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100 font-medium">
-            {{ session('success') }}
-        </div>
+    <div class="mb-6 p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100 font-medium">
+        {{ session('success') }}
+    </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-6 p-4 bg-rose-50 text-rose-600 rounded-2xl border border-rose-100 font-medium">
-            {{ session('error') }}
-        </div>
+    <div class="mb-6 p-4 bg-rose-50 text-rose-600 rounded-2xl border border-rose-100 font-medium">
+        {{ session('error') }}
+    </div>
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -41,32 +43,36 @@
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @foreach($order->items as $item)
-                                <tr>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-4">
-                                            @if($item->image_url)
-                                                <img src="{{ Str::startsWith($item->image_url, 'http') ? $item->image_url : asset('storage/' . $item->image_url) }}" class="w-12 h-16 object-cover rounded-lg border border-gray-100" alt="">
-                                            @else
-                                                <div class="w-12 h-16 bg-gray-100 rounded-lg border border-gray-100 flex items-center justify-center text-gray-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                                                </div>
-                                            @endif
-                                            <div>
-                                                <div class="font-bold text-gray-900 line-clamp-1">{{ $item->product_name }}</div>
-                                                <div class="text-xs text-gray-400 mt-0.5">{{ $item->variant_label }}</div>
-                                            </div>
+                            <tr>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-4">
+                                        @if($item->image_url)
+                                        <img src="{{ Str::startsWith($item->image_url, 'http') ? $item->image_url : asset('storage/' . $item->image_url) }}" class="w-12 h-16 object-cover rounded-lg border border-gray-100" alt="">
+                                        @else
+                                        <div class="w-12 h-16 bg-gray-100 rounded-lg border border-gray-100 flex items-center justify-center text-gray-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                                                <circle cx="9" cy="9" r="2" />
+                                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                                            </svg>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-medium text-gray-600">
-                                        {{ $item->quantity }}
-                                    </td>
-                                    <td class="px-6 py-4 text-right font-medium text-gray-900">
-                                        ${{ number_format($item->unit_price, 2) }}
-                                    </td>
-                                    <td class="px-6 py-4 text-right font-bold text-gray-900">
-                                        ${{ number_format($item->total_price, 2) }}
-                                    </td>
-                                </tr>
+                                        @endif
+                                        <div>
+                                            <div class="font-bold text-gray-900 line-clamp-1">{{ $item->product_name }}</div>
+                                            <div class="text-xs text-gray-400 mt-0.5">{{ $item->variant_label }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-center font-medium text-gray-600">
+                                    {{ $item->quantity }}
+                                </td>
+                                <td class="px-6 py-4 text-right font-medium text-gray-900">
+                                    ${{ number_format($item->unit_price, 2) }}
+                                </td>
+                                <td class="px-6 py-4 text-right font-bold text-gray-900">
+                                    ${{ number_format($item->total_price, 2) }}
+                                </td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -115,14 +121,43 @@
 
         <!-- Sidebar Actions -->
         <div class="space-y-8">
+            <!-- Payment Status Card -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="font-bold text-gray-900 uppercase text-sm tracking-wider mb-4">Trạng thái thanh toán</h3>
+                @if($order->payment_status === 'paid')
+                <div class="flex items-center gap-3 p-3 bg-emerald-50 rounded-2xl">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                    <div>
+                        <p class="font-bold text-emerald-700 text-sm">Đã thanh toán</p>
+                        <p class="text-xs text-emerald-600 mt-0.5">Qua cổng trực tuyến (MoMo)</p>
+                    </div>
+                </div>
+                @elseif($order->payment_status === 'refunded')
+                <div class="flex items-center gap-3 p-3 bg-violet-50 rounded-2xl">
+                    <span class="w-3 h-3 rounded-full bg-violet-500 flex-shrink-0"></span>
+                    <div>
+                        <p class="font-bold text-violet-700 text-sm">Đã hoàn tiền</p>
+                    </div>
+                </div>
+                @else
+                <div class="flex items-center gap-3 p-3 bg-amber-50 rounded-2xl">
+                    <span class="w-3 h-3 rounded-full bg-amber-400 flex-shrink-0"></span>
+                    <div>
+                        <p class="font-bold text-amber-700 text-sm">Chưa thanh toán</p>
+                        <p class="text-xs text-amber-600 mt-0.5">COD – thu tiền khi giao hàng</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+
             <!-- Update Status Card -->
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                 <h3 class="font-bold text-gray-900 uppercase text-sm tracking-wider mb-6">Cập nhật trạng thái</h3>
-                
+
                 <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PATCH')
-                    
+
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Trạng thái hiện tại</label>
                         <select name="status" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-gray-900/5 transition-all font-bold text-gray-900">
@@ -142,26 +177,26 @@
 
             <!-- Danger Zone -->
             @if(in_array($order->status, ['completed', 'cancelled', 'delivery_failed']))
-                <div class="bg-rose-50 p-8 rounded-3xl border border-rose-100">
-                    <h3 class="font-bold text-rose-900 uppercase text-xs tracking-wider mb-2">Danger Zone</h3>
-                    <p class="text-rose-700 text-xs leading-relaxed mb-6">Dọn dẹp đơn hàng đã hoàn tất, đã hủy hoặc giao không thành công.</p>
-                    
-                    <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn đơn hàng này?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full py-3 border-2 border-rose-200 text-rose-600 rounded-2xl font-bold hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all">
-                            Xóa đơn hàng
-                        </button>
-                    </form>
-                </div>
+            <div class="bg-rose-50 p-8 rounded-3xl border border-rose-100">
+                <h3 class="font-bold text-rose-900 uppercase text-xs tracking-wider mb-2">Danger Zone</h3>
+                <p class="text-rose-700 text-xs leading-relaxed mb-6">Dọn dẹp đơn hàng đã hoàn tất, đã hủy hoặc giao không thành công.</p>
+
+                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn đơn hàng này?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full py-3 border-2 border-rose-200 text-rose-600 rounded-2xl font-bold hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all">
+                        Xóa đơn hàng
+                    </button>
+                </form>
+            </div>
             @endif
 
             <!-- Customer Notes -->
             @if($order->customer_note)
-                <div class="bg-amber-50 p-6 rounded-3xl border border-amber-100">
-                    <h3 class="font-bold text-amber-900 uppercase text-xs tracking-wider mb-2">Ghi chú từ khách hàng</h3>
-                    <p class="text-amber-800 text-sm leading-relaxed">{{ $order->customer_note }}</p>
-                </div>
+            <div class="bg-amber-50 p-6 rounded-3xl border border-amber-100">
+                <h3 class="font-bold text-amber-900 uppercase text-xs tracking-wider mb-2">Ghi chú từ khách hàng</h3>
+                <p class="text-amber-800 text-sm leading-relaxed">{{ $order->customer_note }}</p>
+            </div>
             @endif
         </div>
     </div>

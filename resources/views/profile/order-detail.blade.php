@@ -3,7 +3,9 @@
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8 flex items-center gap-4">
                 <a href="{{ route('profile.orders') }}" class="p-2 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-gray-900 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m15 18-6-6 6-6" />
+                    </svg>
                 </a>
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Chi tiết đơn hàng #{{ $order->id }}</h1>
@@ -12,15 +14,15 @@
             </div>
 
             @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100 font-medium">
-                    {{ session('success') }}
-                </div>
+            <div class="mb-6 p-4 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100 font-medium">
+                {{ session('success') }}
+            </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-6 p-4 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 font-medium">
-                    {{ session('error') }}
-                </div>
+            <div class="mb-6 p-4 bg-rose-50 text-rose-600 rounded-xl border border-rose-100 font-medium">
+                {{ session('error') }}
+            </div>
             @endif
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -31,22 +33,22 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Trạng thái</h3>
                             @php
-                                $statusLabels = [
-                                    'pending' => 'Đang xử lý',
-                                    'shipped' => 'Đang giao hàng',
-                                    'completed' => 'Đã giao hàng',
-                                    'finished' => 'Hoàn thành',
-                                    'cancelled' => 'Đã hủy',
-                                    'delivery_failed' => 'Giao hàng không thành công',
-                                ];
-                                $statusColors = [
-                                    'pending' => 'text-amber-600',
-                                    'shipped' => 'text-sky-600',
-                                    'completed' => 'text-emerald-600',
-                                    'finished' => 'text-violet-600',
-                                    'cancelled' => 'text-rose-600',
-                                    'delivery_failed' => 'text-rose-600',
-                                ];
+                            $statusLabels = [
+                            'pending' => 'Đang xử lý',
+                            'shipped' => 'Đang giao hàng',
+                            'completed' => 'Đã giao hàng',
+                            'finished' => 'Hoàn thành',
+                            'cancelled' => 'Đã hủy',
+                            'delivery_failed' => 'Giao hàng không thành công',
+                            ];
+                            $statusColors = [
+                            'pending' => 'text-amber-600',
+                            'shipped' => 'text-sky-600',
+                            'completed' => 'text-emerald-600',
+                            'finished' => 'text-violet-600',
+                            'cancelled' => 'text-rose-600',
+                            'delivery_failed' => 'text-rose-600',
+                            ];
                             @endphp
                             <span class="font-bold {{ $statusColors[$order->status] ?? 'text-gray-600' }}">
                                 {{ $statusLabels[$order->status] ?? $order->status }}
@@ -55,16 +57,16 @@
                         <!-- Progress Bar (Simplified) -->
                         <div class="relative h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                             @php
-                                $progress = match($order->status) {
-                                    'pending' => 25,
-                                    'shipped' => 60,
-                                    'completed' => 85,
-                                    'finished' => 100,
-                                    'cancelled' => 0,
-                                    'delivery_failed' => 0,
-                                    default => 10,
-                                };
-                                $progressColor = in_array($order->status, ['cancelled', 'delivery_failed']) ? 'bg-rose-500' : ($order->status === 'finished' ? 'bg-violet-500' : 'bg-[#61715B]');
+                            $progress = match($order->status) {
+                            'pending' => 25,
+                            'shipped' => 60,
+                            'completed' => 85,
+                            'finished' => 100,
+                            'cancelled' => 0,
+                            'delivery_failed' => 0,
+                            default => 10,
+                            };
+                            $progressColor = in_array($order->status, ['cancelled', 'delivery_failed']) ? 'bg-rose-500' : ($order->status === 'finished' ? 'bg-violet-500' : 'bg-[#61715B]');
                             @endphp
                             <div class="absolute inset-y-0 left-0 {{ $progressColor }} rounded-full transition-all duration-1000" style="width: {{ $progress }}%"></div>
                         </div>
@@ -75,38 +77,43 @@
                         </div>
 
                         @if($order->status == 'pending')
-                            <div class="mt-8 pt-6 border-t border-gray-50 flex justify-end">
-                                <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
-                                    @csrf
-                                    <button type="submit" class="px-6 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 transition-colors">
-                                        Hủy đơn hàng
-                                    </button>
-                                </form>
-                            </div>
+                        <div class="mt-8 pt-6 border-t border-gray-50 flex justify-end">
+                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                                @csrf
+                                <button type="submit" class="px-6 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 transition-colors">
+                                    Hủy đơn hàng
+                                </button>
+                            </form>
+                        </div>
                         @endif
 
                         @if($order->status == 'completed')
-                            <div class="mt-8 pt-6 border-t border-gray-50">
-                                <p class="text-xs text-gray-500 mb-4 font-medium">Bạn đã nhận được hàng chưa?</p>
-                                <div class="flex flex-wrap gap-3">
-                                    <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="action" value="received">
-                                        <button type="submit" class="px-5 py-2.5 text-white rounded-xl text-sm font-bold active:scale-95 transition-all flex items-center gap-2" style="background-color:#61715B;" onmouseover="this.style.backgroundColor='#4A5845'" onmouseout="this.style.backgroundColor='#61715B'">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            Đã nhận hàng
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" onsubmit="return confirm('Bạn xác nhận chưa nhận được hàng?')">
-                                        @csrf
-                                        <input type="hidden" name="action" value="not_received">
-                                        <button type="submit" class="px-5 py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 active:scale-95 transition-all flex items-center gap-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                            Chưa nhận được hàng
-                                        </button>
-                                    </form>
-                                </div>
+                        <div class="mt-8 pt-6 border-t border-gray-50">
+                            <p class="text-xs text-gray-500 mb-4 font-medium">Bạn đã nhận được hàng chưa?</p>
+                            <div class="flex flex-wrap gap-3">
+                                <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="action" value="received">
+                                    <button type="submit" class="px-5 py-2.5 text-white rounded-xl text-sm font-bold active:scale-95 transition-all flex items-center gap-2" style="background-color:#61715B;" onmouseover="this.style.backgroundColor='#4A5845'" onmouseout="this.style.backgroundColor='#61715B'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                        Đã nhận hàng
+                                    </button>
+                                </form>
+                                <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" onsubmit="return confirm('Bạn xác nhận chưa nhận được hàng?')">
+                                    @csrf
+                                    <input type="hidden" name="action" value="not_received">
+                                    <button type="submit" class="px-5 py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 active:scale-95 transition-all flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18" />
+                                            <line x1="6" y1="6" x2="18" y2="18" />
+                                        </svg>
+                                        Chưa nhận được hàng
+                                    </button>
+                                </form>
                             </div>
+                        </div>
                         @endif
                     </div>
 
@@ -118,19 +125,19 @@
                         </div>
                         <div class="divide-y divide-gray-50">
                             @foreach($order->items as $item)
-                                <div class="p-6 flex gap-4">
-                                    <div class="w-16 h-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
-                                        <img src="{{ Str::startsWith($item->image_url, 'http') ? $item->image_url : asset('storage/' . $item->image_url) }}" class="w-full h-full object-cover">
-                                    </div>
-                                    <div class="flex-grow">
-                                        <h4 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product_name }}</h4>
-                                        <p class="text-xs text-gray-500 mb-2">{{ $item->variant_label }}</p>
-                                        <div class="flex justify-between items-end">
-                                            <span class="text-xs text-gray-400">Số lượng: {{ $item->quantity }}</span>
-                                            <span class="font-bold text-gray-900 text-sm">${{ number_format($item->unit_price, 2) }}</span>
-                                        </div>
+                            <div class="p-6 flex gap-4">
+                                <div class="w-16 h-20 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img src="{{ Str::startsWith($item->image_url, 'http') ? $item->image_url : asset('storage/' . $item->image_url) }}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-grow">
+                                    <h4 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product_name }}</h4>
+                                    <p class="text-xs text-gray-500 mb-2">{{ $item->variant_label }}</p>
+                                    <div class="flex justify-between items-end">
+                                        <span class="text-xs text-gray-400">Số lượng: {{ $item->quantity }}</span>
+                                        <span class="font-bold text-gray-900 text-sm">${{ number_format($item->unit_price, 2) }}</span>
                                     </div>
                                 </div>
+                            </div>
                             @endforeach
                         </div>
                         <div class="p-6 bg-gray-50 border-t border-gray-100 space-y-2">
@@ -173,6 +180,29 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Payment Status Card -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest mb-4">Thanh toán</h3>
+                        @if($order->payment_status === 'paid')
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                            <span class="text-sm font-bold text-emerald-600">Đã thanh toán</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Thanh toán trực tuyến (MoMo)</p>
+                        @elseif($order->payment_status === 'refunded')
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-violet-500 flex-shrink-0"></span>
+                            <span class="text-sm font-bold text-violet-600">Đã hoàn tiền</span>
+                        </div>
+                        @else
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></span>
+                            <span class="text-sm font-bold text-amber-600">Chưa thanh toán</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Thanh toán khi nhận hàng (COD)</p>
+                        @endif
                     </div>
 
                     <!-- Actions -->

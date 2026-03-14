@@ -47,7 +47,7 @@
             <h1 class="text-3xl font-bold mb-2">{{ $product['name'] }}</h1>
             
             <div class="flex items-center gap-4 mb-4 mt-2">
-                <p class="text-sm text-gray-500">Mã SP: {{ $product['id'] }}</p>
+                <p class="text-sm text-gray-500">Mã SP: <span id="product-sku" class="font-mono font-semibold text-gray-700">{{ $variantMap[0]['sku'] ?? ($product['id'] ?? '—') }}</span></p>
                 <div class="flex items-center gap-1 cursor-pointer" onclick="document.getElementById('reviews').scrollIntoView({behavior: 'smooth'})">
                     <span class="text-amber-400 text-lg leading-none mt-[1px]">★</span>
                     <span class="text-sm font-bold text-gray-900">{{ number_format($averageRating, 1) }}</span>
@@ -491,6 +491,10 @@
         if (selectedColor && selectedSize) {
             const variant = variantMap.find(v => v.color === selectedColor && v.size === selectedSize);
             if (variant) {
+                // Update SKU display
+                const skuEl = document.getElementById('product-sku');
+                if (skuEl) skuEl.textContent = variant.sku || '—';
+
                 if (variant.stock > 0) {
                     availabilityText.innerHTML = `<div class="w-2 h-2 rounded-full bg-[#5c7a6b]"></div> Cỡ của bạn còn lại ${variant.stock} chiếc`;
                     availabilityText.classList.remove('text-rose-500');
@@ -506,6 +510,11 @@
                 availabilityText.classList.add('text-rose-500');
             }
         } else if (selectedColor) {
+            // Show SKU of first variant with this color
+            const firstColorVariant = variantMap.find(v => v.color === selectedColor);
+            const skuEl = document.getElementById('product-sku');
+            if (skuEl && firstColorVariant) skuEl.textContent = firstColorVariant.sku || '—';
+
             const colorStock = variantMap.filter(v => v.color === selectedColor).reduce((acc, v) => acc + v.stock, 0);
             availabilityText.innerHTML = `<div class="w-2 h-2 rounded-full bg-[#5c7a6b]"></div> Màu này còn tổng cộng ${colorStock} chiếc`;
             availabilityText.classList.remove('text-rose-500');

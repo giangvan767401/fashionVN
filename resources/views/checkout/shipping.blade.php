@@ -34,7 +34,8 @@
 <div style="display: grid; grid-template-columns: 1fr 420px; min-height: 100vh;">
 
     <!-- ===== LEFT SIDE ===== -->
-    <div style="padding: 48px 56px; max-width: 640px;">
+    <div style="display: flex; justify-content: center; align-items: flex-start;">
+    <div style="padding: 48px 56px; max-width: 640px; width: 100%;">
 
         <!-- Logo -->
         <a href="{{ route('home') }}" style="text-decoration: none; display: inline-block; margin-bottom: 40px;">
@@ -152,6 +153,7 @@
                 </button>
             </div>
         </form>
+    </div>
     </div>
 
     <!-- ===== RIGHT SIDE: Cart Summary ===== -->

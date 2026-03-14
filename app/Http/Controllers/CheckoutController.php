@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
+use App\Http\Controllers\MomoController;
 
 class CheckoutController extends Controller
 {
@@ -105,7 +106,7 @@ class CheckoutController extends Controller
         ]);
 
         session()->put('checkout.shipping_method', $request->shipping_method);
-        
+
         $fee = 0;
         if (str_starts_with($request->delivery_date, 'express_1')) $fee = 25;
         if (str_starts_with($request->delivery_date, 'express_2')) $fee = 24;
@@ -144,8 +145,13 @@ class CheckoutController extends Controller
     public function storePayment(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:cod',
+            'payment_method' => 'required|in:cod,momo',
         ]);
+
+        // Chuyển hướng sang luồng thanh toán MoMo
+        if ($request->payment_method === 'momo') {
+            return app(MomoController::class)->createPayment($request);
+        }
 
         if (!session()->has('checkout.info')) {
             return redirect()->route('checkout');

@@ -33,6 +33,13 @@ Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class
 Route::post('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'storePayment'])->middleware(['auth', 'verified'])->name('checkout.store_payment');
 Route::get('/checkout/success/{id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->middleware(['auth', 'verified'])->name('checkout.success');
 
+// MoMo callback (không cần auth vì MoMo gọi về từ server bên ngoài)
+Route::get('/momo/return', [\App\Http\Controllers\MomoController::class, 'returnPayment'])->name('momo.return');
+Route::post('/momo/notify', [\App\Http\Controllers\MomoController::class, 'notify'])->name('momo.notify')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+Route::get('/momo/demo', [\App\Http\Controllers\MomoController::class, 'demo'])->middleware(['auth', 'verified'])->name('momo.demo');
+Route::post('/momo/demo/confirm', [\App\Http\Controllers\MomoController::class, 'demoConfirm'])->middleware(['auth', 'verified'])->name('momo.demo.confirm');
+Route::post('/momo/demo/cancel', [\App\Http\Controllers\MomoController::class, 'demoCancel'])->middleware(['auth', 'verified'])->name('momo.demo.cancel');
+
 // Yêu thích
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->middleware(['auth', 'verified']);
@@ -108,4 +115,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/chat/store', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

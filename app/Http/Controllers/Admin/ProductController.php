@@ -55,7 +55,7 @@ class ProductController extends Controller
             'colors.*' => 'nullable|string|max:100',
             'description' => 'nullable|string',
             'image_files' => 'nullable|array',
-            'image_files.*' => 'image|max:5120',
+            'image_files.*' => 'mimes:jpeg,jpg,png,gif,bmp,webp,avif|max:5120',
             'image_paste' => 'nullable|string',
         ]);
 
@@ -242,6 +242,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'sku_prefix' => 'nullable|string|max:20|regex:/^[A-Za-z0-9\-]+$/',
             'base_price' => 'required|numeric|min:0',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
@@ -252,7 +253,7 @@ class ProductController extends Controller
             // 'quantity' => 'required|integer|min:0', // Removed as per instruction
             'description' => 'nullable|string',
             'image_files' => 'nullable|array',
-            'image_files.*' => 'image|max:5120',
+            'image_files.*' => 'mimes:jpeg,jpg,png,gif,webp,avif|max:5120',
             'image_paste' => 'nullable|string',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'exists:product_images,id',
