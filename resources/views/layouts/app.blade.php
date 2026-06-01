@@ -579,8 +579,12 @@
 
     </footer>
 
+    {{-- ✨ Lumi Chatbot Widget --}}
+    <x-chatbot />
+
     <!-- Mini Cart Drawer & Overlay -->
     <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-[250] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" onclick="closeCart(); return false;" style="cursor: pointer;"></div>
+
     
     <div id="cart-drawer" class="fixed inset-y-0 right-0 z-[300] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col hidden" style="width: 400px; max-width: 100vw;">
         <!-- Cart Header -->

@@ -5,25 +5,109 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
+use App\Models\Coupon;
 use App\Http\Controllers\MomoController;
 
 class CheckoutController extends Controller
 {
-    public function info()
+    /**
+     * Lấy toàn bộ dữ liệu tạm tính, tiền thuế, phí vận chuyển và giảm giá khuyến mãi.
+     */
+    private function getCheckoutData()
     {
         $cartItems = collect();
-        $cartTotal = 0;
+        $cartTotal = 0; // Tạm tính ban đầu (subtotal)
+        $discountAmount = 0;
+        $coupon = null;
+        $cart = null;
 
         if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
+            $cart = Cart::where('user_id', Auth::id())->with('coupon')->first();
         } else {
-            $cart = Cart::where('session_id', session()->getId())->first();
+            $cart = Cart::where('session_id', session()->getId())->with('coupon')->first();
         }
 
         if ($cart) {
             $cartItems = $cart->items()->with(['variant.product.images', 'variant.attributeValues.group'])->get();
             $cartTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
+            
+            // Xác thực và tính toán mã giảm giá
+            if ($cart->coupon) {
+                if ($cart->coupon->isValidFor($cartTotal)) {
+                    $coupon = $cart->coupon;
+                    $discountAmount = $coupon->calculateDiscount($cartTotal);
+                } else {
+                    // Mã giảm giá không còn hợp lệ -> Tự động gỡ
+                    $cart->coupon_id = null;
+                    $cart->save();
+                    session()->flash('warning', 'Mã giảm giá đã được gỡ bỏ do đơn hàng của bạn không còn đủ điều kiện.');
+                }
+            }
         }
+
+        // TÍNH TOÁN HẠNG THÀNH VIÊN VÀ ĐIỂM
+        $tierDiscount = 0;
+        $tierPercent = 0;
+        $pointsDiscount = 0;
+        $pointsRedeemed = 0;
+        $user = Auth::user();
+
+        if ($user) {
+            // 1. Giảm giá theo hạng thành viên (áp dụng trên subtotal gốc)
+            $tierPercent = $user->getTierDiscountPercent();
+            if ($tierPercent > 0) {
+                $tierDiscount = $cartTotal * ($tierPercent / 100);
+            }
+
+            // 2. Sử dụng điểm tích lũy (nếu khách chọn)
+            if (session('checkout.use_points', false)) {
+                // Tạm tính còn lại sau khi trừ voucher và giảm hạng thành viên
+                $remainingSubtotal = max(0, $cartTotal - $discountAmount - $tierDiscount);
+                
+                // Quy đổi: 1 điểm = 100đ
+                $maxRedeemablePoints = min($user->loyalty_points, (int) floor($remainingSubtotal / 100));
+                if ($maxRedeemablePoints > 0) {
+                    $pointsRedeemed = $maxRedeemablePoints;
+                    $pointsDiscount = $pointsRedeemed * 100;
+                }
+            }
+        }
+
+        $subtotalAfterDiscount = max(0, $cartTotal - $discountAmount - $tierDiscount - $pointsDiscount);
+        $tax = $subtotalAfterDiscount * 0.08;
+        $shippingFee = session('checkout.shipping_fee', 0);
+        $total = $subtotalAfterDiscount + $tax + $shippingFee;
+
+        return [
+            'cart' => $cart,
+            'cartItems' => $cartItems,
+            'cartTotal' => $cartTotal,
+            'coupon' => $coupon,
+            'discountAmount' => $discountAmount,
+            'tierPercent' => $tierPercent,
+            'tierDiscount' => $tierDiscount,
+            'pointsRedeemed' => $pointsRedeemed,
+            'pointsDiscount' => $pointsDiscount,
+            'subtotalAfterDiscount' => $subtotalAfterDiscount,
+            'tax' => $tax,
+            'shippingFee' => $shippingFee,
+            'total' => $total,
+        ];
+    }
+
+    public function info()
+    {
+        $checkoutData = $this->getCheckoutData();
+        $cartItems = $checkoutData['cartItems'];
+        $cartTotal = $checkoutData['cartTotal'];
+        $coupon = $checkoutData['coupon'];
+        $discountAmount = $checkoutData['discountAmount'];
+        $tierPercent = $checkoutData['tierPercent'];
+        $tierDiscount = $checkoutData['tierDiscount'];
+        $pointsRedeemed = $checkoutData['pointsRedeemed'];
+        $pointsDiscount = $checkoutData['pointsDiscount'];
+        $tax = $checkoutData['tax'];
+        $total = $checkoutData['total'];
 
         $user = Auth::user();
         $savedAddress = null;
@@ -34,7 +118,11 @@ class CheckoutController extends Controller
                 ->first();
         }
 
-        return view('checkout.info', compact('cartItems', 'cartTotal', 'user', 'savedAddress'));
+        return view('checkout.info', compact(
+            'cartItems', 'cartTotal', 'coupon', 'discountAmount', 
+            'tierPercent', 'tierDiscount', 'pointsRedeemed', 'pointsDiscount',
+            'tax', 'total', 'user', 'savedAddress'
+        ));
     }
 
     public function storeInfo(Request $request)
@@ -79,23 +167,25 @@ class CheckoutController extends Controller
             return redirect()->route('checkout');
         }
 
-        $cartItems = collect();
-        $cartTotal = 0;
-
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-        } else {
-            $cart = Cart::where('session_id', session()->getId())->first();
-        }
-
-        if ($cart) {
-            $cartItems = $cart->items()->with(['variant.product.images', 'variant.attributeValues.group'])->get();
-            $cartTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
-        }
+        $checkoutData = $this->getCheckoutData();
+        $cartItems = $checkoutData['cartItems'];
+        $cartTotal = $checkoutData['cartTotal'];
+        $coupon = $checkoutData['coupon'];
+        $discountAmount = $checkoutData['discountAmount'];
+        $tierPercent = $checkoutData['tierPercent'];
+        $tierDiscount = $checkoutData['tierDiscount'];
+        $pointsRedeemed = $checkoutData['pointsRedeemed'];
+        $pointsDiscount = $checkoutData['pointsDiscount'];
+        $tax = $checkoutData['tax'];
+        $total = $checkoutData['total'];
 
         $info = session('checkout.info');
 
-        return view('checkout.shipping', compact('cartItems', 'cartTotal', 'info'));
+        return view('checkout.shipping', compact(
+            'cartItems', 'cartTotal', 'coupon', 'discountAmount', 
+            'tierPercent', 'tierDiscount', 'pointsRedeemed', 'pointsDiscount',
+            'tax', 'total', 'info'
+        ));
     }
 
     public function storeShipping(Request $request)
@@ -121,25 +211,27 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.shipping');
         }
 
-        $cartItems = collect();
-        $cartTotal = 0;
-
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-        } else {
-            $cart = Cart::where('session_id', session()->getId())->first();
-        }
-
-        if ($cart) {
-            $cartItems = $cart->items()->with(['variant.product.images', 'variant.attributeValues.group'])->get();
-            $cartTotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
-        }
+        $checkoutData = $this->getCheckoutData();
+        $cartItems = $checkoutData['cartItems'];
+        $cartTotal = $checkoutData['cartTotal'];
+        $coupon = $checkoutData['coupon'];
+        $discountAmount = $checkoutData['discountAmount'];
+        $tierPercent = $checkoutData['tierPercent'];
+        $tierDiscount = $checkoutData['tierDiscount'];
+        $pointsRedeemed = $checkoutData['pointsRedeemed'];
+        $pointsDiscount = $checkoutData['pointsDiscount'];
+        $tax = $checkoutData['tax'];
+        $total = $checkoutData['total'];
+        $shippingFee = $checkoutData['shippingFee'];
 
         $info = session('checkout.info');
         $shippingMethod = session('checkout.shipping_method');
-        $shippingFee = session('checkout.shipping_fee', 0);
 
-        return view('checkout.payment', compact('cartItems', 'cartTotal', 'info', 'shippingMethod', 'shippingFee'));
+        return view('checkout.payment', compact(
+            'cartItems', 'cartTotal', 'coupon', 'discountAmount', 
+            'tierPercent', 'tierDiscount', 'pointsRedeemed', 'pointsDiscount',
+            'tax', 'total', 'info', 'shippingMethod', 'shippingFee'
+        ));
     }
 
     public function storePayment(Request $request)
@@ -157,22 +249,23 @@ class CheckoutController extends Controller
             return redirect()->route('checkout');
         }
 
-        // 1. Get Cart
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
-        } else {
-            $cart = Cart::where('session_id', session()->getId())->first();
-        }
+        // 1. Get Checkout data
+        $checkoutData = $this->getCheckoutData();
+        $cart = $checkoutData['cart'];
+        $cartItems = $checkoutData['cartItems'];
+        $subtotal = $checkoutData['cartTotal'];
+        $coupon = $checkoutData['coupon'];
+        $discountAmount = $checkoutData['discountAmount'];
+        $tierDiscount = $checkoutData['tierDiscount'];
+        $pointsRedeemed = $checkoutData['pointsRedeemed'];
+        $pointsDiscount = $checkoutData['pointsDiscount'];
+        $tax = $checkoutData['tax'];
+        $shippingFee = $checkoutData['shippingFee'];
+        $total = $checkoutData['total'];
 
-        if (!$cart || $cart->items->isEmpty()) {
+        if (!$cart || $cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
-
-        $cartItems = $cart->items()->with(['variant.product.images', 'variant.attributeValues.group'])->get();
-        $subtotal = $cartItems->sum(fn($item) => $item->unit_price * $item->quantity);
-        $tax = $subtotal * 0.08;
-        $shippingFee = session('checkout.shipping_fee', 0);
-        $total = $subtotal + $tax + $shippingFee;
 
         $info = session('checkout.info');
 
@@ -180,6 +273,7 @@ class CheckoutController extends Controller
         $order = \App\Models\Order::create([
             'order_number' => 'ORD-' . strtoupper(uniqid()),
             'user_id' => Auth::id(),
+            'coupon_id' => $coupon ? $coupon->id : null,
             'ship_name' => $info['last_name'] . ' ' . $info['first_name'],
             'ship_phone' => $info['phone'],
             'ship_province' => $info['province'] ?? '',
@@ -188,6 +282,10 @@ class CheckoutController extends Controller
             'ship_address' => $info['address'] . ($info['apartment'] ? ' (' . $info['apartment'] . ')' : ''),
             'subtotal' => $subtotal,
             'shipping_fee' => $shippingFee,
+            'discount_amount' => $discountAmount,
+            'points_redeemed' => $pointsRedeemed,
+            'points_discount' => $pointsDiscount,
+            'tier_discount' => $tierDiscount,
             'tax_amount' => $tax,
             'total_amount' => $total,
             'status' => 'pending',
@@ -215,6 +313,16 @@ class CheckoutController extends Controller
             $item->variant->decrement('quantity', $item->quantity);
         }
 
+        // Trừ điểm tích lũy của khách hàng nếu đã sử dụng
+        if ($pointsRedeemed > 0 && $order->user) {
+            $order->user->decrement('loyalty_points', $pointsRedeemed);
+        }
+
+        // Increase coupon usage limit
+        if ($coupon) {
+            $coupon->increment('used_count');
+        }
+
         // 5. Clear Cart
         if ($cart) {
             $cart->items()->delete();
@@ -222,7 +330,7 @@ class CheckoutController extends Controller
         }
 
         // 5. Clear Session
-        session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee']);
+        session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee', 'checkout.use_points']);
 
         // 6. Redirect to Success
         return redirect()->route('checkout.success', $order->id);

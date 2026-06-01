@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,8 +24,8 @@ class MomoController extends Controller
 
         // ----- 1. Lấy giỏ hàng -----
         $cart = Auth::check()
-            ? Cart::where('user_id', Auth::id())->first()
-            : Cart::where('session_id', session()->getId())->first();
+            ? Cart::where('user_id', Auth::id())->with('coupon')->first()
+            : Cart::where('session_id', session()->getId())->with('coupon')->first();
 
         if (!$cart || $cart->items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
@@ -32,16 +33,60 @@ class MomoController extends Controller
 
         $cartItems  = $cart->items()->with(['variant.product.images', 'variant.attributeValues.group'])->get();
         $subtotal   = $cartItems->sum(fn($i) => $i->unit_price * $i->quantity);
-        $tax        = $subtotal * 0.08;
+        
+        // Tính toán mã giảm giá
+        $discountAmount = 0;
+        $coupon = null;
+        if ($cart->coupon) {
+            if ($cart->coupon->isValidFor($subtotal)) {
+                $coupon = $cart->coupon;
+                $discountAmount = $coupon->calculateDiscount($subtotal);
+            } else {
+                $cart->coupon_id = null;
+                $cart->save();
+            }
+        }
+
+        // TÍNH TOÁN HẠNG THÀNH VIÊN VÀ ĐIỂM
+        $tierDiscount = 0;
+        $tierPercent = 0;
+        $pointsDiscount = 0;
+        $pointsRedeemed = 0;
+        $user = Auth::user();
+
+        if ($user) {
+            // 1. Giảm giá theo hạng thành viên (áp dụng trên subtotal gốc)
+            $tierPercent = $user->getTierDiscountPercent();
+            if ($tierPercent > 0) {
+                $tierDiscount = $subtotal * ($tierPercent / 100);
+            }
+
+            // 2. Sử dụng điểm tích lũy (nếu khách chọn)
+            if (session('checkout.use_points', false)) {
+                // Tạm tính còn lại sau khi trừ voucher và giảm hạng thành viên
+                $remainingSubtotal = max(0, $subtotal - $discountAmount - $tierDiscount);
+                
+                // Quy đổi: 1 điểm = 100đ
+                $maxRedeemablePoints = min($user->loyalty_points, (int) floor($remainingSubtotal / 100));
+                if ($maxRedeemablePoints > 0) {
+                    $pointsRedeemed = $maxRedeemablePoints;
+                    $pointsDiscount = $pointsRedeemed * 100;
+                }
+            }
+        }
+
+        $subtotalAfterDiscount = max(0, $subtotal - $discountAmount - $tierDiscount - $pointsDiscount);
+        $tax        = $subtotalAfterDiscount * 0.08;
         $shippingFee = session('checkout.shipping_fee', 0);
-        $total      = $subtotal + $tax + $shippingFee;
+        $total      = $subtotalAfterDiscount + $tax + $shippingFee;
         $info       = session('checkout.info');
 
         // ----- 2. Tạo đơn hàng với trạng thái chờ thanh toán -----
-        $order = DB::transaction(function () use ($cartItems, $subtotal, $tax, $shippingFee, $total, $info) {
+        $order = DB::transaction(function () use ($cartItems, $subtotal, $discountAmount, $tax, $shippingFee, $total, $info, $coupon, $pointsRedeemed, $pointsDiscount, $tierDiscount) {
             $order = Order::create([
                 'order_number'   => 'ORD-' . strtoupper(uniqid()),
                 'user_id'        => Auth::id(),
+                'coupon_id'      => $coupon ? $coupon->id : null,
                 'ship_name'      => $info['last_name'] . ' ' . $info['first_name'],
                 'ship_phone'     => $info['phone'],
                 'ship_province'  => $info['province'] ?? '',
@@ -50,6 +95,10 @@ class MomoController extends Controller
                 'ship_address'   => $info['address'] . (!empty($info['apartment']) ? ' (' . $info['apartment'] . ')' : ''),
                 'subtotal'       => $subtotal,
                 'shipping_fee'   => $shippingFee,
+                'discount_amount' => $discountAmount,
+                'points_redeemed' => $pointsRedeemed,
+                'points_discount' => $pointsDiscount,
+                'tier_discount'   => $tierDiscount,
                 'tax_amount'     => $tax,
                 'total_amount'   => $total,
                 'status'         => 'pending',
@@ -85,7 +134,7 @@ class MomoController extends Controller
         if (config('services.momo.demo_mode', true)) {
             $cart->items()->delete();
             $cart->delete();
-            session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee']);
+            session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee', 'checkout.use_points']);
 
             return redirect()->route('momo.demo', [
                 'order_number' => $order->order_number,
@@ -139,7 +188,7 @@ class MomoController extends Controller
                 // Xóa giỏ hàng và session checkout
                 $cart->items()->delete();
                 $cart->delete();
-                session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee']);
+                session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee', 'checkout.use_points']);
 
                 return redirect()->away($data['payUrl']);
             }
@@ -201,7 +250,15 @@ class MomoController extends Controller
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
-        $order->update(['payment_status' => 'paid']);
+        if ($order->payment_status !== 'paid') {
+            $order->update(['payment_status' => 'paid']);
+            if ($order->coupon) {
+                $order->coupon->increment('used_count');
+            }
+            if ($order->points_redeemed > 0 && $order->user) {
+                $order->user->decrement('loyalty_points', $order->points_redeemed);
+            }
+        }
 
         \App\Models\PaymentTransaction::create([
             'order_id'         => $order->id,
@@ -242,7 +299,12 @@ class MomoController extends Controller
                 return redirect()->route('home')->with('error', 'Chữ ký không hợp lệ.');
             }
 
-            $order->update(['payment_status' => 'paid']);
+            if ($order->payment_status !== 'paid') {
+                $order->update(['payment_status' => 'paid']);
+                if ($order->coupon) {
+                    $order->coupon->increment('used_count');
+                }
+            }
 
             \App\Models\PaymentTransaction::create([
                 'order_id'         => $order->id,
@@ -291,6 +353,9 @@ class MomoController extends Controller
 
         if ($resultCode === 0 && $order->payment_status !== 'paid') {
             $order->update(['payment_status' => 'paid']);
+            if ($order->coupon) {
+                $order->coupon->increment('used_count');
+            }
 
             \App\Models\PaymentTransaction::updateOrCreate(
                 ['order_id' => $order->id, 'gateway' => 'momo'],

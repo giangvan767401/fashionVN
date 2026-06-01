@@ -33,6 +33,13 @@ Route::get('/checkout/payment', [\App\Http\Controllers\CheckoutController::class
 Route::post('/checkout/payment', [\App\Http\Controllers\CheckoutController::class, 'storePayment'])->middleware(['auth', 'verified'])->name('checkout.store_payment');
 Route::get('/checkout/success/{id}', [\App\Http\Controllers\CheckoutController::class, 'success'])->middleware(['auth', 'verified'])->name('checkout.success');
 
+// Áp dụng/Hủy mã giảm giá
+Route::post('/coupon/apply', [\App\Http\Controllers\CouponController::class, 'apply'])->middleware(['auth', 'verified'])->name('coupon.apply');
+Route::post('/coupon/remove', [\App\Http\Controllers\CouponController::class, 'remove'])->middleware(['auth', 'verified'])->name('coupon.remove');
+
+// Sử dụng điểm tích lũy
+Route::post('/checkout/toggle-points', [\App\Http\Controllers\LoyaltyController::class, 'togglePoints'])->middleware(['auth', 'verified'])->name('checkout.toggle-points');
+
 // MoMo callback (không cần auth vì MoMo gọi về từ server bên ngoài)
 Route::get('/momo/return', [\App\Http\Controllers\MomoController::class, 'returnPayment'])->name('momo.return');
 Route::post('/momo/notify', [\App\Http\Controllers\MomoController::class, 'notify'])->name('momo.notify')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
@@ -88,6 +95,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/orders/{id}/print', [\App\Http\Controllers\Admin\OrderController::class, 'print'])->name('orders.print');
     Route::patch('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
     Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
+
+    // Quản lý voucher / coupon
+    Route::patch('/coupons/{coupon}/toggle-status', [\App\Http\Controllers\Admin\CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
+    Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class)->names('coupons');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -115,4 +126,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/chat/store', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
 });
 
+// Chatbot AI
+Route::post('/chatbot/reply', [\App\Http\Controllers\ChatbotController::class, 'reply'])->name('chatbot.reply');
+
 require __DIR__ . '/auth.php';
+

@@ -28,6 +28,11 @@ class Order extends Model
         'total_amount',
         'status',
         'payment_status',
+        'points_processed',
+        'points_earned',
+        'points_redeemed',
+        'points_discount',
+        'tier_discount',
         'cancel_reason',
         'admin_note',
         'customer_note',
@@ -42,7 +47,35 @@ class Order extends Model
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'points_processed' => 'boolean',
+        'points_earned' => 'integer',
+        'points_redeemed' => 'integer',
+        'points_discount' => 'decimal:2',
+        'tier_discount' => 'decimal:2',
     ];
+
+    protected static function booted()
+    {
+        static::updated(function ($order) {
+            // Kiểm tra khi đơn hàng hoàn thành (finished) để tích điểm
+            if ($order->wasChanged('status') && $order->status === 'finished') {
+                if ($order->user && !$order->points_processed) {
+                    // Tỷ lệ điểm thưởng theo hạng thành viên (Kim cương tích lũy x2)
+                    $multiplier = $order->user->getTierPointsPercent();
+                    $earnedPoints = (int) floor($order->subtotal / 10000) * $multiplier;
+
+                    $order->updateQuietly([
+                        'points_processed' => true,
+                        'points_earned' => $earnedPoints,
+                    ]);
+
+                    // Cộng điểm tích lũy và cập nhật hạng thành viên
+                    $order->user->increment('loyalty_points', $earnedPoints);
+                    $order->user->updateLoyaltyAndTier();
+                }
+            }
+        });
+    }
 
     public function user()
     {
@@ -52,5 +85,10 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
     }
 }

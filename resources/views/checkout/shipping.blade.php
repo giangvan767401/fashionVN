@@ -196,22 +196,101 @@
             @endforeach
         </div>
 
+        <!-- Coupon Form -->
+        <div style="margin-top: 20px; margin-bottom: 14px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+            @if(session('status'))
+            <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:10px 12px; border-radius:6px; font-size:12px; margin-bottom:12px;">
+                {{ session('status') }}
+            </div>
+            @endif
+            @if(session('error'))
+            <div style="background:#fef2f2; border:1px solid #fca5a5; color:#b91c1c; padding:10px 12px; border-radius:6px; font-size:12px; margin-bottom:12px;">
+                {{ session('error') }}
+            </div>
+            @endif
+            @if(session('warning'))
+            <div style="background:#fffbeb; border:1px solid #fde68a; color:#92400e; padding:10px 12px; border-radius:6px; font-size:12px; margin-bottom:12px;">
+                {{ session('warning') }}
+            </div>
+            @endif
+
+            @if($coupon)
+                <div style="display: flex; justify-content: space-between; align-items: center; background: #f0fdf4; padding: 10px 14px; border: 1px dashed #10b981; border-radius: 6px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 0 0-2 2v3a2 2 0 0 1 0 4v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 0 1 0-4V7a2 2 0 0 0-2-2H5z"/></svg>
+                        <span style="font-size: 13px; font-weight: 600; color: #047857; text-transform: uppercase;">{{ $coupon->code }}</span>
+                        <span style="font-size: 11px; color: #065f46;">(Đã áp dụng)</span>
+                    </div>
+                    <form action="{{ route('coupon.remove') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" style="background: none; border: none; cursor: pointer; color: #6b7280; font-size: 12px; font-weight: 600; text-decoration: underline;">Gỡ</button>
+                    </form>
+                </div>
+            @else
+                <form action="{{ route('coupon.apply') }}" method="POST" style="display: flex; gap: 10px; margin: 0;">
+                    @csrf
+                    <input type="text" name="code" placeholder="Mã giảm giá (Voucher)" required style="flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; text-transform: uppercase; font-family: inherit;">
+                    <button type="submit" style="padding: 10px 16px; background: #4a5845; color: white; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: 0.05em; text-transform: uppercase;">Áp Dụng</button>
+                </form>
+            @endif
+        </div>
+
+        <!-- Loyalty points Form -->
+        @if(Auth::check())
+        <div style="margin-top: 10px; margin-bottom: 20px; background: #fafaf9; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 12px; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 6px; font-family: inherit;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4a5845" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Điểm tích lũy: <span style="color: #4a5845; font-weight: 700;">{{ Auth::user()->loyalty_points }} điểm</span>
+                </span>
+                <span style="font-size: 11px; color: #6b7280;">(Quy đổi: {{ number_format(Auth::user()->loyalty_points * 100, 0, ',', '.') }}đ)</span>
+            </div>
+            @if(Auth::user()->loyalty_points > 0)
+                <form action="{{ route('checkout.toggle-points') }}" method="POST" id="form-toggle-points" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                    @csrf
+                    <input type="checkbox" name="use_points" value="1" id="use_points" onchange="document.getElementById('form-toggle-points').submit()" {{ session('checkout.use_points') ? 'checked' : '' }} style="width: 15px; height: 15px; accent-color: #4a5845; cursor: pointer;">
+                    <label for="use_points" style="font-size: 12px; color: #4b5563; cursor: pointer; user-select: none; font-weight: 500;">Sử dụng điểm tích lũy thanh toán</label>
+                </form>
+            @else
+                <p style="font-size: 11px; color: #9ca3af; margin: 0;">Bạn chưa có điểm tích lũy để sử dụng.</p>
+            @endif
+        </div>
+        @endif
+
+        <!-- Divider -->
         <div style="border-top: 1px solid #e5e7eb; margin-bottom: 20px;"></div>
 
         <!-- Order Summary -->
-        @php $tax = $cartTotal * 0.08; $total = $cartTotal + $tax; @endphp
         <div style="display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; justify-content: space-between;">
                 <span style="font-size: 13px; color: #6b7280;">Tạm Tính ({{ $cartItems->count() }})</span>
                 <span style="font-size: 13px; color: #374151;">{{ number_format($cartTotal, 0, ',', '.') }}đ</span>
             </div>
+            @if($discountAmount > 0)
+            <div style="display: flex; justify-content: space-between; color: #047857;">
+                <span style="font-size: 13px;">Giảm giá (Voucher)</span>
+                <span style="font-size: 13px; font-weight: 600;">-{{ number_format($discountAmount, 0, ',', '.') }}đ</span>
+            </div>
+            @endif
+            @if($tierDiscount > 0)
+            <div style="display: flex; justify-content: space-between; color: #047857;">
+                <span style="font-size: 13px;">Hạng thành viên ({{ strtoupper($user->member_tier) }} -{{ $tierPercent }}%)</span>
+                <span style="font-size: 13px; font-weight: 600;">-{{ number_format($tierDiscount, 0, ',', '.') }}đ</span>
+            </div>
+            @endif
+            @if($pointsDiscount > 0)
+            <div style="display: flex; justify-content: space-between; color: #047857;">
+                <span style="font-size: 13px;">Đã dùng điểm ({{ $pointsRedeemed }} điểm)</span>
+                <span style="font-size: 13px; font-weight: 600;">-{{ number_format($pointsDiscount, 0, ',', '.') }}đ</span>
+            </div>
+            @endif
             <div style="display: flex; justify-content: space-between;">
-                <span style="font-size: 13px; color: #6b7280;">Thuế</span>
+                <span style="font-size: 13px; color: #6b7280;">Thuế (8%)</span>
                 <span style="font-size: 13px; color: #374151;">{{ number_format($tax, 0, ',', '.') }}đ</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
                 <span style="font-size: 13px; color: #6b7280;">Phí Vận Chuyển</span>
-                <span style="font-size: 13px; color: #374151;">Miễn Phí</span>
+                <span style="font-size: 13px; color: #374151;">{{ $shippingFee > 0 ? number_format($shippingFee, 0, ',', '.') . 'đ' : 'Miễn Phí' }}</span>
             </div>
             <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-size: 15px; color: #111827;">Tổng Đơn Hàng:</span>

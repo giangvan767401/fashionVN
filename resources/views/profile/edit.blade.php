@@ -33,6 +33,9 @@
                         <p><span class="font-medium text-gray-900">Admin:</span> {{ Auth::user()->role_id == 1 ? 'Có' : 'Không' }}</p>
                     </div>
 
+                    <!-- Loyalty Card Component -->
+                    @include('profile.partials.loyalty-card')
+
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <a href="{{ route('profile.info') }}" 
                            style="display: block; width: 100%; padding: 10px 16px; text-align: center; font-size: 13px; font-weight: 500; border-radius: 6px; border: 1.5px solid #d1d5db; color: #374151; text-decoration: none; box-sizing: border-box;">

@@ -113,15 +113,15 @@
                         <p class="text-[12px] mb-6">Or</p>
                         
                         <div class="flex items-center justify-center gap-6">
-                            <button type="button" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition">
+                            <a href="#" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition" title="Apple (Chưa hỗ trợ)">
                                 <img src="{{ asset('user/img/Icons-apple.svg') }}" class="w-8 h-8">
-                            </button>
-                            <button type="button" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition">
+                            </a>
+                            <a href="{{ route('social.redirect', 'google') }}" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition" title="Đăng ký bằng Google">
                                 <img src="{{ asset('user/img/Gmail.svg') }}" class="w-8 h-8">
-                            </button>
-                            <button type="button" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition">
+                            </a>
+                            <a href="{{ route('social.redirect', 'facebook') }}" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition" title="Đăng ký bằng Facebook">
                                 <img src="{{ asset('user/img/Icons-facbook.svg') }}" class="w-8 h-8">
-                            </button>
+                            </a>
                         </div>
                     </div>
 

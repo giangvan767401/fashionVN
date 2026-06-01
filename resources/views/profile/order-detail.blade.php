@@ -76,6 +76,16 @@
                             <span>Hoàn thành</span>
                         </div>
 
+                        @if($order->status == 'finished' && $order->points_earned > 0)
+                        <div class="mt-4 p-3 bg-violet-50 text-violet-700 rounded-xl text-xs flex justify-between items-center border border-violet-100 font-[Montserrat]">
+                            <span class="font-semibold flex items-center gap-1">
+                                <svg class="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                                Điểm tích lũy nhận được:
+                            </span>
+                            <span class="font-bold text-sm">+{{ number_format($order->points_earned) }} điểm</span>
+                        </div>
+                        @endif
+
                         @if($order->status == 'pending')
                         <div class="mt-8 pt-6 border-t border-gray-50 flex justify-end">
                             <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
@@ -145,6 +155,24 @@
                                 <span>Tạm tính</span>
                                 <span>${{ number_format($order->subtotal, 2) }}</span>
                             </div>
+                            @if(($order->discount_amount ?? 0) > 0)
+                            <div class="flex justify-between text-xs text-rose-600">
+                                <span>Giảm giá (Voucher)</span>
+                                <span>-${{ number_format($order->discount_amount, 2) }}</span>
+                            </div>
+                            @endif
+                            @if(($order->tier_discount ?? 0) > 0)
+                            <div class="flex justify-between text-xs text-rose-600">
+                                <span>Giảm giá thành viên</span>
+                                <span>-${{ number_format($order->tier_discount, 2) }}</span>
+                            </div>
+                            @endif
+                            @if(($order->points_discount ?? 0) > 0)
+                            <div class="flex justify-between text-xs text-rose-600">
+                                <span>Giảm giá tích lũy ({{ number_format($order->points_redeemed) }} điểm)</span>
+                                <span>-${{ number_format($order->points_discount, 2) }}</span>
+                            </div>
+                            @endif
                             <div class="flex justify-between text-xs text-gray-500">
                                 <span>Phí vận chuyển</span>
                                 <span>${{ number_format($order->shipping_fee, 2) }}</span>
