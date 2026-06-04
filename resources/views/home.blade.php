@@ -4,11 +4,11 @@
     <img src="{{ asset('user/img/hero-desktop.jpeg') }}" alt="Ảnh Hero" class="w-full h-full object-cover object-[30%_40%]">
     <div class="absolute top-1/2 md:top-1/2 left-[4%] md:left-[10%] -translate-y-1/2">
         <h1 class="text-3xl md:text-4xl text-black font-medium leading-tight mb-4">
-            Thanh Lịch Tinh Tế,<br>
-            Hài Hòa Với Thiên Nhiên
+            {{ __('Thanh Lịch Tinh Tế') }},<br>
+            {{ __('Hài Hòa Với Thiên Nhiên') }}
         </h1>
         <a href="{{ route('collection') }}" class="inline-block bg-white text-black px-6 md:px-9 py-2 uppercase text-sm font-semibold tracking-wider hover:bg-gray-100 transition-colors">
-            Hàng Mới
+            {{ __('Hàng Mới') }}
         </a>
     </div>
 </div>
@@ -16,8 +16,8 @@
 <!-- Sản Phẩm Bán Chạy -->
 <div class="max-w-7xl mx-auto px-4 py-16">
     <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl font-bold">Sản Phẩm Mới</h2>
-        <a href="{{ route('collection') }}" class="text-sm font-medium underline">Xem Tất Cả</a>
+        <h2 class="text-2xl font-bold">{{ __('Sản Phẩm Mới') }}</h2>
+        <a href="{{ route('collection') }}" class="text-sm font-medium underline">{{ __('Xem Tất Cả') }}</a>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
         @php
@@ -30,7 +30,7 @@
 
         @if($bestSellers->isEmpty())
             <div class="col-span-full py-12 text-center text-gray-400 italic">
-                Sản phẩm đang được cập nhật...
+                {{ __('Sản phẩm đang được cập nhật...') }}
             </div>
         @endif
     </div>
@@ -39,7 +39,7 @@
 <!-- Bộ Sưu Tập -->
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="mb-4">
-        <h2 class="text-2xl font-bold text-gray-900">Bộ Sưu Tập</h2>
+        <h2 class="text-2xl font-bold text-gray-900">{{ __('Bộ Sưu Tập') }}</h2>
     </div>
 
     <!-- Masonry-style Grid -->
@@ -93,9 +93,9 @@
 <!-- Khám phá sản phẩm (trước đây là Bộ Sưu Tập) -->
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-12">
-        <h1 class="text-3xl font-bold">Khám phá sản phẩm</h1>
+        <h1 class="text-3xl font-bold">{{ __('Khám phá sản phẩm') }}</h1>
         <a href="{{ route('collection') }}" class="text-sm font-medium hover:underline flex items-center gap-2">
-            Khám phá trọn bộ
+            {{ __('Khám phá trọn bộ') }}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </a>
     </div>
@@ -124,7 +124,7 @@
             </div>
         @empty
             <div class="col-span-full py-20 text-center border-2 border-dashed border-gray-100 rounded-3xl">
-                <p class="text-gray-400 italic">Dữ liệu bộ sưu tập đang được cập nhật...</p>
+                <p class="text-gray-400 italic">{{ __('Dữ liệu bộ sưu tập đang được cập nhật...') }}</p>
             </div>
         @endforelse
     </div>
@@ -132,7 +132,7 @@
 
 <!-- Phong Cách Mỗi Ngày (Modiweek) -->
 <div class="max-w-7xl mx-auto px-4 py-16">
-    <h2 class="text-2xl font-bold mb-8">Phong Cách Mỗi Ngày</h2>
+    <h2 class="text-2xl font-bold mb-8">{{ __('Phong Cách Mỗi Ngày') }}</h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         @php
         $days = [
@@ -164,10 +164,10 @@
             <img src="{{ asset('user/img/collection/Moodboard2_71ade389-dc80-49eb-b7e8-1c90a0273a2a_700x.webp') }}" alt="Sản Phẩm Xanh" class="w-full h-full object-cover mix-blend-multiply">
         </div>
         <div class="w-full md:w-1/2 flex flex-col justify-center items-start p-8 md:p-16 bg-[#e6e2df]">
-            <h2 class="text-3xl font-bold mb-6 text-black">Trái tim hướng về sự bền vững.</h2>
-            <p class="text-black mb-8 leading-relaxed max-w-md">Cam kết của chúng tôi với môi trường là luôn cẩn trọng lựa chọn chất liệu và ưu tiên quy trình sản xuất đạo đức. Chúng tôi tin rằng thời trang không chỉ giúp bạn mặc đẹp mà còn mang lại cảm giác an tâm về lựa chọn của mình.</p>
+            <h2 class="text-3xl font-bold mb-6 text-black">{{ __('Trái tim hướng về sự bền vững.') }}</h2>
+            <p class="text-black mb-8 leading-relaxed max-w-md">{{ __('Cam kết của chúng tôi với môi trường là luôn cẩn trọng lựa chọn chất liệu và ưu tiên quy trình sản xuất đạo đức. Chúng tôi tin rằng thời trang không chỉ giúp bạn mặc đẹp mà còn mang lại cảm giác an tâm về lựa chọn của mình.') }}</p>
             <a href="{{ url('/sustainability') }}" class="inline-block border-b-2 border-black text-black font-semibold text-sm uppercase tracking-wider pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">
-                Tìm Hiểu Thêm
+                {{ __('Tìm Hiểu Thêm') }}
             </a>
         </div>
     </div>
@@ -175,7 +175,7 @@
 
 <!-- Theo Dõi Chúng Tôi -->
 <div class="max-w-7xl mx-auto px-4 py-16 text-center">
-    <h2 class="text-2xl font-bold mb-2">Theo Dõi Chúng Tôi</h2>
+    <h2 class="text-2xl font-bold mb-2">{{ __('Theo Dõi Chúng Tôi') }}</h2>
     <p class="text-gray-500 mb-8"><a href="#" class="underline">@Lumiere.vn</a></p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         @for ($i = 1; $i <= 4; $i++)

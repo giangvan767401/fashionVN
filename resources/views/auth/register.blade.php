@@ -16,7 +16,7 @@
             
                     <!-- Title -->
                     <h1 class="text-3xl font-light uppercase text-center mb-10 tracking-wide">
-                        TẠO TÀI KHOẢN
+                        {{ __('TẠO TÀI KHOẢN') }}
                     </h1>
 
                     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -28,7 +28,7 @@
                         <div>
                             <input type="text" 
                                    name="first_name"
-                                   placeholder="Tên"
+                                   placeholder="{{ __('Tên') }}"
                                    value="{{ old('first_name') }}"
                                    required autofocus
                                    class="w-full border border-gray-300 bg-white px-4 py-4 text-[14px] font-light 
@@ -42,7 +42,7 @@
                         <div>
                             <input type="text" 
                                    name="last_name"
-                                   placeholder="Họ"
+                                   placeholder="{{ __('Họ') }}"
                                    value="{{ old('last_name') }}"
                                    required
                                    class="w-full border border-gray-300 bg-white px-4 py-4 text-[14px] font-light 
@@ -70,7 +70,7 @@
                         <div class="relative">
                             <input type="password" 
                                    name="password"
-                                   placeholder="Mật Khẩu"
+                                   placeholder="{{ __('Mật Khẩu') }}"
                                    required autocomplete="new-password"
                                    class="w-full border border-gray-300 bg-white px-4 py-4 text-[14px] font-light 
                                           focus:outline-none focus:border-gray-600 focus:ring-0 
@@ -95,22 +95,22 @@
                                 class="w-full text-white text-[14px] font-medium uppercase py-4 
                                        hover:opacity-90 transition"
                                 style="background-color: #5C6955;">
-                                ĐĂNG KÝ NGAY
+                                {{ __('ĐĂNG KÝ NGAY') }}
                             </button>
                         </div>
                     </form>
 
                     <!-- Login Link -->
                     <div class="mt-8 flex items-center justify-center gap-2 text-[14px] font-light text-gray-600">
-                        <span>Bạn Đã Có Tài Khoản?</span>
+                        <span>{{ __('Bạn Đã Có Tài Khoản?') }}</span>
                         <a href="{{ route('login') }}" class="hover:text-black">
-                            Đăng Nhập
+                            {{ __('Đăng Nhập') }}
                         </a>
                     </div>
 
                     <!-- Social -->
                     <div class="mt-8 text-center text-gray-500">
-                        <p class="text-[12px] mb-6">Or</p>
+                        <p class="text-[12px] mb-6">{{ __('Hoặc') }}</p>
                         
                         <div class="flex items-center justify-center gap-6">
                             <a href="#" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition" title="Apple (Chưa hỗ trợ)">
@@ -127,9 +127,9 @@
 
                     <!-- Policy -->
                     <div class="mt-8 text-center text-[11px] text-gray-500 leading-relaxed">
-                        Khi Đăng Ký, Bạn Đồng Ý Với 
+                        {{ __('Khi Đăng Ký, Bạn Đồng Ý Với') }} 
                         <a href="#" class="underline hover:text-black">
-                            Điều Khoản & Chính Sách Bảo Mật
+                            {{ __('Điều Khoản & Chính Sách Bảo Mật') }}
                         </a>.
                     </div>
 

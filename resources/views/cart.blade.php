@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ Hàng – Lumiere</title>
+    <title>{{ __('Giỏ Hàng') }} – Lumiere</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -21,6 +21,12 @@
             </div>
             <div style="font-size: 9px; letter-spacing: 0.3em; color: #9ca3af; text-transform: uppercase; margin-top: 2px;">women clothing</div>
         </a>
+        {{-- Language Toggle --}}
+        <div style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px;">
+            <a href="{{ route('lang', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
+            <span style="color: #d1d5db;">|</span>
+            <a href="{{ route('lang', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
+        </div>
     </header>
 
     <main style="max-width: 1100px; margin: 0 auto; padding: 48px 32px;">
@@ -28,25 +34,25 @@
         <!-- Page Title Row with Steps -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
             <div style="display: flex; align-items: center; gap: 12px; font-size: 14px;">
-                <a href="{{ url()->previous() }}" style="color: #9ca3af; text-decoration: none; font-weight: 400;">Trở Lại</a>
+                <a href="{{ url()->previous() }}" style="color: #9ca3af; text-decoration: none; font-weight: 400;">{{ __('Trở Lại') }}</a>
                 <span style="color: #d1d5db;">|</span>
-                <span style="font-size: 20px; font-weight: 700; color: #111827;">Giỏ Hàng</span>
+                <span style="font-size: 20px; font-weight: 700; color: #111827;">{{ __('Giỏ Hàng') }}</span>
                 <span style="color: #d1d5db; margin: 0 4px;">/</span>
-                <span style="color: #9ca3af; font-weight: 400;">Thông Tin</span>
+                <span style="color: #9ca3af; font-weight: 400;">{{ __('Thông Tin') }}</span>
                 <span style="color: #d1d5db; margin: 0 4px;">/</span>
-                <span style="color: #9ca3af; font-weight: 400;">Vận Chuyển</span>
+                <span style="color: #9ca3af; font-weight: 400;">{{ __('Vận Chuyển') }}</span>
                 <span style="color: #d1d5db; margin: 0 4px;">/</span>
-                <span style="color: #9ca3af; font-weight: 400;">Thanh Toán</span>
+                <span style="color: #9ca3af; font-weight: 400;">{{ __('Thanh Toán') }}</span>
             </div>
-            <a href="{{ route('collection') }}" style="font-size: 13px; color: #6b7280; text-decoration: none; letter-spacing: 0.05em;">Tiếp Tục Mua Sắm</a>
+            <a href="{{ route('collection') }}" style="font-size: 13px; color: #6b7280; text-decoration: none; letter-spacing: 0.05em;">{{ __('Tiếp Tục Mua Sắm') }}</a>
         </div>
 
         @if($cartItems->isEmpty())
             <!-- Empty Cart -->
             <div style="text-align: center; padding: 80px 0;">
-                <p style="font-size: 16px; color: #9ca3af; margin-bottom: 24px;">Giỏ hàng của bạn đang trống.</p>
+                <p style="font-size: 16px; color: #9ca3af; margin-bottom: 24px;">{{ __('Giỏ hàng của bạn đang trống.') }}</p>
                 <a href="{{ route('collection') }}" style="display: inline-block; padding: 12px 32px; background: #4a5845; color: white; font-size: 14px; text-decoration: none; letter-spacing: 0.05em;">
-                    Khám phá bộ sưu tập
+                    {{ __('Khám phá bộ sưu tập') }}
                 </a>
             </div>
         @else
@@ -58,10 +64,10 @@
             <div>
                 <!-- Table Header -->
                 <div style="display: grid; grid-template-columns: 1fr 100px 110px 80px; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; margin-bottom: 8px;">
-                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em;">Chi Tiết Đơn Hàng</span>
-                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em; text-align: center;">Giá</span>
-                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em; text-align: center;">Số Lượng</span>
-                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em; text-align: right;">Tổng</span>
+                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em;">{{ __('Chi Tiết Đơn Hàng') }}</span>
+                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em; text-align: center;">{{ __('Giá') }}</span>
+                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em; text-align: center;">{{ __('Số Lượng') }}</span>
+                    <span style="font-size: 12px; font-weight: 500; color: #374151; letter-spacing: 0.05em; text-align: right;">{{ __('Tổng') }}</span>
                 </div>
 
                 <!-- Cart Items -->
@@ -98,10 +104,10 @@
                                 <div>
                                     <p style="font-size: 14px; font-weight: 600; color: #111827; margin: 0 0 8px 0;">{{ $product?->name ?? 'Sản phẩm' }}</p>
                                     @if($size)
-                                    <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">Kích Cỡ: {{ $size }}</p>
+                                    <p style="font-size: 12px; color: #6b7280; margin: 0 0 4px 0;">{{ __('Kích Cỡ:') }} {{ $size }}</p>
                                     @endif
                                     @if($color)
-                                    <p style="font-size: 12px; color: #6b7280; margin: 0;">Màu Sắc: {{ $color }}</p>
+                                    <p style="font-size: 12px; color: #6b7280; margin: 0;">{{ __('Màu Sắc:') }} {{ $color }}</p>
                                     @endif
                                 </div>
                                 <!-- Remove Button -->
@@ -150,27 +156,27 @@
                 @endphp
                 <div style="space-y: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <span style="font-size: 14px; color: #6b7280;">Tạm Tính ({{ $cartItems->count() }})</span>
+                        <span style="font-size: 14px; color: #6b7280;">{{ __('Tạm Tính') }} ({{ $cartItems->count() }})</span>
                         <span style="font-size: 14px; font-weight: 600; color: #111827;">{{ number_format($cartTotal, 0, ',', '.') }}đ</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <span style="font-size: 14px; color: #6b7280;">Thuế</span>
+                        <span style="font-size: 14px; color: #6b7280;">{{ __('Thuế') }}</span>
                         <span style="font-size: 14px; font-weight: 600; color: #111827;">{{ number_format($tax, 0, ',', '.') }}đ</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb;">
-                        <span style="font-size: 14px; color: #6b7280;">Phí Vận Chuyển</span>
-                        <span style="font-size: 14px; font-weight: 600; color: #4a7c59;">Miễn Phí</span>
+                        <span style="font-size: 14px; color: #6b7280;">{{ __('Phí Vận Chuyển') }}</span>
+                        <span style="font-size: 14px; font-weight: 600; color: #4a7c59;">{{ __('Miễn Phí') }}</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-size: 15px; font-weight: 600; color: #111827;">Tổng Đơn Hàng:</span>
+                        <span style="font-size: 15px; font-weight: 600; color: #111827;">{{ __('Tổng Đơn Hàng:') }}</span>
                         <span style="font-size: 16px; font-weight: 700; color: #111827;">{{ number_format($total, 0, ',', '.') }}đ</span>
                     </div>
                     <p style="font-size: 11px; color: #9ca3af; line-height: 1.6; margin-bottom: 24px;">
-                        Tổng số tiền bạn thanh toán đã bao gồm toàn bộ thuế và phí hải quan áp dụng. Chúng tôi cam kết không thu thêm bất kỳ khoản phí nào khi giao hàng.
+                        {{ __('Tổng số tiền bạn thanh toán đã bao gồm toàn bộ thuế và phí hải quan áp dụng. Chúng tôi cam kết không thu thêm bất kỳ khoản phí nào khi giao hàng.') }}
                     </p>
                     <a href="{{ route('checkout') }}"
                        style="display: block; width: 100%; padding: 14px; text-align: center; background: #4a5845; color: white; font-size: 14px; font-weight: 500; text-decoration: none; letter-spacing: 0.05em; border-radius: 2px; box-sizing: border-box;">
-                        Tiếp Tục
+                        {{ __('Tiếp Tục') }}
                     </a>
                 </div>
             </div>

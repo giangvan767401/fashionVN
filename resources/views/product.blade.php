@@ -5,11 +5,11 @@
         <nav class="text-base text-gray-500" aria-label="Breadcrumb">
             <ol class="list-none p-0 inline-flex">
                 <li class="flex items-center">
-                    <a href="/" class="hover:text-gray-900 transition-colors">Trang Chủ</a>
+                    <a href="/" class="hover:text-gray-900 transition-colors">{{ __('Trang Chủ') }}</a>
                     <span class="mx-2">/</span>
                 </li>
                 <li class="flex items-center">
-                    <a href="{{ route('collection') }}" class="hover:text-gray-900 transition-colors">Tất Cả Sản Phẩm</a>
+                    <a href="{{ route('collection') }}" class="hover:text-gray-900 transition-colors">{{ __('Tất Cả Sản Phẩm') }}</a>
                     <span class="mx-2">/</span>
                 </li>
                 <li class="flex items-center">
@@ -47,11 +47,11 @@
             <h1 class="text-3xl font-bold mb-2">{{ $product['name'] }}</h1>
             
             <div class="flex items-center gap-4 mb-4 mt-2">
-                <p class="text-sm text-gray-500">Mã SP: <span id="product-sku" class="font-mono font-semibold text-gray-700">{{ $variantMap[0]['sku'] ?? ($product['id'] ?? '—') }}</span></p>
+                <p class="text-sm text-gray-500">{{ __('Mã SP:') }} <span id="product-sku" class="font-mono font-semibold text-gray-700">{{ $variantMap[0]['sku'] ?? ($product['id'] ?? '—') }}</span></p>
                 <div class="flex items-center gap-1 cursor-pointer" onclick="document.getElementById('reviews').scrollIntoView({behavior: 'smooth'})">
                     <span class="text-amber-400 text-lg leading-none mt-[1px]">★</span>
                     <span class="text-sm font-bold text-gray-900">{{ number_format($averageRating, 1) }}</span>
-                    <span class="text-sm text-gray-500 underline underline-offset-2">({{ $totalReviews }} đánh giá)</span>
+                    <span class="text-sm text-gray-500 underline underline-offset-2">({{ $totalReviews }} {{ __('đánh giá') }})</span>
                 </div>
             </div>
             
@@ -68,10 +68,10 @@
                 <!-- Size Guide Inline (Hidden by default) -->
                 <div id="inline-size-guide" class="hidden transition-opacity duration-300 border-t border-gray-300 pt-6 mt-2">
                     <div class="flex justify-between items-end mb-1">
-                        <h3 class="text-xl font-bold text-gray-900 uppercase tracking-wide">Bảng Hướng Dẫn Chọn Size</h3>
-                        <button class="text-sm text-gray-500 hover:text-black underline underline-offset-4" onclick="toggleSizeGuide()">Đóng</button>
+                        <h3 class="text-xl font-bold text-gray-900 uppercase tracking-wide">{{ __('Bảng Hướng Dẫn Chọn Size') }}</h3>
+                        <button class="text-sm text-gray-500 hover:text-black underline underline-offset-4" onclick="toggleSizeGuide()">{{ __('Đóng') }}</button>
                     </div>
-                    <p class="text-base text-gray-500 mb-6">Số đo cơ thể (cm), không phải số đo trang phục.</p>
+                    <p class="text-base text-gray-500 mb-6">{{ __('Số đo cơ thể (cm), không phải số đo trang phục.') }}</p>
                     <div class="overflow-x-auto border border-gray-200">
                         <table class="w-full text-center text-base">
                             <thead>
@@ -104,7 +104,7 @@
                 </div>
             </div>
             <div class="mb-6 border-t border-gray-200 pt-6">
-                <h3 class="font-medium text-sm text-gray-900 uppercase tracking-wide mb-3 text-[#333]">Màu Sắc:</h3>
+                <h3 class="font-medium text-sm text-gray-900 uppercase tracking-wide mb-3 text-[#333]">{{ __('Màu Sắc:') }}</h3>
                 <div class="flex flex-col gap-3">
                     @foreach($product['colors'] as $index => $color)
                         <button class="flex items-center gap-3 group focus:outline-none color-selection-btn" onclick="selectColor(this, '{{ $color['name'] }}')">
@@ -120,8 +120,8 @@
             <!-- Size Selection -->
             <div class="mb-8 border-t border-gray-200 pt-6">
                 <div class="flex justify-between items-end mb-3">
-                    <h3 class="font-medium text-sm text-gray-900 uppercase tracking-wide">Kích Cỡ: <span id="selected-size" class="font-normal">Select Size</span></h3>
-                    <button class="text-sm text-[#5c7a6b] underline underline-offset-4 hover:text-[#4a6356] transition-colors" onclick="toggleSizeGuide()">Hướng Dẫn Chọn Size</button>
+                    <h3 class="font-medium text-sm text-gray-900 uppercase tracking-wide">{{ __('Kích Cỡ:') }} <span id="selected-size" class="font-normal">{{ __('Select Size') }}</span></h3>
+                    <button class="text-sm text-[#5c7a6b] underline underline-offset-4 hover:text-[#4a6356] transition-colors" onclick="toggleSizeGuide()">{{ __('Hướng Dẫn Chọn Size') }}</button>
                 </div>
                 
                 <div class="grid grid-cols-5 gap-2">
@@ -142,7 +142,7 @@
                     <input type="hidden" name="size" id="form-size" value="">
                     <input type="hidden" name="quantity" value="1">
                     <button type="button" onclick="submitAddToCart()" class="w-full bg-[#333] text-white py-4 font-semibold uppercase tracking-wider hover:bg-black transition-colors mb-3">
-                        Thêm Vào Giỏ
+                        {{ __('Thêm Vào Giỏ') }}
                     </button>
                 </form>
                 
@@ -156,14 +156,14 @@
                     <svg id="wishlist-icon" width="20" height="18" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16.5 5.5C16.5 8.5 9 14.5 9 14.5C9 14.5 1.5 8.5 1.5 5.5C1.5 3.5 3 2 5 2C6.5 2 7.7 2.8 8.5 4C9.3 2.8 10.5 2 12 2C14 2 16.5 3.5 16.5 5.5Z" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span id="wishlist-label">Thêm Vào Yêu Thích</span>
+                    <span id="wishlist-label">{{ __('Thêm Vào Yêu Thích') }}</span>
                 </button>
                 @else
                 <a href="{{ route('login') }}" class="w-full border border-gray-300 bg-white text-[#333] py-4 font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
                     <svg width="20" height="18" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16.5 5.5C16.5 8.5 9 14.5 9 14.5C9 14.5 1.5 8.5 1.5 5.5C1.5 3.5 3 2 5 2C6.5 2 7.7 2.8 8.5 4C9.3 2.8 10.5 2 12 2C14 2 16.5 3.5 16.5 5.5Z" stroke="#333333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Thêm Vào Yêu Thích
+                    {{ __('Thêm Vào Yêu Thích') }}
                 </a>
                 @endauth
             </div>
@@ -179,7 +179,7 @@
                 <!-- Phom Dáng -->
                 <div class="border-b border-gray-200">
                     <button class="w-full flex justify-between items-center py-5 font-medium text-left product-accordion-btn" data-target="fit-content">
-                        PHOM DÁNG & TỈ LỆ
+                        {{ __('PHOM DÁNG & TỈ LỆ') }}
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
                     <div id="fit-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed">
@@ -191,7 +191,7 @@
                 <!-- Chất Liệu -->
                 <div class="border-b border-gray-200">
                     <button class="w-full flex justify-between items-center py-5 font-medium text-left product-accordion-btn" data-target="fabric-content">
-                        CHẤT LIỆU
+                        {{ __('CHẤT LIỆU') }}
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
                     <div id="fabric-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed">
@@ -202,7 +202,7 @@
                 <!-- Chi Tiết Sản Phẩm -->
                 <div class="border-b border-gray-200">
                     <button class="w-full flex justify-between items-center py-5 font-medium text-left product-accordion-btn" data-target="details-content">
-                        CHI TIẾT MÔ TẢ SẢN PHẨM
+                        {{ __('CHI TIẾT MÔ TẢ SẢN PHẨM') }}
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
                     <div id="details-content" class="hidden pb-5 text-gray-600 text-sm space-y-2">
@@ -221,7 +221,7 @@
 
     <!-- Product Reviews -->
     <div id="reviews" class="max-w-[1440px] px-4 md:px-8 mx-auto mt-16 mb-20 border-t border-gray-200 pt-16">
-        <h2 class="text-2xl font-bold mb-8 uppercase tracking-wide">Đánh Giá Sản Phẩm</h2>
+        <h2 class="text-2xl font-bold mb-8 uppercase tracking-wide">{{ __('Đánh Giá Sản Phẩm') }}</h2>
         
         <div class="flex flex-col md:flex-row gap-12">
             <!-- Review Summary & Form -->
@@ -237,7 +237,7 @@
                             @endif
                         @endfor
                     </div>
-                    <p class="text-sm text-gray-500">Dựa trên {{ $totalReviews }} đánh giá</p>
+                    <p class="text-sm text-gray-500">{{ __('Dựa trên') }} {{ $totalReviews }} {{ __('đánh giá') }}</p>
                 </div>
 
                 @if(session('success'))
@@ -253,13 +253,13 @@
 
                 @if($canReview)
                     <div class="bg-gray-50 p-6 rounded-2xl">
-                        <h3 class="font-bold text-lg mb-4">{{ $userReview ? 'Cập nhật đánh giá của bạn' : 'Viết đánh giá' }}</h3>
+                        <h3 class="font-bold text-lg mb-4">{{ $userReview ? __('Cập nhật đánh giá của bạn') : __('Viết đánh giá') }}</h3>
                         <form action="{{ route('reviews.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product['product_id'] }}">
                             
                             <div class="mb-4">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Đánh giá sao</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Đánh giá sao') }}</label>
                                 <div class="flex flex-row-reverse justify-end gap-1 star-rating mb-2">
                                     @for($i = 5; $i >= 1; $i--)
                                         <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}" class="hidden" {{ ($userReview && $userReview->rating == $i) ? 'checked' : ($i==5 && !$userReview ? 'checked' : '') }}>
@@ -274,23 +274,23 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Bình luận</label>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">{{ __('Bình luận') }}</label>
                                 <textarea name="comment" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gray-900 focus:outline-none text-sm" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm...">{{ $userReview ? $userReview->body : '' }}</textarea>
                             </div>
 
                             <button type="submit" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl hover:bg-black transition-colors">
-                                {{ $userReview ? 'Cập Nhật' : 'Gửi Đánh Giá' }}
+                                {{ $userReview ? __('Cập Nhật') : __('Gửi Đánh Giá') }}
                             </button>
                         </form>
                     </div>
                 @elseif(!Auth::check())
                     <div class="bg-gray-50 p-6 rounded-2xl text-center">
-                        <p class="text-gray-600 mb-4 text-sm">Vui lòng đăng nhập để đánh giá sản phẩm.</p>
-                        <a href="{{ route('login') }}" class="inline-block border border-gray-900 text-gray-900 px-6 py-2 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors text-sm">Đăng nhập</a>
+                        <p class="text-gray-600 mb-4 text-sm">{{ __('Vui lòng đăng nhập để đánh giá sản phẩm.') }}</p>
+                        <a href="{{ route('login') }}" class="inline-block border border-gray-900 text-gray-900 px-6 py-2 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-colors text-sm">{{ __('Đăng nhập') }}</a>
                     </div>
                 @else
                     <div class="bg-gray-50 p-6 rounded-2xl">
-                        <p class="text-gray-600 text-sm">Bạn chỉ có thể đánh giá sau khi đã mua và nhận sản phẩm này.</p>
+                        <p class="text-gray-600 text-sm">{{ __('Bạn chỉ có thể đánh giá sau khi đã mua và nhận sản phẩm này.') }}</p>
                     </div>
                 @endif
             </div>
@@ -299,7 +299,7 @@
             <div class="w-full md:w-2/3">
                 @if($reviews->isEmpty())
                     <div class="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl">
-                        Chưa có đánh giá nào. Hãy là người đầu tiên nhận xét về sản phẩm này!
+                        {{ __('Chưa có đánh giá nào. Hãy là người đầu tiên nhận xét về sản phẩm này!') }}
                     </div>
                 @else
                     <div class="space-y-6">
@@ -320,7 +320,7 @@
                                     @if($review->is_verified)
                                         <span class="ml-3 text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 flex items-center gap-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                                            Đã mua hàng
+                                            {{ __('Đã mua hàng') }}
                                         </span>
                                     @endif
                                 </div>
@@ -337,7 +337,7 @@
 
     <!-- Related Products -->
  <div class="max-w-[1440px] px-8 md:px-16 lg:px-28 mx-auto mb-20">
-    <h2 class="text-2xl font-bold mb-8 text-left uppercase tracking-wide">Có Thể Bạn Cũng Thích</h2>
+    <h2 class="text-2xl font-bold mb-8 text-left uppercase tracking-wide">{{ __('Có Thể Bạn Cũng Thích') }}</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-12">
         
@@ -553,11 +553,11 @@
         const size = document.getElementById('form-size').value;
         const color = document.getElementById('form-color').value;
         if (!size || size === 'Select Size') {
-            alert('Vui lòng chọn Kích Cỡ trước khi thêm vào giỏ hàng.');
+            alert('{{ __("Vui lòng chọn Kích Cỡ trước khi thêm vào giỏ hàng.") }}');
             return;
         }
         if (!color) {
-            alert('Vui lòng chọn Màu Sắc.');
+            alert('{{ __("Vui lòng chọn Màu Sắc.") }}');
             return;
         }
         document.getElementById('add-to-cart-form').submit();

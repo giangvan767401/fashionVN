@@ -12,6 +12,14 @@ use App\Http\Controllers\WishlistController;
 // Trang chủ
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Chuyển đổi ngôn ngữ
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'vi'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 // Trang collection / shop
 Route::get('/collection', [CollectionController::class, 'index'])->name('collection');
 

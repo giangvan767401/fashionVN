@@ -8,8 +8,8 @@
                     </svg>
                 </a>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Chi tiết đơn hàng #{{ $order->id }}</h1>
-                    <p class="text-sm text-gray-500 mt-1">Mã đơn: {{ $order->order_number }}</p>
+                    <h1 class="text-2xl font-bold text-gray-900">{{ __('Chi tiết đơn hàng') }} #{{ $order->id }}</h1>
+                    <p class="text-sm text-gray-500 mt-1">{{ __('Mã đơn:') }} {{ $order->order_number }}</p>
                 </div>
             </div>
 
@@ -31,15 +31,15 @@
                     <!-- Status Card -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Trạng thái</h3>
+                            <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest">{{ __('Trạng thái') }}</h3>
                             @php
                             $statusLabels = [
-                            'pending' => 'Đang xử lý',
-                            'shipped' => 'Đang giao hàng',
-                            'completed' => 'Đã giao hàng',
-                            'finished' => 'Hoàn thành',
-                            'cancelled' => 'Đã hủy',
-                            'delivery_failed' => 'Giao hàng không thành công',
+                            'pending' => __('Đang xử lý'),
+                            'shipped' => __('Đang giao hàng'),
+                            'completed' => __('Đã giao hàng'),
+                            'finished' => __('Hoàn thành'),
+                            'cancelled' => __('Đã hủy'),
+                            'delivery_failed' => __('Giao hàng không thành công'),
                             ];
                             $statusColors = [
                             'pending' => 'text-amber-600',
@@ -71,27 +71,27 @@
                             <div class="absolute inset-y-0 left-0 {{ $progressColor }} rounded-full transition-all duration-1000" style="width: {{ $progress }}%"></div>
                         </div>
                         <div class="flex justify-between mt-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            <span>Đã đặt</span>
-                            <span>Đang giao</span>
-                            <span>Hoàn thành</span>
+                            <span>{{ __('Đã đặt') }}</span>
+                            <span>{{ __('Đang giao') }}</span>
+                            <span>{{ __('Hoàn thành') }}</span>
                         </div>
 
                         @if($order->status == 'finished' && $order->points_earned > 0)
                         <div class="mt-4 p-3 bg-violet-50 text-violet-700 rounded-xl text-xs flex justify-between items-center border border-violet-100 font-[Montserrat]">
                             <span class="font-semibold flex items-center gap-1">
                                 <svg class="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                                Điểm tích lũy nhận được:
+                                {{ __('Điểm tích lũy nhận được:') }}
                             </span>
-                            <span class="font-bold text-sm">+{{ number_format($order->points_earned) }} điểm</span>
+                            <span class="font-bold text-sm">+{{ number_format($order->points_earned) }} {{ __('điểm') }}</span>
                         </div>
                         @endif
 
                         @if($order->status == 'pending')
                         <div class="mt-8 pt-6 border-t border-gray-50 flex justify-end">
-                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?')">
+                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('{{ __(\'Bạn có chắc chắn muốn hủy đơn hàng này không?\') }}')">
                                 @csrf
                                 <button type="submit" class="px-6 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 transition-colors">
-                                    Hủy đơn hàng
+                                    {{ __('Hủy đơn hàng') }}
                                 </button>
                             </form>
                         </div>
@@ -99,7 +99,7 @@
 
                         @if($order->status == 'completed')
                         <div class="mt-8 pt-6 border-t border-gray-50">
-                            <p class="text-xs text-gray-500 mb-4 font-medium">Bạn đã nhận được hàng chưa?</p>
+                            <p class="text-xs text-gray-500 mb-4 font-medium">{{ __('Bạn đã nhận được hàng chưa?') }}</p>
                             <div class="flex flex-wrap gap-3">
                                 <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST">
                                     @csrf
@@ -108,10 +108,10 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                             <polyline points="20 6 9 17 4 12" />
                                         </svg>
-                                        Đã nhận hàng
+                                        {{ __('Đã nhận hàng') }}
                                     </button>
                                 </form>
-                                <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" onsubmit="return confirm('Bạn xác nhận chưa nhận được hàng?')">
+                                <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" onsubmit="return confirm('{{ __('Bạn xác nhận chưa nhận được hàng?') }}')">
                                     @csrf
                                     <input type="hidden" name="action" value="not_received">
                                     <button type="submit" class="px-5 py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 active:scale-95 transition-all flex items-center gap-2">
@@ -119,7 +119,7 @@
                                             <line x1="18" y1="6" x2="6" y2="18" />
                                             <line x1="6" y1="6" x2="18" y2="18" />
                                         </svg>
-                                        Chưa nhận được hàng
+                                        {{ __('Chưa nhận được hàng') }}
                                     </button>
                                 </form>
                             </div>
@@ -130,8 +130,8 @@
                     <!-- Items Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-50 flex justify-between items-center">
-                            <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Sản phẩm</h3>
-                            <span class="text-xs text-gray-500">{{ $order->items->count() }} mặt hàng</span>
+                            <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest">{{ __('Sản phẩm') }}</h3>
+                            <span class="text-xs text-gray-500">{{ $order->items->count() }} {{ __('mặt hàng') }}</span>
                         </div>
                         <div class="divide-y divide-gray-50">
                             @foreach($order->items as $item)
@@ -143,7 +143,7 @@
                                     <h4 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product_name }}</h4>
                                     <p class="text-xs text-gray-500 mb-2">{{ $item->variant_label }}</p>
                                     <div class="flex justify-between items-end">
-                                        <span class="text-xs text-gray-400">Số lượng: {{ $item->quantity }}</span>
+                                        <span class="text-xs text-gray-400">{{ __('Số lượng:') }} {{ $item->quantity }}</span>
                                         <span class="font-bold text-gray-900 text-sm">${{ number_format($item->unit_price, 2) }}</span>
                                     </div>
                                 </div>
@@ -152,37 +152,37 @@
                         </div>
                         <div class="p-6 bg-gray-50 border-t border-gray-100 space-y-2">
                             <div class="flex justify-between text-xs text-gray-500">
-                                <span>Tạm tính</span>
+                                <span>{{ __('Tạm tính') }}</span>
                                 <span>${{ number_format($order->subtotal, 2) }}</span>
                             </div>
                             @if(($order->discount_amount ?? 0) > 0)
                             <div class="flex justify-between text-xs text-rose-600">
-                                <span>Giảm giá (Voucher)</span>
+                                <span>{{ __('Giảm giá (Voucher)') }}</span>
                                 <span>-${{ number_format($order->discount_amount, 2) }}</span>
                             </div>
                             @endif
                             @if(($order->tier_discount ?? 0) > 0)
                             <div class="flex justify-between text-xs text-rose-600">
-                                <span>Giảm giá thành viên</span>
+                                <span>{{ __('Giảm giá thành viên') }}</span>
                                 <span>-${{ number_format($order->tier_discount, 2) }}</span>
                             </div>
                             @endif
                             @if(($order->points_discount ?? 0) > 0)
                             <div class="flex justify-between text-xs text-rose-600">
-                                <span>Giảm giá tích lũy ({{ number_format($order->points_redeemed) }} điểm)</span>
+                                <span>{{ __('Giảm giá tích lũy') }} ({{ number_format($order->points_redeemed) }} {{ __('điểm') }})</span>
                                 <span>-${{ number_format($order->points_discount, 2) }}</span>
                             </div>
                             @endif
                             <div class="flex justify-between text-xs text-gray-500">
-                                <span>Phí vận chuyển</span>
+                                <span>{{ __('Phí vận chuyển') }}</span>
                                 <span>${{ number_format($order->shipping_fee, 2) }}</span>
                             </div>
                             <div class="flex justify-between text-xs text-gray-500">
-                                <span>Thuế (8%)</span>
+                                <span>{{ __('Thuế (8%)') }}</span>
                                 <span>${{ number_format($order->tax_amount, 2) }}</span>
                             </div>
                             <div class="flex justify-between items-center pt-3 mt-1 border-t border-gray-100">
-                                <span class="font-bold text-gray-900">Tổng thanh toán</span>
+                                <span class="font-bold text-gray-900">{{ __('Tổng thanh toán') }}</span>
                                 <span class="text-xl font-black text-gray-900">${{ number_format($order->total_amount, 2) }}</span>
                             </div>
                         </div>
@@ -193,15 +193,15 @@
                 <div class="space-y-6">
                     <!-- Recipient Card -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest mb-4">Địa chỉ giao hàng</h3>
+                        <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest mb-4">{{ __('Địa chỉ giao hàng') }}</h3>
                         <div class="space-y-3">
                             <div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Người nhận</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">{{ __('Người nhận') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $order->ship_name }}</p>
                                 <p class="text-sm text-gray-600">{{ $order->ship_phone }}</p>
                             </div>
                             <div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Địa chỉ</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">{{ __('Địa chỉ') }}</p>
                                 <p class="text-sm text-gray-600 leading-relaxed">
                                     {{ $order->ship_address }}<br>
                                     {{ $order->ship_ward }}, {{ $order->ship_district }}, {{ $order->ship_province }}
@@ -212,33 +212,33 @@
 
                     <!-- Payment Status Card -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest mb-4">Thanh toán</h3>
+                        <h3 class="font-bold text-gray-900 uppercase text-[10px] tracking-widest mb-4">{{ __('Thanh toán') }}</h3>
                         @if($order->payment_status === 'paid')
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
-                            <span class="text-sm font-bold text-emerald-600">Đã thanh toán</span>
+                            <span class="text-sm font-bold text-emerald-600">{{ __('Đã thanh toán') }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Thanh toán trực tuyến (MoMo)</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ __('Thanh toán trực tuyến (MoMo)') }}</p>
                         @elseif($order->payment_status === 'refunded')
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-violet-500 flex-shrink-0"></span>
-                            <span class="text-sm font-bold text-violet-600">Đã hoàn tiền</span>
+                            <span class="text-sm font-bold text-violet-600">{{ __('Đã hoàn tiền') }}</span>
                         </div>
                         @else
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></span>
-                            <span class="text-sm font-bold text-amber-600">Chưa thanh toán</span>
+                            <span class="text-sm font-bold text-amber-600">{{ __('Chưa thanh toán') }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Thanh toán khi nhận hàng (COD)</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ __('Thanh toán khi nhận hàng (COD)') }}</p>
                         @endif
                     </div>
 
                     <!-- Actions -->
                     <div class="bg-[#111111] rounded-2xl p-6 shadow-xl">
-                        <h3 class="font-bold text-white uppercase text-[10px] tracking-widest mb-4">Bạn cần hỗ trợ?</h3>
-                        <p class="text-xs text-gray-400 leading-relaxed mb-6">Nếu có bất kỳ thắc mắc nào về đơn hàng, vui lòng liên hệ với chúng tôi để được giải đáp sớm nhất.</p>
+                        <h3 class="font-bold text-white uppercase text-[10px] tracking-widest mb-4">{{ __('Bạn cần hỗ trợ?') }}</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed mb-6">{{ __('Nếu có bất kỳ thắc mắc nào về đơn hàng, vui lòng liên hệ với chúng tôi để được giải đáp sớm nhất.') }}</p>
                         <a href="{{ route('page.contact') }}" class="block w-full py-3 bg-white text-gray-900 text-center font-bold text-xs rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
-                            Liên hệ hỗ trợ
+                            {{ __('Liên hệ hỗ trợ') }}
                         </a>
                     </div>
                 </div>

@@ -16,7 +16,7 @@
             
                     <!-- Title -->
                     <h1 class="text-3xl font-light uppercase text-center mb-10 tracking-wide">
-                        ĐĂNG NHẬP
+                        {{ __('ĐĂNG NHẬP') }}
                     </h1>
 
                     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -42,7 +42,7 @@
                         <div class="relative">
                             <input type="password" 
                                    name="password"
-                                   placeholder="Mật Khẩu"
+                                   placeholder="{{ __('Mật Khẩu') }}"
                                    required
                                    class="w-full border border-gray-300 bg-white px-4 py-4 text-[14px] font-light 
                                           focus:outline-none focus:border-gray-600 focus:ring-0 
@@ -67,13 +67,13 @@
                                 <input type="checkbox" 
                                        name="remember"
                                        class="border-gray-300 focus:ring-gray-500">
-                                Ghi nhớ tôi
+                                {{ __('Ghi nhớ tôi') }}
                             </label>
 
                             @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}"
                                    class="hover:text-black hover:underline">
-                                    Quên mật khẩu?
+                                    {{ __('Quên mật khẩu?') }}
                                 </a>
                             @endif
                         </div>
@@ -84,23 +84,23 @@
                                 class="w-full text-white text-[14px] font-medium uppercase py-4 
                                        hover:opacity-90 transition"
                                 style="background-color: #5C6955;">
-                                ĐĂNG NHẬP
+                                {{ __('ĐĂNG NHẬP') }}
                             </button>
                         </div>
                     </form>
 
                     <!-- Register Link -->
                     <div class="mt-8 flex items-center justify-center gap-2 text-[14px] font-light text-gray-600">
-                        <span>Chưa Có Tài Khoản?</span>
+                        <span>{{ __('Chưa Có Tài Khoản?') }}</span>
                         <a href="{{ route('register') }}" 
                            class="hover:text-black">
-                            Đăng Ký
+                            {{ __('Đăng Ký') }}
                         </a>
                     </div>
 
                     <!-- Social -->
                     <div class="mt-8 text-center text-gray-500">
-                        <p class="text-[12px] mb-6">Or</p>
+                        <p class="text-[12px] mb-6">{{ __('Hoặc') }}</p>
 
                         <div class="flex items-center justify-center gap-6">
                             <a href="#" class="w-10 h-10 flex items-center justify-center hover:opacity-80 transition" title="Apple (Chưa hỗ trợ)">
@@ -117,9 +117,9 @@
 
                     <!-- Policy -->
                     <div class="mt-8 text-center text-[11px] text-gray-500 leading-relaxed">
-                        Khi Đăng Nhập, Bạn Đồng Ý Với 
+                        {{ __('Khi Đăng Nhập, Bạn Đồng Ý Với') }} 
                         <a href="#" class="underline hover:text-black">
-                            Điều Khoản & Chính Sách Bảo Mật
+                            {{ __('Điều Khoản & Chính Sách Bảo Mật') }}
                         </a>.
                     </div>
 

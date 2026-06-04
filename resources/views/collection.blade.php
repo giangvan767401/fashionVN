@@ -20,11 +20,11 @@
             <nav class="text-base text-gray-500" aria-label="Breadcrumb">
                 <ol class="list-none p-0 inline-flex">
                     <li class="flex items-center">
-                        <a href="/" class="hover:text-gray-900 transition-colors">Trang Chủ</a>
+                        <a href="/" class="hover:text-gray-900 transition-colors">{{ __('Trang Chủ') }}</a>
                         <span class="mx-2">/</span>
                     </li>
                     <li class="flex items-center">
-                        <span class="text-gray-900">Tất Cả Sản Phẩm</span>
+                        <span class="text-gray-900">{{ __('Tất Cả Sản Phẩm') }}</span>
                     </li>
                 </ol>
             </nav>
@@ -51,7 +51,7 @@
                     @endforeach
                     @endif
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold font-serif">Filters</h2>
+                        <h2 class="text-xl font-bold font-serif">{{ __('Filters') }}</h2>
                     </div>
 
                     <!-- Active Filters Chips -->
@@ -92,25 +92,25 @@
                         <!-- Sắp Xếp Theo -->
                         <div class="border border-gray-200">
                             <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="sort-content">
-                                Sắp Xếp Theo
+                                {{ __('Sắp Xếp Theo') }}
                                 <span class="text-lg leading-none icon font-normal">+</span>
                             </button>
                             <div id="sort-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="sort[]" value="featured" {{ in_array('featured', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
-                                    <span class="text-[13px] text-gray-600 ml-4">Nổi Bật</span>
+                                    <span class="text-[13px] text-gray-600 ml-4">{{ __('Nổi Bật') }}</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="sort[]" value="bestseller" {{ in_array('bestseller', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
-                                    <span class="text-[13px] text-gray-600 ml-4">Bán Chạy Nhất</span>
+                                    <span class="text-[13px] text-gray-600 ml-4">{{ __('Bán Chạy Nhất') }}</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="sort[]" value="price_asc" {{ in_array('price_asc', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
-                                    <span class="text-[13px] text-gray-600 ml-4">Giá: Tăng Dần</span>
+                                    <span class="text-[13px] text-gray-600 ml-4">{{ __('Giá: Tăng Dần') }}</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="sort[]" value="price_desc" {{ in_array('price_desc', (array)request()->query('sort', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
-                                    <span class="text-[13px] text-gray-600 ml-4">Giá: Giảm Dần</span>
+                                    <span class="text-[13px] text-gray-600 ml-4">{{ __('Giá: Giảm Dần') }}</span>
                                 </label>
                             </div>
                         </div>
@@ -118,17 +118,17 @@
                         <!-- Bộ Sưu Tập -->
                         <div class="border border-gray-200">
                             <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="collection-content">
-                                Bộ Sưu Tập
+                                {{ __('Bộ Sưu Tập') }}
                                 <span class="text-lg leading-none icon font-normal">+</span>
                             </button>
                             <div id="collection-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="collections[]" value="hang-moi" {{ in_array('hang-moi', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
-                                    <span class="text-[13px] text-gray-600 ml-4">Hàng Mới</span>
+                                    <span class="text-[13px] text-gray-600 ml-4">{{ __('Hàng Mới') }}</span>
                                 </label>
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="collections[]" value="ban-chay-nhat" {{ in_array('ban-chay-nhat', (array)request()->query('collections', [])) ? 'checked' : '' }} class="form-checkbox text-[#5c7a6b] border-gray-300 rounded-sm focus:ring-0 w-3.5 h-3.5 filter-checkbox">
-                                    <span class="text-[13px] text-gray-600 ml-4">Bán Chạy Nhất</span>
+                                    <span class="text-[13px] text-gray-600 ml-4">{{ __('Bán Chạy Nhất') }}</span>
                                 </label>
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                         <!-- Kích Cỡ -->
                         <div class="border border-gray-200">
                             <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="size-content">
-                                Kích Cỡ
+                                {{ __('Kích Cỡ') }}
                                 <span class="text-lg leading-none icon font-normal">+</span>
                             </button>
                             <div id="size-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
@@ -166,7 +166,7 @@
                         <!-- Chất Liệu -->
                         <div class="border border-gray-200">
                             <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="materials-content">
-                                Chất Liệu
+                                {{ __('Chất Liệu') }}
                                 <span class="text-lg leading-none icon font-normal">+</span>
                             </button>
                             <div id="materials-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
@@ -188,7 +188,7 @@
                         <!-- Màu Sắc -->
                         <div class="border border-gray-200">
                             <button type="button" class="w-full flex justify-between items-center px-4 py-3 bg-[#7b9c8a] text-white font-semibold text-sm text-left accordion-btn transition-colors" data-target="colors-content">
-                                Màu Sắc
+                                {{ __('Màu Sắc') }}
                                 <span class="text-lg leading-none icon font-normal">+</span>
                             </button>
                             <div id="colors-content" class="hidden px-4 py-4 space-y-3 bg-white border-t border-gray-200">
@@ -212,8 +212,8 @@
                     </div>
 
                     <div class="mt-6 flex flex-row items-center justify-between gap-3">
-                        <button type="button" class="w-1/2 text-center text-[12px] text-gray-500 hover:text-black py-2.5 transition-colors font-medium border border-transparent bg-transparent" onclick="window.location.href='{{ route('collection') }}'">Bỏ Chọn Tất Cả</button>
-                        <button type="submit" class="w-1/2 bg-[#5c7a6b] text-white px-2 py-2.5 text-[12px] hover:bg-[#4a6356] transition-colors font-medium rounded-sm">Lọc Đã Chọn</button>
+                        <button type="button" class="w-1/2 text-center text-[12px] text-gray-500 hover:text-black py-2.5 transition-colors font-medium border border-transparent bg-transparent" onclick="window.location.href='{{ route('collection') }}'">{{ __('Bỏ Chọn Tất Cả') }}</button>
+                        <button type="submit" class="w-1/2 bg-[#5c7a6b] text-white px-2 py-2.5 text-[12px] hover:bg-[#4a6356] transition-colors font-medium rounded-sm">{{ __('Lọc Đã Chọn') }}</button>
                     </div>
                 </form>
             </div>
@@ -222,8 +222,8 @@
             <div class="flex-1">
                 @if(request()->has('q') && request()->get('q') !== '')
                 <div class="mb-6 pb-4 border-b border-gray-200">
-                    <h1 class="text-2xl font-bold">Kết quả tìm kiếm cho: "{{ request('q') }}"</h1>
-                    <p class="text-gray-500 mt-2">Tìm thấy {{ count($products) }} sản phẩm</p>
+                    <h1 class="text-2xl font-bold">{{ __('Kết quả tìm kiếm cho:') }} "{{ request('q') }}"</h1>
+                    <p class="text-gray-500 mt-2">{{ __('Tìm thấy') }} {{ count($products) }} {{ __('sản phẩm') }}</p>
                 </div>
                 @endif
 
@@ -299,15 +299,15 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto mb-4 text-gray-400">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p class="text-lg">Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
-                    <a href="{{ route('collection') }}" class="text-[#5c7a6b] font-medium hover:underline mt-2 inline-block">Bỏ chọn các bộ lọc</a>
+                    <p class="text-lg">{{ __('Không tìm thấy sản phẩm nào phù hợp với bộ lọc.') }}</p>
+                    <a href="{{ route('collection') }}" class="text-[#5c7a6b] font-medium hover:underline mt-2 inline-block">{{ __('Bỏ chọn các bộ lọc') }}</a>
                 </div>
                 @endif
 
                 <!-- Load More -->
                 <div class="mt-16 flex justify-center border-t border-gray-200 pt-16">
                     <button class="border border-gray-300 px-8 py-3 text-sm font-medium hover:bg-gray-50 transition-colors">
-                        Load More
+                        {{ __('Load More') }}
                     </button>
                 </div>
             </div>

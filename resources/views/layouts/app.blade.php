@@ -46,7 +46,7 @@
         <nav class="hidden md:flex justify-center space-x-8 text-[15px] font-medium text-gray-700 h-full">
             <!-- Bộ Sưu Tập with Mega Menu -->
             <div class="h-full flex items-center">
-                <button type="button" id="megaMenuBtn" onclick="document.getElementById('megaMenu').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Bộ Sưu Tập</button>
+                <button type="button" id="megaMenuBtn" onclick="document.getElementById('megaMenu').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">{{ __('Bộ Sưu Tập') }}</button>
                 
                 <!-- Mega Menu Dropdown -->
                 <div id="megaMenu" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
@@ -107,7 +107,7 @@
             </div>
 
             <div class="h-full flex items-center">
-                <button type="button" id="megaMenuBtn2" onclick="document.getElementById('megaMenu2').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Hàng Mới</button>
+                <button type="button" id="megaMenuBtn2" onclick="document.getElementById('megaMenu2').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">{{ __('Hàng Mới') }}</button>
                 <div id="megaMenu2" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
                     <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between">
                         <!-- Columns 1-2: Text Links -->
@@ -164,7 +164,7 @@
             </div>
 
             <div class="h-full flex items-center">
-                <button type="button" id="megaMenuBtn5" onclick="document.getElementById('megaMenu5').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Modiweek</button>
+                <button type="button" id="megaMenuBtn5" onclick="document.getElementById('megaMenu5').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">{{ __('Modiweek') }}</button>
                 <!-- Mega Menu Dropdown -->
                 <div id="megaMenu5" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
                     <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between gap-8">
@@ -218,7 +218,7 @@
             </div>
             
             <div class="h-full flex items-center">
-                <button type="button" id="megaMenuBtn4" onclick="document.getElementById('megaMenu4').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Kích Thước</button>
+                <button type="button" id="megaMenuBtn4" onclick="document.getElementById('megaMenu4').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">{{ __('Kích Thước') }}</button>
                 <!-- Mega Menu Dropdown -->
                 <div id="megaMenu4" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
                     <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between gap-8">
@@ -263,7 +263,7 @@
                 </div>
             </div>
             <div class="h-full flex items-center">
-                <button type="button" id="megaMenuBtn6" onclick="document.getElementById('megaMenu6').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">Sản Phẩm Xanh</button>
+                <button type="button" id="megaMenuBtn6" onclick="document.getElementById('megaMenu6').classList.toggle('hidden')" class="hover:text-black py-4 h-full flex items-center">{{ __('Sản Phẩm Xanh') }}</button>
                 <!-- Mega Menu Dropdown -->
                 <div id="megaMenu6" class="hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-100 z-50">
                     <div class="max-w-7xl mx-auto px-8 py-12 flex justify-between gap-8">
@@ -385,6 +385,28 @@
 
 
         <div class="flex items-center space-x-6 flex-1 justify-end">
+            <!-- Language Switcher -->
+            <div class="relative inline-block text-left" id="langMenuWrapper">
+                <button id="langMenuBtn" onclick="toggleLangMenu(event)" class="text-[13px] font-medium text-gray-700 hover:text-black flex items-center gap-1.5 focus:outline-none py-1.5 px-2.5 rounded-full hover:bg-gray-50 transition-all border border-gray-100">
+                    @if(app()->getLocale() === 'vi')
+                        <span class="text-sm leading-none">🇻🇳</span>
+                        <span class="tracking-wider text-xs">VI</span>
+                    @else
+                        <span class="text-sm leading-none">🇬🇧</span>
+                        <span class="tracking-wider text-xs">EN</span>
+                    @endif
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div id="langDropdown" class="hidden absolute right-0 mt-2 w-28 bg-white rounded-xl shadow-xl border border-gray-50 z-[200] py-1.5 overflow-hidden">
+                    <a href="{{ route('lang.switch', 'vi') }}" class="flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors {{ app()->getLocale() === 'vi' ? 'font-semibold text-black bg-gray-50/50' : '' }}">
+                        <span class="text-base leading-none">🇻🇳</span> Tiếng Việt
+                    </a>
+                    <a href="{{ route('lang.switch', 'en') }}" class="flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors {{ app()->getLocale() === 'en' ? 'font-semibold text-black bg-gray-50/50' : '' }}">
+                        <span class="text-base leading-none">🇬🇧</span> English
+                    </a>
+                </div>
+            </div>
+
             <button aria-label="Search" onclick="openSearch()" class="hover:text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
@@ -599,9 +621,9 @@
         <!-- Cart Body -->
         @if($cartItems->isEmpty())
             <div id="cart-body" class="flex-1 overflow-y-auto px-8 py-12 flex flex-col items-center justify-center text-center">
-                <h3 class="text-[17px] font-bold text-gray-900 mb-4">Giỏ Hàng Của Bạn Đang Trống</h3>
+                <h3 class="text-[17px] font-bold text-gray-900 mb-4">{{ __('Giỏ Hàng Của Bạn Đang Trống') }}</h3>
                 <p class="text-[13px] text-gray-600 mb-10 leading-relaxed px-4">
-                    Khám Phá Lumiere Và Thêm Sản Phẩm Vào Giỏ Hàng Của Bạn
+                    {{ __('Khám Phá Lumiere Và Thêm Sản Phẩm Vào Giỏ Hàng Của Bạn') }}
                 </p>
                 <style>
                     .cart-btn-green {
@@ -706,8 +728,8 @@
     <script>
         // ... Click outside to close megamenus
         document.addEventListener('click', function(event) {
-            const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5', 'accountDropdown', 'bellDropdown'];
-            const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5', 'accountMenuBtn', 'bellMenuBtn'];
+            const menuIds = ['megaMenu', 'megaMenu2', 'megaMenu5', 'accountDropdown', 'bellDropdown', 'langDropdown'];
+            const btnIds = ['megaMenuBtn', 'megaMenuBtn2', 'megaMenuBtn5', 'accountMenuBtn', 'bellMenuBtn', 'langMenuBtn'];
             
             menuIds.forEach((mId, index) => {
                 const menu = document.getElementById(mId);
@@ -788,11 +810,20 @@
             dropdown.classList.toggle('hidden');
         }
 
+        // Language Dropdown Handler
+        function toggleLangMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('langDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeSearch();
                 closeCart();
                 closeAccountMenu();
+                const langDropdown = document.getElementById('langDropdown');
+                if (langDropdown) langDropdown.classList.add('hidden');
             }
         });
 
