@@ -273,12 +273,24 @@
                 const end = document.getElementById('custom-end').value;
 
                 if (!start || !end) {
-                    alert('Vui lòng chọn đầy đủ ngày bắt đầu và kết thúc!');
+                    Swal.fire({
+                        title: 'Thông báo',
+                        text: 'Vui lòng chọn đầy đủ ngày bắt đầu và kết thúc!',
+                        icon: 'warning',
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'Đóng'
+                    });
                     return;
                 }
                 
                 if (new Date(start) > new Date(end)) {
-                    alert('Ngày kết thúc phải lớn hơn ngày bắt đầu!');
+                    Swal.fire({
+                        title: 'Thông báo',
+                        text: 'Ngày kết thúc phải lớn hơn ngày bắt đầu!',
+                        icon: 'warning',
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'Đóng'
+                    });
                     return;
                 }
 

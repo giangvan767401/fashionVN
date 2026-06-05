@@ -51,8 +51,28 @@ Route::post('/coupon/remove', [\App\Http\Controllers\CouponController::class, 'r
 Route::post('/checkout/toggle-points', [\App\Http\Controllers\LoyaltyController::class, 'togglePoints'])->middleware(['auth', 'verified'])->name('checkout.toggle-points');
 
 // MoMo callback (không cần auth vì MoMo gọi về từ server bên ngoài)
+Route::get('/momo/confirm-scan/{order_number}', [\App\Http\Controllers\MomoController::class, 'confirmScan'])->name('momo.confirm_scan');
+Route::post('/momo/confirm-scan/{order_number}/execute', [\App\Http\Controllers\MomoController::class, 'executeConfirmScan'])->name('momo.execute_confirm_scan');
+Route::get('/api/orders/check-status/{order_number}', [\App\Http\Controllers\MomoController::class, 'checkStatus'])->name('momo.check_status');
 Route::get('/momo/return', [\App\Http\Controllers\MomoController::class, 'returnPayment'])->name('momo.return');
 Route::post('/momo/notify', [\App\Http\Controllers\MomoController::class, 'notify'])->name('momo.notify')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+// PayOS callback (không cần auth đối với webhook nhận từ PayOS)
+Route::get('/payos/demo/{order_id}', [\App\Http\Controllers\PayOSController::class, 'demo'])->name('payos.demo');
+Route::get('/payos/confirm-scan/{order_id}', [\App\Http\Controllers\PayOSController::class, 'confirmScan'])->name('payos.confirm_scan');
+Route::post('/payos/confirm-scan/{order_id}/execute', [\App\Http\Controllers\PayOSController::class, 'executeConfirmScan'])->name('payos.execute_confirm_scan');
+Route::get('/payos/return/{order_id}', [\App\Http\Controllers\PayOSController::class, 'returnPayment'])->name('payos.return');
+Route::get('/payos/cancel/{order_id}', [\App\Http\Controllers\PayOSController::class, 'cancelPayment'])->name('payos.cancel');
+Route::post('/webhook/payos', [\App\Http\Controllers\PayOSController::class, 'webhook'])->name('payos.webhook')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+
+// VNPAY payment gateway
+Route::get('/vnpay/return', [\App\Http\Controllers\VNPayController::class, 'returnPayment'])->name('vnpay.return');
+Route::get('/vnpay/cancel/{order_id}', [\App\Http\Controllers\VNPayController::class, 'cancelPayment'])->name('vnpay.cancel');
+Route::get('/vnpay/confirm-scan/{order_id}', [\App\Http\Controllers\VNPayController::class, 'confirmScan'])->name('vnpay.confirm_scan');
+Route::post('/vnpay/confirm-scan/{order_id}/execute', [\App\Http\Controllers\VNPayController::class, 'executeConfirmScan'])->name('vnpay.execute_confirm_scan');
+Route::get('/vnpay/demo/{order_id}', [\App\Http\Controllers\VNPayController::class, 'demo'])->middleware(['auth', 'verified'])->name('vnpay.demo');
+Route::post('/vnpay/demo/confirm', [\App\Http\Controllers\VNPayController::class, 'demoConfirm'])->middleware(['auth', 'verified'])->name('vnpay.demo.confirm');
+Route::post('/vnpay/demo/cancel', [\App\Http\Controllers\VNPayController::class, 'demoCancel'])->middleware(['auth', 'verified'])->name('vnpay.demo.cancel');
 Route::get('/momo/demo', [\App\Http\Controllers\MomoController::class, 'demo'])->middleware(['auth', 'verified'])->name('momo.demo');
 Route::post('/momo/demo/confirm', [\App\Http\Controllers\MomoController::class, 'demoConfirm'])->middleware(['auth', 'verified'])->name('momo.demo.confirm');
 Route::post('/momo/demo/cancel', [\App\Http\Controllers\MomoController::class, 'demoCancel'])->middleware(['auth', 'verified'])->name('momo.demo.cancel');

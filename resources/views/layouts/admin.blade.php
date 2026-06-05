@@ -15,6 +15,9 @@
     <!-- Chart CDN -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -23,6 +26,23 @@
             font-family: 'Inter', sans-serif; 
             margin: 0;
             padding: 0;
+        }
+        .swal2-popup {
+            font-family: 'Inter', sans-serif !important;
+            border-radius: 8px !important;
+        }
+        .swal2-styled.swal2-confirm {
+            background-color: #10b981 !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 10px 24px !important;
+        }
+        .swal2-styled.swal2-cancel {
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 10px 24px !important;
         }
         .sidebar-item-active {
             background-color: rgba(16, 185, 129, 0.1);
@@ -45,6 +65,32 @@
             flex-direction: column;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('submit', function(e) {
+                const form = e.target.closest('.confirm-form');
+                if (form) {
+                    e.preventDefault();
+                    const text = form.getAttribute('data-confirm-text') || 'Bạn có chắc chắn muốn thực hiện thao tác này?';
+                    const title = form.getAttribute('data-confirm-title') || 'Xác nhận';
+                    Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#10b981',
+                        cancelButtonColor: '#6e7881',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </head>
 <body class="antialiased bg-[#f9fafb] text-gray-900">
     <!-- Sidebar -->

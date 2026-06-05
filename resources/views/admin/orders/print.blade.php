@@ -53,7 +53,7 @@
             </div>
             <div class="order-details">
                 <strong>Thông tin thanh toán:</strong>
-                <p>PT Thanh toán: COD (Thanh toán khi nhận hàng)</p>
+                <p>PT Thanh toán: {{ $order->payment_method_name }}</p>
                 @php
                     $statusLabels = [
                         'pending' => 'Chờ xử lý',
@@ -85,8 +85,8 @@
                         <td>{{ $item->variant->product->name ?? 'Sản phẩm đã bị xóa' }}</td>
                         <td class="center">{{ $item->variant->color }} / {{ $item->variant->size }}</td>
                         <td class="center">{{ $item->quantity }}</td>
-                        <td class="right">{{ number_format($item->price, 0, ',', '.') }}₫</td>
-                        <td class="right">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</td>
+                        <td class="right">{{ number_format($item->unit_price, 0, ',', '.') }}₫</td>
+                        <td class="right">{{ number_format($item->total_price ?? ($item->unit_price * $item->quantity), 0, ',', '.') }}₫</td>
                     </tr>
                 @endforeach
                 <tr class="total-row">

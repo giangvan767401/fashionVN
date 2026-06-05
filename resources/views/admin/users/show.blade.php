@@ -36,7 +36,7 @@
                     </div>
                     <div class="mt-6 md:mt-0 flex space-x-3">
                         @if($user->id !== auth()->id())
-                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này? Thao tác này không thể hoàn tác.')">
+                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="confirm-form" data-confirm-text="Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này? Thao tác này không thể hoàn tác.">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="px-4 py-2 bg-white text-rose-600 border border-rose-100 hover:bg-rose-50 rounded-xl text-sm font-bold transition-all flex items-center shadow-sm">

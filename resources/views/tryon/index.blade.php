@@ -226,7 +226,13 @@
 
         // Kiểm tra kích thước file (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert('File ảnh quá lớn! Vui lòng chọn ảnh dưới 5MB.');
+            Swal.fire({
+                title: 'Thông báo',
+                text: 'File ảnh quá lớn! Vui lòng chọn ảnh dưới 5MB.',
+                icon: 'warning',
+                confirmButtonColor: '#4a7c59',
+                confirmButtonText: 'Đóng'
+            });
             this.value = '';
             return;
         }

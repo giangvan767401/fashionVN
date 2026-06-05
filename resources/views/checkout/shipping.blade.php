@@ -46,9 +46,9 @@
         </a>
         {{-- Language Toggle --}}
         <div style="position: absolute; top: 48px; right: 56px; display: flex; align-items: center; gap: 6px; font-size: 12px;">
-            <a href="{{ route('lang', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
+            <a href="{{ route('lang.switch', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
             <span style="color: #d1d5db;">|</span>
-            <a href="{{ route('lang', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
+            <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
         </div>
 
         <!-- Breadcrumb Steps -->
@@ -135,14 +135,14 @@
                                 <input type="radio" name="delivery_date" value="express_1" style="width:14px; height:14px;">
                                 {{ $vnDays[$e1->format('l')] }}, {{ $e1->format('d/m') }}
                             </div>
-                            <span class="shipping-price" style="font-size: 13px;">$25.00</span>
+                            <span class="shipping-price" style="font-size: 13px;">25.000đ</span>
                         </label>
                         <label style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                             <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151;">
                                 <input type="radio" name="delivery_date" value="express_2" style="width:14px; height:14px;">
                                 {{ $vnDays[$e2->format('l')] }}, {{ $e2->format('d/m') }}
                             </div>
-                            <span class="shipping-price" style="font-size: 13px;">$24.00</span>
+                            <span class="shipping-price" style="font-size: 13px;">24.000đ</span>
                         </label>
                      </div>
                 </div>

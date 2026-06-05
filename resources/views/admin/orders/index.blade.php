@@ -87,10 +87,30 @@
                                 <div class="text-xs text-gray-500 font-medium mt-1">{{ $order->ship_phone }}</div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gray-50 border border-gray-100 text-xs font-bold text-gray-600">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                                    COD
-                                </div>
+                                @php
+                                    $paymentCode = $order->payment_method_code;
+                                @endphp
+                                @if($paymentCode === 'MoMo')
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-pink-50 border border-pink-100 text-xs font-bold text-[#ad1457]">
+                                        <img src="{{ asset('user/img/momo_circle.svg') }}" alt="MoMo" class="w-3.5 h-3.5 object-contain">
+                                        MoMo
+                                    </div>
+                                @elseif($paymentCode === 'VietQR')
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-50 border border-blue-100 text-xs font-bold text-[#2563eb]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#2563eb]"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                                        VietQR
+                                    </div>
+                                @elseif($paymentCode === 'VNPAY')
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold" style="background:#eff6ff; border-color:#bfdbfe; color:#005baa;">
+                                        <span style="font-weight:900;color:#005baa;letter-spacing:-0.5px;">VN</span><span style="font-weight:900;color:#e31837;">PAY</span>
+                                    </div>
+                                @else
+                                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gray-50 border border-gray-100 text-xs font-bold text-gray-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                                        COD
+                                    </div>
+                                @endif
+
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 font-bold text-sm">

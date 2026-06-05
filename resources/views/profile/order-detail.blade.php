@@ -88,7 +88,7 @@
 
                         @if($order->status == 'pending')
                         <div class="mt-8 pt-6 border-t border-gray-50 flex justify-end">
-                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('{{ __('Bạn có chắc chắn muốn hủy đơn hàng này không?') }}')">
+                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" class="confirm-form" data-confirm-text="{{ __('Bạn có chắc chắn muốn hủy đơn hàng này không?') }}">
                                 @csrf
                                 <button type="submit" class="px-6 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 transition-colors">
                                     {{ __('Hủy đơn hàng') }}
@@ -111,7 +111,7 @@
                                         {{ __('Đã nhận hàng') }}
                                     </button>
                                 </form>
-                                <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" onsubmit="return confirm('{{ __('Bạn xác nhận chưa nhận được hàng?') }}')">
+                                <form action="{{ route('profile.orders.confirm-received', $order->id) }}" method="POST" class="confirm-form" data-confirm-text="{{ __('Bạn xác nhận chưa nhận được hàng?') }}">
                                     @csrf
                                     <input type="hidden" name="action" value="not_received">
                                     <button type="submit" class="px-5 py-2.5 border-2 border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 active:scale-95 transition-all flex items-center gap-2">
@@ -144,7 +144,7 @@
                                     <p class="text-xs text-gray-500 mb-2">{{ $item->variant_label }}</p>
                                     <div class="flex justify-between items-end">
                                         <span class="text-xs text-gray-400">{{ __('Số lượng:') }} {{ $item->quantity }}</span>
-                                        <span class="font-bold text-gray-900 text-sm">${{ number_format($item->unit_price, 2) }}</span>
+                                        <span class="font-bold text-gray-900 text-sm">{{ number_format($item->unit_price, 0, ',', '.') }}đ</span>
                                     </div>
                                 </div>
                             </div>
@@ -153,37 +153,37 @@
                         <div class="p-6 bg-gray-50 border-t border-gray-100 space-y-2">
                             <div class="flex justify-between text-xs text-gray-500">
                                 <span>{{ __('Tạm tính') }}</span>
-                                <span>${{ number_format($order->subtotal, 2) }}</span>
+                                <span>{{ number_format($order->subtotal, 0, ',', '.') }}đ</span>
                             </div>
                             @if(($order->discount_amount ?? 0) > 0)
                             <div class="flex justify-between text-xs text-rose-600">
                                 <span>{{ __('Giảm giá (Voucher)') }}</span>
-                                <span>-${{ number_format($order->discount_amount, 2) }}</span>
+                                <span>-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</span>
                             </div>
                             @endif
                             @if(($order->tier_discount ?? 0) > 0)
                             <div class="flex justify-between text-xs text-rose-600">
                                 <span>{{ __('Giảm giá thành viên') }}</span>
-                                <span>-${{ number_format($order->tier_discount, 2) }}</span>
+                                <span>-{{ number_format($order->tier_discount, 0, ',', '.') }}đ</span>
                             </div>
                             @endif
                             @if(($order->points_discount ?? 0) > 0)
                             <div class="flex justify-between text-xs text-rose-600">
                                 <span>{{ __('Giảm giá tích lũy') }} ({{ number_format($order->points_redeemed) }} {{ __('điểm') }})</span>
-                                <span>-${{ number_format($order->points_discount, 2) }}</span>
+                                <span>-{{ number_format($order->points_discount, 0, ',', '.') }}đ</span>
                             </div>
                             @endif
                             <div class="flex justify-between text-xs text-gray-500">
                                 <span>{{ __('Phí vận chuyển') }}</span>
-                                <span>${{ number_format($order->shipping_fee, 2) }}</span>
+                                <span>{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
                             </div>
                             <div class="flex justify-between text-xs text-gray-500">
                                 <span>{{ __('Thuế (8%)') }}</span>
-                                <span>${{ number_format($order->tax_amount, 2) }}</span>
+                                <span>{{ number_format($order->tax_amount, 0, ',', '.') }}đ</span>
                             </div>
                             <div class="flex justify-between items-center pt-3 mt-1 border-t border-gray-100">
                                 <span class="font-bold text-gray-900">{{ __('Tổng thanh toán') }}</span>
-                                <span class="text-xl font-black text-gray-900">${{ number_format($order->total_amount, 2) }}</span>
+                                <span class="text-xl font-black text-gray-900">{{ number_format($order->total_amount, 0, ',', '.') }}đ</span>
                             </div>
                         </div>
                     </div>
@@ -218,7 +218,7 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
                             <span class="text-sm font-bold text-emerald-600">{{ __('Đã thanh toán') }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">{{ __('Thanh toán trực tuyến (MoMo)') }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ $order->payment_method_name }}</p>
                         @elseif($order->payment_status === 'refunded')
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-violet-500 flex-shrink-0"></span>
@@ -229,7 +229,7 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></span>
                             <span class="text-sm font-bold text-amber-600">{{ __('Chưa thanh toán') }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">{{ __('Thanh toán khi nhận hàng (COD)') }}</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ $order->payment_method_name }}</p>
                         @endif
                     </div>
 

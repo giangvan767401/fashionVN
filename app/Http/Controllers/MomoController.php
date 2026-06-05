@@ -87,6 +87,7 @@ class MomoController extends Controller
                 'order_number'   => 'ORD-' . strtoupper(uniqid()),
                 'user_id'        => Auth::id(),
                 'coupon_id'      => $coupon ? $coupon->id : null,
+                'payment_method_id' => 4,
                 'ship_name'      => $info['last_name'] . ' ' . $info['first_name'],
                 'ship_phone'     => $info['phone'],
                 'ship_province'  => $info['province'] ?? '',
@@ -219,7 +220,277 @@ class MomoController extends Controller
             return redirect()->route('home')->with('error', 'Không tìm thấy đơn hàng.');
         }
 
-        return view('momo.demo', compact('order', 'amount'));
+        $host = request()->getHost();
+        $port = request()->getPort();
+        if (in_array($host, ['127.0.0.1', 'localhost'])) {
+            $localIp = gethostbyname(gethostname());
+            if ($localIp && $localIp !== '127.0.0.1' && $localIp !== '127.0.0.2') {
+                $host = $localIp;
+            }
+        }
+        $confirmScanUrl = "http://{$host}" . ($port ? ":{$port}" : "") . "/momo/confirm-scan/" . $order->order_number;
+
+        $momoPhone = env('MOMO_RECEIVER_PHONE');
+        if (!$momoPhone) {
+            $accNo = env('VIETQR_ACCOUNT_NO', '9116102005');
+            $momoPhone = (strpos($accNo, '0') === 0) ? $accNo : '0' . $accNo;
+        }
+        $momoRealUrl = "https://nhantien.momo.vn/{$momoPhone}/" . (int)round($amount);
+
+        return view('momo.demo', compact('order', 'amount', 'confirmScanUrl', 'momoRealUrl'));
+    }
+
+    /**
+     * Hiển thị giao diện thanh toán MoMo khi quét mã QR từ điện thoại.
+     */
+    public function confirmScan($orderNumber)
+    {
+        $order = Order::where('order_number', $orderNumber)->first();
+
+        if (!$order) {
+            return response('Không tìm thấy đơn hàng.', 404);
+        }
+
+        return '
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Thanh toán đơn hàng</title>
+            <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+            <style>
+                body {
+                    font-family: "Nunito", sans-serif;
+                    background: #fdf2f8;
+                    margin: 0;
+                    padding: 16px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-start;
+                    min-height: 100vh;
+                    box-sizing: border-box;
+                }
+                .container {
+                    background: #ffffff;
+                    width: 100%;
+                    max-width: 420px;
+                    border-radius: 16px;
+                    box-shadow: 0 10px 25px -5px rgba(219, 39, 119, 0.1), 0 8px 10px -6px rgba(219, 39, 119, 0.1);
+                    padding: 24px;
+                    border: 1px solid #fbcfe8;
+                }
+                .header {
+                    text-align: center;
+                    margin-bottom: 24px;
+                }
+                .logo {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: #ae2070;
+                    margin-bottom: 4px;
+                }
+                .subtitle {
+                    font-size: 13px;
+                    color: #64748b;
+                }
+                .amount-card {
+                    background: #fdf2f8;
+                    border: 1px solid #fbcfe8;
+                    border-radius: 12px;
+                    padding: 16px;
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .amount-label {
+                    font-size: 12px;
+                    color: #be185d;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    margin-bottom: 4px;
+                }
+                .amount-value {
+                    font-size: 28px;
+                    font-weight: 800;
+                    color: #9d174d;
+                }
+                .info-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 12px 0;
+                    border-bottom: 1px solid #fce7f3;
+                    font-size: 14px;
+                }
+                .info-label {
+                    color: #64748b;
+                    font-weight: 500;
+                }
+                .info-value {
+                    color: #0f172a;
+                    font-weight: 700;
+                }
+                .btn-submit {
+                    display: block;
+                    width: 100%;
+                    padding: 16px;
+                    background: #ae2070;
+                    color: #fff;
+                    font-size: 15px;
+                    font-weight: 800;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    margin-top: 24px;
+                    text-align: center;
+                    box-shadow: 0 4px 6px -1px rgba(174, 32, 112, 0.2);
+                    text-decoration: none;
+                }
+                .btn-submit:hover {
+                    background: #8f1a5c;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <div class="logo">Ví <span style="color:#0f172a;">MoMo</span></div>
+                    <div class="subtitle">Cổng thanh toán giả lập di động</div>
+                </div>
+                
+                <div class="amount-card">
+                    <div class="amount-label">Số tiền cần thanh toán</div>
+                    <div class="amount-value">' . number_format($order->total_amount, 0, ',', '.') . 'đ</div>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Nhà cung cấp</span>
+                    <span class="info-value">LUMIERE WOMEN CLOTHING</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Mã đơn hàng</span>
+                    <span class="info-value">' . htmlspecialchars($order->order_number) . '</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phương thức</span>
+                    <span class="info-value">Ví điện tử MoMo</span>
+                </div>
+
+                <form method="POST" action="' . route('momo.execute_confirm_scan', $order->order_number) . '">
+                    ' . csrf_field() . '
+                    <button type="submit" class="btn-submit">
+                        ✓ &nbsp; XÁC NHẬN THANH TOÁN
+                    </button>
+                </form>
+            </div>
+        </body>
+        </html>
+        ';
+    }
+
+    /**
+     * Thực thi thanh toán và đánh dấu đơn hàng là đã thanh toán từ điện thoại.
+     */
+    public function executeConfirmScan($orderNumber)
+    {
+        $order = Order::where('order_number', $orderNumber)->first();
+
+        if (!$order) {
+            return response('Không tìm thấy đơn hàng.', 404);
+        }
+
+        if ($order->payment_status !== 'paid') {
+            $order->update(['payment_status' => 'paid']);
+            if ($order->coupon) {
+                $order->coupon->increment('used_count');
+            }
+            if ($order->points_redeemed > 0 && $order->user) {
+                $order->user->decrement('loyalty_points', $order->points_redeemed);
+            }
+
+            \App\Models\PaymentTransaction::create([
+                'order_id'         => $order->id,
+                'gateway'          => 'momo',
+                'transaction_code' => 'SCAN-' . strtoupper(uniqid()),
+                'amount'           => $order->total_amount,
+                'currency'         => 'VND',
+                'status'           => 'success',
+                'gateway_response' => ['mode' => 'scan', 'resultCode' => 0],
+                'paid_at'          => now(),
+            ]);
+        }
+
+        return '
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Thanh toán thành công</title>
+            <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+            <style>
+                body {
+                    font-family: "Nunito", sans-serif;
+                    background: #f4f6f9;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    padding: 20px;
+                    box-sizing: border-box;
+                }
+                .card {
+                    background: #white;
+                    background-color: #fff;
+                    border-radius: 16px;
+                    padding: 40px 30px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                    max-width: 400px;
+                    width: 100%;
+                }
+                .icon {
+                    font-size: 64px;
+                    color: #2e7d32;
+                    margin-bottom: 20px;
+                }
+                h1 {
+                    font-size: 22px;
+                    color: #333;
+                    margin-bottom: 12px;
+                }
+                p {
+                    font-size: 14px;
+                    color: #666;
+                    line-height: 1.6;
+                    margin-bottom: 24px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <div class="icon">✓</div>
+                <h1>Thanh toán thành công!</h1>
+                <p>Mã đơn hàng: <strong>' . htmlspecialchars($orderNumber) . '</strong><br>Đơn hàng đã được xác nhận thanh toán thành công. Bạn có thể đóng trình duyệt này và quay lại màn hình máy tính.</p>
+                <div style="font-size: 12px; color: #ae2070; font-weight: bold; margin-top: 10px;">Lumiere cảm ơn bạn!</div>
+            </div>
+        </body>
+        </html>
+        ';
+    }
+
+    /**
+     * Trả về trạng thái thanh toán của đơn hàng (dùng để polling từ JS).
+     */
+    public function checkStatus($orderNumber)
+    {
+        $order = Order::where('order_number', $orderNumber)->first();
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+        return response()->json([
+            'payment_status' => $order->payment_status
+        ]);
     }
 
     /**

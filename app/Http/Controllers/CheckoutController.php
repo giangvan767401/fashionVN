@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Http\Controllers\MomoController;
+use App\Http\Controllers\VNPayController;
 
 class CheckoutController extends Controller
 {
@@ -178,13 +179,15 @@ class CheckoutController extends Controller
         $pointsDiscount = $checkoutData['pointsDiscount'];
         $tax = $checkoutData['tax'];
         $total = $checkoutData['total'];
+        $shippingFee = $checkoutData['shippingFee'];
 
         $info = session('checkout.info');
+        $user = Auth::user();
 
         return view('checkout.shipping', compact(
             'cartItems', 'cartTotal', 'coupon', 'discountAmount', 
             'tierPercent', 'tierDiscount', 'pointsRedeemed', 'pointsDiscount',
-            'tax', 'total', 'info'
+            'tax', 'total', 'info', 'shippingFee', 'user'
         ));
     }
 
@@ -198,8 +201,8 @@ class CheckoutController extends Controller
         session()->put('checkout.shipping_method', $request->shipping_method);
 
         $fee = 0;
-        if (str_starts_with($request->delivery_date, 'express_1')) $fee = 25;
-        if (str_starts_with($request->delivery_date, 'express_2')) $fee = 24;
+        if (str_starts_with($request->delivery_date, 'express_1')) $fee = 25000;
+        if (str_starts_with($request->delivery_date, 'express_2')) $fee = 24000;
         session()->put('checkout.shipping_fee', $fee);
 
         return redirect()->route('checkout.payment');
@@ -226,23 +229,34 @@ class CheckoutController extends Controller
 
         $info = session('checkout.info');
         $shippingMethod = session('checkout.shipping_method');
+        $user = Auth::user();
 
         return view('checkout.payment', compact(
             'cartItems', 'cartTotal', 'coupon', 'discountAmount', 
             'tierPercent', 'tierDiscount', 'pointsRedeemed', 'pointsDiscount',
-            'tax', 'total', 'info', 'shippingMethod', 'shippingFee'
+            'tax', 'total', 'info', 'shippingMethod', 'shippingFee', 'user'
         ));
     }
 
     public function storePayment(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:cod,momo',
+            'payment_method' => 'required|in:cod,momo,vietqr,vnpay',
         ]);
 
         // Chuyển hướng sang luồng thanh toán MoMo
         if ($request->payment_method === 'momo') {
             return app(MomoController::class)->createPayment($request);
+        }
+
+        // Chuyển hướng sang luồng thanh toán VietQR (PayOS)
+        if ($request->payment_method === 'vietqr') {
+            return app(PayOSController::class)->createPayment($request);
+        }
+
+        // Chuyển hướng sang luồng thanh toán VNPAY
+        if ($request->payment_method === 'vnpay') {
+            return app(VNPayController::class)->createPayment($request);
         }
 
         if (!session()->has('checkout.info')) {
@@ -274,6 +288,7 @@ class CheckoutController extends Controller
             'order_number' => 'ORD-' . strtoupper(uniqid()),
             'user_id' => Auth::id(),
             'coupon_id' => $coupon ? $coupon->id : null,
+            'payment_method_id' => 1,
             'ship_name' => $info['last_name'] . ' ' . $info['first_name'],
             'ship_phone' => $info['phone'],
             'ship_province' => $info['province'] ?? '',

@@ -79,7 +79,7 @@
                                     </a>
 
                                     @if($user->id !== auth()->id())
-                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này? Thao tác này không thể hoàn tác.')">
+                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline confirm-form" data-confirm-text="Bạn có chắc chắn muốn xóa vĩnh viễn người dùng này? Thao tác này không thể hoàn tác.">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-100 rounded-lg transition-colors flex items-center justify-center border border-transparent shadow-sm" title="Xóa tài khoản">

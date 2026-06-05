@@ -129,7 +129,7 @@
                     <span class="w-3 h-3 rounded-full bg-emerald-500 flex-shrink-0"></span>
                     <div>
                         <p class="font-bold text-emerald-700 text-sm">Đã thanh toán</p>
-                        <p class="text-xs text-emerald-600 mt-0.5">Qua cổng trực tuyến (MoMo)</p>
+                        <p class="text-xs text-emerald-600 mt-0.5">{{ $order->payment_method_name }}</p>
                     </div>
                 </div>
                 @elseif($order->payment_status === 'refunded')
@@ -144,7 +144,7 @@
                     <span class="w-3 h-3 rounded-full bg-amber-400 flex-shrink-0"></span>
                     <div>
                         <p class="font-bold text-amber-700 text-sm">Chưa thanh toán</p>
-                        <p class="text-xs text-amber-600 mt-0.5">COD – thu tiền khi giao hàng</p>
+                        <p class="text-xs text-amber-600 mt-0.5">{{ $order->payment_method_name }}</p>
                     </div>
                 </div>
                 @endif
@@ -181,7 +181,7 @@
                 <h3 class="font-bold text-rose-900 uppercase text-xs tracking-wider mb-2">Danger Zone</h3>
                 <p class="text-rose-700 text-xs leading-relaxed mb-6">Dọn dẹp đơn hàng đã hoàn tất, đã hủy hoặc giao không thành công.</p>
 
-                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn đơn hàng này?')">
+                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="confirm-form" data-confirm-text="Bạn có chắc chắn muốn xóa vĩnh viễn đơn hàng này?">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="w-full py-3 border-2 border-rose-200 text-rose-600 rounded-2xl font-bold hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all">

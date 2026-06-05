@@ -91,4 +91,63 @@ class Order extends Model
     {
         return $this->belongsTo(Coupon::class);
     }
+
+    public function paymentTransactions()
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
+    public function getPaymentMethodNameAttribute()
+    {
+        if ($this->payment_method_id == 1) {
+            return 'Thanh toán khi nhận hàng (COD)';
+        } elseif ($this->payment_method_id == 2) {
+            return 'Chuyển khoản VietQR';
+        } elseif ($this->payment_method_id == 3) {
+            return 'Thanh toán VNPAY';
+        } elseif ($this->payment_method_id == 4) {
+            return 'Ví MoMo';
+        }
+
+        // Fallback for existing orders: check payment transactions
+        $lastTransaction = $this->paymentTransactions()->latest()->first();
+        if ($lastTransaction) {
+            if ($lastTransaction->gateway === 'momo') {
+                return 'Ví MoMo';
+            } elseif ($lastTransaction->gateway === 'vnpay') {
+                return 'Thanh toán VNPAY';
+            } elseif ($lastTransaction->gateway === 'payos') {
+                return 'Chuyển khoản VietQR';
+            }
+        }
+
+        return 'Thanh toán khi nhận hàng (COD)';
+    }
+
+    public function getPaymentMethodCodeAttribute()
+    {
+        if ($this->payment_method_id == 1) {
+            return 'COD';
+        } elseif ($this->payment_method_id == 2) {
+            return 'VietQR';
+        } elseif ($this->payment_method_id == 3) {
+            return 'VNPAY';
+        } elseif ($this->payment_method_id == 4) {
+            return 'MoMo';
+        }
+
+        // Fallback
+        $lastTransaction = $this->paymentTransactions()->latest()->first();
+        if ($lastTransaction) {
+            if ($lastTransaction->gateway === 'momo') {
+                return 'MoMo';
+            } elseif ($lastTransaction->gateway === 'vnpay') {
+                return 'VNPAY';
+            } elseif ($lastTransaction->gateway === 'payos') {
+                return 'VietQR';
+            }
+        }
+
+        return 'COD';
+    }
 }

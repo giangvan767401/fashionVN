@@ -561,11 +561,23 @@
         const size = document.getElementById('form-size').value;
         const color = document.getElementById('form-color').value;
         if (!size || size === 'Select Size') {
-            alert('{{ __("Vui lòng chọn Kích Cỡ trước khi thêm vào giỏ hàng.") }}');
+            Swal.fire({
+                title: '{{ __("Thông báo") }}',
+                text: '{{ __("Vui lòng chọn Kích Cỡ trước khi thêm vào giỏ hàng.") }}',
+                icon: 'warning',
+                confirmButtonColor: '#4a7c59',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         if (!color) {
-            alert('{{ __("Vui lòng chọn Màu Sắc.") }}');
+            Swal.fire({
+                title: '{{ __("Thông báo") }}',
+                text: '{{ __("Vui lòng chọn Màu Sắc.") }}',
+                icon: 'warning',
+                confirmButtonColor: '#4a7c59',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         document.getElementById('add-to-cart-form').submit();
@@ -623,7 +635,13 @@
         const size      = document.getElementById('form-size')?.value  || '';
 
         if (!productId) {
-            alert('Không tìm thấy sản phẩm.');
+            Swal.fire({
+                title: 'Lỗi',
+                text: 'Không tìm thấy sản phẩm.',
+                icon: 'error',
+                confirmButtonColor: '#4a7c59',
+                confirmButtonText: 'Đóng'
+            });
             return;
         }
 
@@ -651,7 +669,13 @@
                 icon.setAttribute('stroke', '#333333');
                 label.textContent = 'Thêm Vào Yêu Thích';
             } else if (data.error) {
-                alert(data.error);
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: data.error,
+                    icon: 'info',
+                    confirmButtonColor: '#4a7c59',
+                    confirmButtonText: 'Đóng'
+                });
             }
         })
         .catch(err => console.error('Wishlist toggle error:', err));

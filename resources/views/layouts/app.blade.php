@@ -17,9 +17,55 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Montserrat', sans-serif; }
+        .swal2-popup {
+            font-family: 'Montserrat', sans-serif !important;
+            border-radius: 4px !important;
+        }
+        .swal2-styled.swal2-confirm {
+            background-color: #4a7c59 !important;
+            border-radius: 3px !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.04em !important;
+            font-size: 14px !important;
+            padding: 10px 24px !important;
+        }
+        .swal2-styled.swal2-cancel {
+            border-radius: 3px !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 10px 24px !important;
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('submit', function(e) {
+                const form = e.target.closest('.confirm-form');
+                if (form) {
+                    e.preventDefault();
+                    const text = form.getAttribute('data-confirm-text') || 'Bạn có chắc chắn muốn thực hiện thao tác này?';
+                    const title = form.getAttribute('data-confirm-title') || 'Xác nhận';
+                    Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#4a7c59',
+                        cancelButtonColor: '#6e7881',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </head>
 <body class="antialiased min-h-screen flex flex-col pt-16">
     <!-- Fetch Cart Data -->

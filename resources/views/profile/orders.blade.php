@@ -74,7 +74,7 @@
                                     
                                     <div class="text-right">
                                         <p class="text-xs text-gray-400 mb-1">{{ __('Tổng thanh toán') }}</p>
-                                        <p class="text-xl font-black text-gray-900">${{ number_format($order->total_amount, 2) }}</p>
+                                        <p class="text-xl font-black text-gray-900">{{ number_format($order->total_amount, 0, ',', '.') }}đ</p>
                                         <div class="mt-4">
                                             <a href="{{ route('profile.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 text-sm font-bold text-gray-900 hover:text-[#61715B] transition-colors">
                                                 {{ __('Xem chi tiết') }}

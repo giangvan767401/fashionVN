@@ -76,9 +76,9 @@
                 </a>
                 {{-- Language Toggle --}}
                 <div style="position: absolute; top: 48px; right: 56px; display: flex; align-items: center; gap: 6px; font-size: 12px;">
-                    <a href="{{ route('lang', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
+                    <a href="{{ route('lang.switch', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
                     <span style="color: #d1d5db;">|</span>
-                    <a href="{{ route('lang', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
+                    <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
                 </div>
 
                 <!-- Breadcrumb Steps -->
@@ -152,18 +152,51 @@
                             </div>
                             <img src="{{ asset('user/img/momo_circle.svg') }}" alt="MoMo" style="width:36px; height:36px; object-fit:contain;">
                         </label>
+
+                        <label class="radio-box" id="label-vietqr" style="border-color: #e5e7eb;">
+                            <input type="radio" name="payment_method" value="vietqr" onchange="selectPayment('vietqr')">
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <span style="font-size: 14px; font-weight: 600; color: #111827;">{{ __('Chuyển khoản VietQR (Tự động)') }}</span>
+                                <span style="font-size: 12px; color: #6b7280; margin-top: 4px;">{{ __('Quét mã VietQR bằng ứng dụng ngân hàng để tự động xác nhận giao dịch.') }}</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a5845" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="2" y1="10" x2="22" y2="10"></line>
+                            </svg>
+                        </label>
+
+                        <label class="radio-box" id="label-vnpay" style="border-color: #e5e7eb;">
+                            <input type="radio" name="payment_method" value="vnpay" onchange="selectPayment('vnpay')">
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                <span style="font-size: 14px; font-weight: 600; color: #111827;">{{ __('Cổng thanh toán VNPAY') }}</span>
+                                <span style="font-size: 12px; color: #6b7280; margin-top: 4px;">{{ __('Thanh toán qua cổng VNPAY: thẻ ATM/Visa/Mastercard hoặc quét mã QR ngân hàng.') }}</span>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:2px;">
+                                <span style="font-size:13px;font-weight:900;color:#005baa;letter-spacing:-0.5px;">VN</span><span style="font-size:13px;font-weight:900;color:#e31837;">PAY</span>
+                            </div>
+                        </label>
                     </div>
 
                     <script>
                         function selectPayment(method) {
-                            var labelCod = document.getElementById('label-cod');
-                            var labelMomo = document.getElementById('label-momo');
+                            var labelCod    = document.getElementById('label-cod');
+                            var labelMomo   = document.getElementById('label-momo');
+                            var labelVietqr = document.getElementById('label-vietqr');
+                            var labelVnpay  = document.getElementById('label-vnpay');
+
+                            labelCod.style.borderColor    = '#e5e7eb';
+                            labelMomo.style.borderColor   = '#e5e7eb';
+                            labelVietqr.style.borderColor = '#e5e7eb';
+                            labelVnpay.style.borderColor  = '#e5e7eb';
+
                             if (method === 'momo') {
                                 labelMomo.style.borderColor = '#ae2070';
-                                labelCod.style.borderColor = '#e5e7eb';
+                            } else if (method === 'vietqr') {
+                                labelVietqr.style.borderColor = '#4a5845';
+                            } else if (method === 'vnpay') {
+                                labelVnpay.style.borderColor = '#005baa';
                             } else {
                                 labelCod.style.borderColor = '#4a5845';
-                                labelMomo.style.borderColor = '#e5e7eb';
                             }
                         }
                     </script>

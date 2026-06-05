@@ -45,6 +45,12 @@ return [
         'demo_mode'     => env('MOMO_DEMO_MODE', true),
     ],
 
+    'payos' => [
+        'client_id'     => env('PAYOS_CLIENT_ID'),
+        'api_key'       => env('PAYOS_API_KEY'),
+        'checksum_key'  => env('PAYOS_CHECKSUM_KEY'),
+    ],
+
     'facebook' => [
         'client_id'     => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),

@@ -23,9 +23,9 @@
         </a>
         {{-- Language Toggle --}}
         <div style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px;">
-            <a href="{{ route('lang', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
+            <a href="{{ route('lang.switch', 'vi') }}" style="color: {{ app()->getLocale() === 'vi' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'vi' ? '600' : '400' }}; text-decoration: none;">VI</a>
             <span style="color: #d1d5db;">|</span>
-            <a href="{{ route('lang', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
+            <a href="{{ route('lang.switch', 'en') }}" style="color: {{ app()->getLocale() === 'en' ? '#1a1a1a' : '#9ca3af' }}; font-weight: {{ app()->getLocale() === 'en' ? '600' : '400' }}; text-decoration: none;">EN</a>
         </div>
     </header>
 
