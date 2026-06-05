@@ -73,6 +73,7 @@ class ProductController extends Controller
             'sizes' => $uniqueSizes,
             'description' => $productModel->short_desc,
             'materials' => implode(', ', array_unique($materialTags)),
+            'slug' => $productModel->slug,
         ];
 
         // 3. Lấy 3 sản phẩm "Có thể bạn cũng thích" (Cùng Collection)

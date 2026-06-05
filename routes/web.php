@@ -25,6 +25,8 @@ Route::get('/collection', [CollectionController::class, 'index'])->name('collect
 
 // Trang chi tiết sản phẩm
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
+Route::get('/product/{slug}/try-on', [\App\Http\Controllers\TryOnController::class, 'index'])->name('tryon.index');
+Route::post('/try-on/process', [\App\Http\Controllers\TryOnController::class, 'process'])->name('tryon.process');
 
 // Giỏ hàng
 Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');

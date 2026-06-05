@@ -88,7 +88,7 @@
 
                         @if($order->status == 'pending')
                         <div class="mt-8 pt-6 border-t border-gray-50 flex justify-end">
-                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('{{ __(\'Bạn có chắc chắn muốn hủy đơn hàng này không?\') }}')">
+                            <form action="{{ route('profile.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('{{ __('Bạn có chắc chắn muốn hủy đơn hàng này không?') }}')">
                                 @csrf
                                 <button type="submit" class="px-6 py-2 border border-rose-200 text-rose-600 rounded-xl text-sm font-bold hover:bg-rose-50 transition-colors">
                                     {{ __('Hủy đơn hàng') }}

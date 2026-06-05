@@ -51,4 +51,10 @@ class Product extends Model
     {
         return round($this->reviews()->where('status', 'approved')->avg('rating') ?? 0, 1);
     }
+
+    public function getPrimaryImageUrlAttribute()
+    {
+        $img = $this->images->firstWhere('is_primary', true) ?? $this->images->first();
+        return $img ? $img->url : asset('user/img/default-product.jpg');
+    }
 }

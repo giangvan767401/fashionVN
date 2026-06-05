@@ -57,4 +57,9 @@ return [
         'redirect'      => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'huggingface' => [
+        'token'     => env('HF_TOKEN'),
+        'space_url' => env('HF_SPACE_URL', 'https://kwai-kolors-kolors-virtual-try-on.hf.space'),
+    ],
+
 ];

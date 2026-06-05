@@ -145,6 +145,14 @@
                         {{ __('Thêm Vào Giỏ') }}
                     </button>
                 </form>
+
+                <!-- Try-On AI Button -->
+                <a href="{{ route('tryon.index', $product['slug']) }}" class="w-full border-2 border-[#5c7a6b] bg-[#5c7a6b]/5 hover:bg-[#5c7a6b] text-[#5c7a6b] hover:text-white py-4 font-semibold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 mb-3 cursor-pointer">
+                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <span>✨ {{ __('Thử đồ ảo AI') }}</span>
+                </a>
                 
                 @auth
                 <button
