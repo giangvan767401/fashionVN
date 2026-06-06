@@ -45,6 +45,11 @@ class SocialAuthController extends Controller
             // Retrieve user data from the provider
             $socialUser = Socialite::driver($provider)->user();
         } catch (\Exception $e) {
+            // Log the actual exception details
+            \Log::error("Social auth callback failed for provider {$provider}: " . $e->getMessage(), [
+                'exception' => $e
+            ]);
+
             // Redirect back to login with error details if verification failed
             return redirect()->route('login')->withErrors([
                 'email' => __('Đăng nhập qua mạng xã hội không thành công. Vui lòng thử lại.'),
