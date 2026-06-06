@@ -26,6 +26,10 @@ class SocialAuthController extends Controller
             abort(404);
         }
 
+        if ($provider === 'facebook') {
+            return Socialite::driver($provider)->scopes(['email'])->redirect();
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 
@@ -56,12 +60,10 @@ class SocialAuthController extends Controller
             ]);
         }
 
-        // Validate that we have an email address
+        // Validate that we have an email address, otherwise use fallback email
         $email = $socialUser->getEmail();
         if (!$email) {
-            return redirect()->route('login')->withErrors([
-                'email' => __('Không thể lấy địa chỉ email từ tài khoản mạng xã hội của bạn.'),
-            ]);
+            $email = $socialUser->getId() . '@' . $provider . '.com';
         }
 
         // Authenticate/Link in a transaction to prevent inconsistent states
