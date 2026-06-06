@@ -207,9 +207,8 @@
                         {{ __('PHOM DÁNG & TỈ LỆ') }}
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
-                    <div id="fit-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed">
-                        Phom dáng thể thao thoải mái. Kết hợp hoàn hảo với quần legging và quần dài.<br><br>
-                        Người mẫu của chúng tôi mặc size S.
+                    <div id="fit-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+                        {!! nl2br(e($product['fit_guide'] ?: 'Thông tin phom dáng đang được cập nhật.')) !!}
                     </div>
                 </div>
 
@@ -219,8 +218,8 @@
                         {{ __('CHẤT LIỆU') }}
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
-                    <div id="fabric-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed">
-                        Chất liệu chính: {{ $product['materials'] ?: 'Đang cập nhật' }}. Thân thiện và mang lại cảm giác thoải mái.
+                    <div id="fabric-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+                        {!! nl2br(e($product['materials'] ?: 'Thông tin chất liệu đang được cập nhật.')) !!}
                     </div>
                 </div>
 
@@ -230,13 +229,8 @@
                         {{ __('CHI TIẾT MÔ TẢ SẢN PHẨM') }}
                         <span class="text-xl leading-none font-light toggle-icon">+</span>
                     </button>
-                    <div id="details-content" class="hidden pb-5 text-gray-600 text-sm space-y-2">
-                        <ul class="list-disc pl-5">
-                            <li>Cổ chữ V tinh tế</li>
-                            <li>Thiết kế tay ngắn mát mẻ</li>
-                            <li>Gấu áo bo thun nhẹ</li>
-                            <li>Được tạo ra với sự bền vững cao nhất</li>
-                        </ul>
+                    <div id="details-content" class="hidden pb-5 text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+                        {!! nl2br(e($product['detail_description'] ?: 'Chi tiết mô tả sản phẩm đang được cập nhật.')) !!}
                     </div>
                 </div>
 

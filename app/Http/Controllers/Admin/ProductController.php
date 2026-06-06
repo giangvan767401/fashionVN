@@ -105,7 +105,10 @@ class ProductController extends Controller
             'sizes.*' => 'nullable|string|max:100',
             'colors' => 'nullable|array',
             'colors.*' => 'nullable|string|max:100',
+            'short_desc' => 'nullable|string',
             'description' => 'nullable|string',
+            'fit_guide' => 'nullable|string',
+            'materials' => 'nullable|string',
             'image_files' => 'nullable|array',
             'image_files.*' => 'mimes:jpeg,jpg,png,gif,bmp,webp,avif|max:5120',
             'image_paste' => 'nullable|string',
@@ -125,7 +128,10 @@ class ProductController extends Controller
                 'base_price' => $request->base_price,
                 'sale_price' => $salePrice,
                 'discount_percent' => $discountPercent,
+                'short_desc' => $request->short_desc,
                 'description' => $request->description,
+                'fit_guide' => $request->fit_guide,
+                'materials' => $request->materials,
                 'is_active' => true,
             ]);
 
@@ -311,7 +317,10 @@ class ProductController extends Controller
             'colors' => 'nullable|array',
             'colors.*' => 'nullable|string|max:100',
             // 'quantity' => 'required|integer|min:0', // Removed as per instruction
+            'short_desc' => 'nullable|string',
             'description' => 'nullable|string',
+            'fit_guide' => 'nullable|string',
+            'materials' => 'nullable|string',
             'image_files' => 'nullable|array',
             'image_files.*' => 'mimes:jpeg,jpg,png,gif,webp,avif|max:5120',
             'image_paste' => 'nullable|string',
@@ -333,7 +342,10 @@ class ProductController extends Controller
                 'base_price' => $request->base_price,
                 'sale_price' => $salePrice,
                 'discount_percent' => $discountPercent,
+                'short_desc' => $request->short_desc,
                 'description' => $request->description,
+                'fit_guide' => $request->fit_guide,
+                'materials' => $request->materials,
             ]);
 
             $product->categories()->sync($request->categories);

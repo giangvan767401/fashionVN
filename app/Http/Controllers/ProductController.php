@@ -77,7 +77,9 @@ class ProductController extends Controller
             'colors' => $uniqueColors,
             'sizes' => $uniqueSizes,
             'description' => $productModel->short_desc,
-            'materials' => implode(', ', array_unique($materialTags)),
+            'detail_description' => $productModel->description,
+            'fit_guide' => $productModel->fit_guide,
+            'materials' => $productModel->materials ?: implode(', ', array_unique($materialTags)),
             'slug' => $productModel->slug,
         ];
 

@@ -371,17 +371,43 @@
                             </div>
                         </div>
 
-                        <div class="space-y-2">
-                            <label for="description" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Mô tả tóm tắt</label>
-                            <textarea name="description" id="description" rows="4" 
-                                      class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all placeholder:text-gray-400"
-                                      placeholder="Mô tả chất liệu, phom dáng...">{{ old('description') }}</textarea>
-                            @error('description') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="short_desc" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Mô tả ngắn (Hiển thị đầu trang storefront)</label>
+                                <textarea name="short_desc" id="short_desc" rows="3" 
+                                          class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#24422e]/10 focus:border-[#24422e] transition-all placeholder:text-gray-400"
+                                          placeholder="Tóm tắt ngắn gọn sản phẩm...">{{ old('short_desc') }}</textarea>
+                                @error('short_desc') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="description" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Chi tiết mô tả sản phẩm (Accordion)</label>
+                                <textarea name="description" id="description" rows="3" 
+                                          class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#24422e]/10 focus:border-[#24422e] transition-all placeholder:text-gray-400"
+                                          placeholder="Mô tả chi tiết kiểu dáng, cổ áo, tà áo...">{{ old('description') }}</textarea>
+                                @error('description') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="fit_guide" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Phom dáng & Tỉ lệ (Accordion)</label>
+                                <textarea name="fit_guide" id="fit_guide" rows="3" 
+                                          class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#24422e]/10 focus:border-[#24422e] transition-all placeholder:text-gray-400"
+                                          placeholder="Ví dụ: Phom dáng thể thao thoải mái. Người mẫu cao 1m70 mặc size S...">{{ old('fit_guide') }}</textarea>
+                                @error('fit_guide') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="materials" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Chất liệu (Accordion)</label>
+                                <textarea name="materials" id="materials" rows="3" 
+                                          class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#24422e]/10 focus:border-[#24422e] transition-all placeholder:text-gray-400"
+                                          placeholder="Ví dụ: 100% Cotton hữu cơ, co giãn tốt...">{{ old('materials') }}</textarea>
+                                @error('materials') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
                         </div>
 
                         <!-- Submit -->
                         <div class="pt-4 flex items-center gap-3">
-                            <button type="submit" class="px-8 py-3 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-200 flex items-center justify-center gap-2 flex-1 md:flex-none">
+                            <button type="submit" class="px-8 py-3 bg-[#24422e] text-white rounded-xl text-sm font-bold hover:bg-[#1b3223] transition-all shadow-sm flex items-center justify-center gap-2 flex-1 md:flex-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                                 Xuất bản sản phẩm
                             </button>
