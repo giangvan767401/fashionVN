@@ -26,11 +26,41 @@ class ChatbotController extends Controller
                 return "Hiện chưa có sản phẩm nào.";
             }
 
-            return $products->map(fn($p) =>
-                "- {$p->name}: " . number_format($p->base_price, 0, ',', '.') . "₫"
-            )->join("\n");
+            return $products->map(function ($p) {
+                $price = number_format($p->base_price, 0, ',', '.') . '₫';
+                if ($p->discount_percent > 0) {
+                    $salePrice = number_format($p->effective_price, 0, ',', '.') . '₫';
+                    return "- {$p->name}: ~~{$price}~~ → **{$salePrice}** (giảm {$p->discount_percent}% 🔥)";
+                }
+                return "- {$p->name}: {$price}";
+            })->join("\n");
         } catch (\Exception $e) {
             return "Đang tải danh sách sản phẩm...";
+        }
+    }
+
+    /**
+     * Lấy danh sách sản phẩm đang sale.
+     */
+    private function getSaleProductContext(): ?string
+    {
+        try {
+            $products = Product::where('is_active', true)
+                ->where('discount_percent', '>', 0)
+                ->latest()
+                ->get();
+
+            if ($products->isEmpty()) {
+                return null;
+            }
+
+            return $products->map(function ($p) {
+                $original  = number_format($p->base_price, 0, ',', '.') . '₫';
+                $salePrice = number_format($p->effective_price, 0, ',', '.') . '₫';
+                return "- **{$p->name}**: ~~{$original}~~ → **{$salePrice}** (-{$p->discount_percent}%)";
+            })->join("\n");
+        } catch (\Exception $e) {
+            return null;
         }
     }
 
@@ -74,6 +104,15 @@ class ChatbotController extends Controller
         // ── CẢM ƠN ──────────────────────────────────────────────
         if ($this->matches($words, ['cảm ơn', 'cam on', 'thanks', 'thank you', 'camon'])) {
             return "Không có chi bạn! 😊 Nếu cần thêm gì cứ hỏi mình nhé. Chúc bạn mua sắm vui vẻ tại Lumiere!";
+        }
+
+        // ── SALE / GIẢM GIÁ ──────────────────────────────────────
+        if ($this->matches($words, ['sale', 'giảm giá', 'giam gia', 'khuyến mãi', 'khuyen mai', 'ưu đãi', 'uu dai', 'hàng sale', 'đang sale', 'giảm', 'giam', 'flash sale'])) {
+            $saleList = $this->getSaleProductContext();
+            if ($saleList) {
+                return "🔥 **Sản phẩm đang SALE tại Lumiere:**\n\n{$saleList}\n\n👉 [Xem tất cả sản phẩm →](/collection)\n\nMình có thể tư vấn thêm về sản phẩm nào bạn nhé!";
+            }
+            return "Hiện tại Lumiere chưa có sản phẩm nào đang sale bạn ơi 🙏\n\nNhưng đừng bỏ lỡ — theo dõi [bộ sưu tập mới nhất →](/collection) để cập nhật ưu đãi sớm nhất nhé!";
         }
 
         // ── SẢN PHẨM ──────────────────────────────────────────────

@@ -55,8 +55,25 @@
                 </div>
             </div>
             
-            <!-- Price -->
+            {{-- Price Display --}}
+            @if($product['is_on_sale'])
+            <div class="flex items-center gap-4 mb-6">
+                <div class="relative">
+                    <span class="inline-flex items-center gap-2 px-4 py-2 border-2 border-rose-500 text-2xl font-black text-rose-600">
+                        <span class="absolute -top-3 -left-1 inline-flex items-center px-2 py-0.5 bg-rose-500 text-white text-[11px] font-black uppercase tracking-widest rounded-sm animate-pulse">
+                            SALE
+                        </span>
+                        {{ $product['price'] }}
+                    </span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-gray-400 line-through text-lg">{{ $product['price_original'] }}</span>
+                    <span class="text-rose-500 text-[12px] font-black uppercase tracking-wider">-{{ $product['discount_percent'] }}% OFF</span>
+                </div>
+            </div>
+            @else
             <div class="inline-block border border-gray-300 px-4 py-2 text-2xl font-bold mb-6">{{ $product['price'] }}</div>
+            @endif
 
             <!-- Description & Size Guide Container -->
             <div id="product-info-container" class="mb-8">
@@ -355,10 +372,19 @@
                 <img src="{{ $related['image'] }}" alt="{{ $related['name'] }}" 
                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 
+                <!-- SALE Badge -->
+                @if($related['is_on_sale'])
+                <div class="absolute top-4 left-4">
+                    <span class="inline-flex items-center px-2 py-0.5 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-sm shadow-md">
+                        -{{ $related['discount_percent'] }}%
+                    </span>
+                </div>
+                @else
                 <!-- NEW Badge -->
                 <div class="absolute top-4 left-4 text-[10px] font-bold tracking-widest text-black uppercase">
                     NEW
                 </div>
+                @endif
 
                 <!-- Heart Icon -->
                 <button class="absolute top-3 right-3 text-black transition-transform hover:scale-110 p-2 focus:outline-none z-10" onclick="event.stopPropagation();">
@@ -372,7 +398,14 @@
                 <!-- Title & Price Row -->
                 <div class="flex justify-between items-start">
                     <h3 class="font-bold text-[14px] text-gray-900 leading-tight group-hover:underline pr-2 line-clamp-1">{{ $related['name'] }}</h3>
-                    <span class="font-bold text-[14px] text-gray-900 ml-auto whitespace-nowrap">{{ $related['price'] }}</span>
+                    <div class="flex flex-col items-end whitespace-nowrap ml-auto">
+                        @if($related['is_on_sale'])
+                            <span class="font-black text-[14px] text-rose-600">{{ $related['price'] }}</span>
+                            <span class="text-[11px] text-gray-400 line-through">{{ $related['price_original'] }}</span>
+                        @else
+                            <span class="font-bold text-[14px] text-gray-900">{{ $related['price'] }}</span>
+                        @endif
+                    </div>
                 </div>
                 
                 <!-- Subtitle Row -->

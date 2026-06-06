@@ -147,10 +147,81 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label for="base_price" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Giá bán lẻ *</label>
+                                <label for="base_price" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">Giá gốc *</label>
                                 <input type="number" name="base_price" id="base_price" value="{{ old('base_price', (int)$product->base_price) }}" required
-                                       class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all">
+                                       class="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
+                                       x-on:input="calcSalePrice()">
                                 @error('base_price') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        {{-- SALE Section --}}
+                        <div class="p-5 rounded-2xl border-2 border-dashed border-rose-200 bg-rose-50/40 space-y-4" x-data="{
+                            discountPct: {{ old('discount_percent', (int)$product->discount_percent) }},
+                            salePrice: 0,
+                            calcSalePrice() {
+                                const base = parseFloat(document.getElementById('base_price').value) || 0;
+                                if (this.discountPct > 0 && base > 0) {
+                                    this.salePrice = Math.round(base * (1 - this.discountPct / 100));
+                                } else {
+                                    this.salePrice = 0;
+                                }
+                            },
+                            formatVND(n) {
+                                return n.toLocaleString('vi-VN') + '₫';
+                            }
+                        }" x-init="calcSalePrice()">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-rose-700">Cài đặt Sale / Giảm giá</p>
+                                    <p class="text-[11px] text-rose-500">Giá sale sẽ được tính tự động từ % bạn nhập</p>
+                                </div>
+                            </div>
+
+                            @if($product->discount_percent > 0)
+                            <div class="flex items-center gap-2 p-3 bg-rose-100 rounded-xl border border-rose-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <span class="text-[11px] font-bold text-rose-700">Hiện đang giảm {{ $product->discount_percent }}% — Giá sale: {{ number_format($product->effective_price, 0, ',', '.') }}₫</span>
+                            </div>
+                            @endif
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label for="discount_percent" class="text-[11px] font-bold text-rose-600 uppercase tracking-widest block">Phần trăm giảm giá (%)</label>
+                                    <div class="relative">
+                                        <input type="number" name="discount_percent" id="discount_percent"
+                                               x-model="discountPct"
+                                               x-on:input="calcSalePrice()"
+                                               min="0" max="99" step="1"
+                                               class="w-full bg-white border-rose-200 rounded-xl px-4 py-3 pr-12 text-sm font-bold text-rose-700 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition-all"
+                                               placeholder="0">
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-rose-400 font-bold text-sm">%</span>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400">Nhập 0 để tắt sale</p>
+                                    @error('discount_percent') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-rose-600 uppercase tracking-widest block">Giá sau khi giảm (preview)</label>
+                                    <div class="bg-white border border-rose-200 rounded-xl px-4 py-3 flex items-center gap-3">
+                                        <template x-if="discountPct > 0 && salePrice > 0">
+                                            <div class="flex flex-col">
+                                                <span class="text-lg font-black text-rose-600" x-text="formatVND(salePrice)"></span>
+                                                <span class="text-xs text-gray-400 line-through" x-text="formatVND(parseFloat(document.getElementById('base_price').value) || 0)"></span>
+                                            </div>
+                                        </template>
+                                        <template x-if="!(discountPct > 0 && salePrice > 0)">
+                                            <span class="text-sm text-gray-400 italic">Chưa áp dụng giảm giá</span>
+                                        </template>
+                                        <template x-if="discountPct > 0">
+                                            <span class="ml-auto inline-flex items-center px-2.5 py-1 bg-rose-500 text-white text-[11px] font-black rounded-lg uppercase tracking-wider"
+                                                  x-text="'-' + discountPct + '%'"></span>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

@@ -16,9 +16,60 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['categories', 'images'])->latest()->paginate(10);
+        $query = Product::with(['categories', 'images']);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('variants', function($qv) use ($search) {
+                      $qv->where('sku', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('categories', function($qc) use ($search) {
+                      $qc->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Toggle: active filter
+        if ($request->input('is_active') === '1') {
+            $query->where('is_active', true);
+        }
+
+        // Tab filters
+        $tab = $request->input('tab', 'all');
+        if ($tab === 'active') {
+            $query->where('is_active', true);
+        } elseif ($tab === 'sale') {
+            $query->where('is_active', true)->where('discount_percent', '>', 0);
+        } elseif ($tab === 'outofstock') {
+            // Products with 0 total quantity
+            $query->where(function($q) {
+                $q->whereDoesntHave('variants')
+                  ->orWhereHas('variants', function($qv) {
+                      $qv->select(DB::raw('sum(quantity)'))->havingRaw('sum(quantity) = 0');
+                  });
+            });
+        } elseif (str_starts_with($tab, 'cat_')) {
+            $catId = (int) substr($tab, 4);
+            $query->whereHas('categories', function($qc) use ($catId) {
+                $qc->where('categories.id', $catId);
+            });
+        }
+
+        // Date range filters
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->input('start_date'));
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->input('end_date'));
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -47,6 +98,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'base_price' => 'required|numeric|min:0',
+            'discount_percent' => 'nullable|integer|min:0|max:99',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'sizes' => 'nullable|array',
@@ -59,6 +111,11 @@ class ProductController extends Controller
             'image_paste' => 'nullable|string',
         ]);
 
+        $discountPercent = (int) ($request->discount_percent ?? 0);
+        $salePrice = $discountPercent > 0
+            ? round($request->base_price * (1 - $discountPercent / 100))
+            : null;
+
         try {
             DB::beginTransaction();
 
@@ -66,6 +123,8 @@ class ProductController extends Controller
                 'name' => $request->name,
                 'slug' => Str::slug($request->name) . '-' . time(),
                 'base_price' => $request->base_price,
+                'sale_price' => $salePrice,
+                'discount_percent' => $discountPercent,
                 'description' => $request->description,
                 'is_active' => true,
             ]);
@@ -244,6 +303,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'sku_prefix' => 'nullable|string|max:20|regex:/^[A-Za-z0-9\-]+$/',
             'base_price' => 'required|numeric|min:0',
+            'discount_percent' => 'nullable|integer|min:0|max:99',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'sizes' => 'nullable|array',
@@ -259,6 +319,11 @@ class ProductController extends Controller
             'delete_images.*' => 'exists:product_images,id',
         ]);
 
+        $discountPercent = (int) ($request->discount_percent ?? 0);
+        $salePrice = $discountPercent > 0
+            ? round($request->base_price * (1 - $discountPercent / 100))
+            : null;
+
         try {
             DB::beginTransaction();
 
@@ -266,6 +331,8 @@ class ProductController extends Controller
                 'name' => $request->name,
                 'slug' => Str::slug($request->name) . '-' . $product->id,
                 'base_price' => $request->base_price,
+                'sale_price' => $salePrice,
+                'discount_percent' => $discountPercent,
                 'description' => $request->description,
             ]);
 

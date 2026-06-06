@@ -12,6 +12,12 @@ class Product extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'discount_percent' => 'integer',
+        'base_price'       => 'float',
+        'sale_price'       => 'float',
+    ];
+
     public function collections()
     {
         return $this->belongsToMany(Collection::class, 'collection_products')->withPivot('sort_order');
@@ -57,4 +63,25 @@ class Product extends Model
         $img = $this->images->firstWhere('is_primary', true) ?? $this->images->first();
         return $img ? $img->url : asset('user/img/default-product.jpg');
     }
+
+    /**
+     * Kiểm tra sản phẩm có đang được giảm giá không.
+     */
+    public function getIsOnSaleAttribute(): bool
+    {
+        return $this->discount_percent > 0;
+    }
+
+    /**
+     * Trả về giá hiển thị sau khi giảm (nếu có). 
+     * Nếu không giảm giá, trả về base_price.
+     */
+    public function getEffectivePriceAttribute(): float
+    {
+        if ($this->discount_percent > 0) {
+            return round($this->base_price * (1 - $this->discount_percent / 100));
+        }
+        return $this->sale_price ?? $this->base_price;
+    }
 }
+

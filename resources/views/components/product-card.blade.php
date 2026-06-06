@@ -3,6 +3,7 @@
 @php
     $primaryImage = $product->images->where('is_primary', true)->first();
     $isNew = $product->created_at->diffInDays(now()) < 7 || $product->is_featured;
+    $isOnSale = $product->is_on_sale;
 @endphp
 
 <a href="{{ route('product.show', $product->slug) }}" class="group cursor-pointer block">
@@ -24,7 +25,13 @@
         @endif
 
         <!-- Labels -->
-        @if($isNew)
+        @if($isOnSale)
+            <div class="absolute top-4 left-4">
+                <span class="inline-flex items-center px-2.5 py-1 bg-rose-500 text-white text-[11px] font-black uppercase tracking-widest rounded-sm shadow-lg animate-pulse">
+                    -{{ $product->discount_percent }}%
+                </span>
+            </div>
+        @elseif($isNew)
             <div class="absolute top-4 left-4">
                 <span class="text-[11px] font-bold text-black uppercase tracking-[0.2em]">NEW</span>
             </div>
@@ -44,9 +51,14 @@
             <h3 class="text-[13px] font-bold text-gray-900 leading-tight border-b border-transparent group-hover:border-black transition-all inline-block truncate uppercase tracking-wide">
                 {{ $product->name }}
             </h3>
-            <span class="text-[13px] font-bold text-gray-900 whitespace-nowrap">
-                {{ number_format($product->base_price, 0, ',', '.') }}₫
-            </span>
+            <div class="flex flex-col items-end whitespace-nowrap">
+                @if($isOnSale)
+                    <span class="text-[13px] font-black text-rose-600">{{ number_format($product->effective_price, 0, ',', '.') }}₫</span>
+                    <span class="text-[11px] text-gray-400 line-through">{{ number_format($product->base_price, 0, ',', '.') }}₫</span>
+                @else
+                    <span class="text-[13px] font-bold text-gray-900">{{ number_format($product->base_price, 0, ',', '.') }}₫</span>
+                @endif
+            </div>
         </div>
         
         @if($product->description)

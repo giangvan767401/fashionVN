@@ -64,7 +64,12 @@ class ProductController extends Controller
 
         $product = [
             'name' => $productModel->name,
-            'price' => number_format($productModel->sale_price ?? $productModel->base_price, 0, ',', '.') . 'đ',
+            'base_price_raw' => $productModel->base_price,
+            'effective_price_raw' => $productModel->effective_price,
+            'is_on_sale' => $productModel->is_on_sale,
+            'discount_percent' => $productModel->discount_percent,
+            'price' => number_format($productModel->effective_price, 0, ',', '.') . '₫',
+            'price_original' => number_format($productModel->base_price, 0, ',', '.') . '₫',
             'id' => $productModel->sku,
             'product_id' => $productModel->id,
             'availability' => $productModel->variants->sum('quantity'),
@@ -128,7 +133,10 @@ class ProductController extends Controller
 
             return [
                 'name' => $relProd->name,
-                'price' => number_format($relProd->sale_price ?? $relProd->base_price, 0, ',', '.') . 'đ',
+                'price' => number_format($relProd->effective_price, 0, ',', '.') . '₫',
+                'price_original' => number_format($relProd->base_price, 0, ',', '.') . '₫',
+                'is_on_sale' => $relProd->is_on_sale,
+                'discount_percent' => $relProd->discount_percent,
                 'image' => $imgUrl,
                 'slug' => $relProd->slug,
                 'short_description' => $relProd->short_desc ?: 'Áo dáng cơ bản năng động', // Fallback nếu DB trống
