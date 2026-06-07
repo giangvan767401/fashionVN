@@ -249,9 +249,93 @@ class CheckoutController extends Controller
             return app(MomoController::class)->createPayment($request);
         }
 
-        // Chuyển hướng sang luồng thanh toán VietQR (PayOS)
+        // Chuyển hướng sang luồng thanh toán VietQR (SePay)
         if ($request->payment_method === 'vietqr') {
-            return app(PayOSController::class)->createPayment($request);
+            if (!session()->has('checkout.info')) {
+                return redirect()->route('checkout');
+            }
+
+            // 1. Get Checkout data
+            $checkoutData = $this->getCheckoutData();
+            $cart = $checkoutData['cart'];
+            $cartItems = $checkoutData['cartItems'];
+            $subtotal = $checkoutData['cartTotal'];
+            $coupon = $checkoutData['coupon'];
+            $discountAmount = $checkoutData['discountAmount'];
+            $tierDiscount = $checkoutData['tierDiscount'];
+            $pointsRedeemed = $checkoutData['pointsRedeemed'];
+            $pointsDiscount = $checkoutData['pointsDiscount'];
+            $tax = $checkoutData['tax'];
+            $shippingFee = $checkoutData['shippingFee'];
+            $total = $checkoutData['total'];
+
+            if (!$cart || $cartItems->isEmpty()) {
+                return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
+            }
+
+            $info = session('checkout.info');
+
+            // 2. Create Order
+            $order = \App\Models\Order::create([
+                'order_number' => 'ORD-' . strtoupper(uniqid()),
+                'user_id' => Auth::id(),
+                'coupon_id' => $coupon ? $coupon->id : null,
+                'payment_method_id' => 2, // 2 = VietQR
+                'ship_name' => $info['last_name'] . ' ' . $info['first_name'],
+                'ship_phone' => $info['phone'],
+                'ship_province' => $info['province'] ?? '',
+                'ship_district' => '',
+                'ship_ward' => '',
+                'ship_address' => $info['address'] . ($info['apartment'] ? ' (' . $info['apartment'] . ')' : ''),
+                'subtotal' => $subtotal,
+                'shipping_fee' => $shippingFee,
+                'discount_amount' => $discountAmount,
+                'points_redeemed' => $pointsRedeemed,
+                'points_discount' => $pointsDiscount,
+                'tier_discount' => $tierDiscount,
+                'tax_amount' => $tax,
+                'total_amount' => $total,
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
+            ]);
+
+            // 3. Create Order Items and Update Stock
+            foreach ($cartItems as $item) {
+                $product = $item->variant->product;
+                $primaryImage = $product?->images->where('is_primary', true)->first() ?? $product?->images->first();
+                $imageUrl = $primaryImage ? $primaryImage->url : null;
+
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'variant_id' => $item->variant_id,
+                    'product_name' => $product?->name ?? 'Unknown',
+                    'variant_label' => $item->variant_label,
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'total_price' => $item->unit_price * $item->quantity,
+                    'image_url' => $imageUrl,
+                ]);
+
+                // 4. Subtract stock quantity
+                $item->variant->decrement('quantity', $item->quantity);
+            }
+
+            // Trừ điểm tích lũy của khách hàng nếu đã sử dụng
+            if ($pointsRedeemed > 0 && $order->user) {
+                $order->user->decrement('loyalty_points', $pointsRedeemed);
+            }
+
+            // 5. Clear Cart
+            if ($cart) {
+                $cart->items()->delete();
+                $cart->delete();
+            }
+
+            // 6. Clear Session
+            session()->forget(['checkout.info', 'checkout.shipping_method', 'checkout.shipping_fee', 'checkout.use_points']);
+
+            // 7. Redirect to QR payment page
+            return redirect()->route('payment.qr', $order->id);
         }
 
         // Chuyển hướng sang luồng thanh toán VNPAY

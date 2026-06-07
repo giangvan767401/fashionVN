@@ -78,6 +78,11 @@ Route::get('/momo/demo', [\App\Http\Controllers\MomoController::class, 'demo'])-
 Route::post('/momo/demo/confirm', [\App\Http\Controllers\MomoController::class, 'demoConfirm'])->middleware(['auth', 'verified'])->name('momo.demo.confirm');
 Route::post('/momo/demo/cancel', [\App\Http\Controllers\MomoController::class, 'demoCancel'])->middleware(['auth', 'verified'])->name('momo.demo.cancel');
 
+// SePay QR Payment — trang hiển thị mã QR cho khách hàng
+Route::get('/orders/{order}/qr-payment', [\App\Http\Controllers\QRPaymentController::class, 'generateQR'])
+     ->middleware(['auth', 'verified'])
+     ->name('payment.qr');
+
 // Yêu thích
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle')->middleware(['auth', 'verified']);
